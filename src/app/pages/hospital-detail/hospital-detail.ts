@@ -12,7 +12,7 @@ import { HospitalService, Hospital } from 'src/app/core/services/hospital.servic
 })
 export class HospitalDetail implements OnInit {
   hospital: Hospital | null = null;
-  baseUrl = 'http://192.168.29.93:8000';
+  baseUrl = 'http://165.22.223.163:8000';
 
   constructor(
     private route: ActivatedRoute,

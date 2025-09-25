@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.29.93:8000',
+  apiUrl: 'http://165.22.223.163:8000',
   defaultLanguage: 'en',
   supportedLanguages: ['en', 'es', 'fr'],
   apiEndpoints: {

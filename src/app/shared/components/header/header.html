@@ -1,0 +1,54 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/">
+      <span class="text-primary-custom">Logo</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen"
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact: true}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="treatmentsDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Treatments Plan
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="treatmentsDropdown">
+            <li *ngFor="let treatment of treatmentTypes">
+              <a class="dropdown-item" [routerLink]="'/treatments/' + toSlug(treatment)" routerLinkActive="active">
+                {{ treatment }}
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/associate-hospital" routerLinkActive="active">Associate Hospital</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/doctors" routerLinkActive="active">Our Doctors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="#" routerLinkActive="active">Articles</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active" class="btn-default login-btn ms-2"><i
+              class="fa-regular fa-circle-user"></i> Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

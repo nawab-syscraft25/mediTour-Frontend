@@ -1,0 +1,82 @@
+<section class="inner-banner">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="inner-baner-dtl position-relative text-center">
+                    <img [src]="'assets/images/surgical-treatment.png'" class="w-100 img-fluid rounded-5" />
+                    <div class="inner-heading">
+                        <h2>Treatments Plan</h2>
+                        <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
+                            <li><a href="/">Home</a></li>
+                            <li><img [src]="'assets/images/breadcumb.svg'"></li>
+                            <li><a href="/">Surgical Treatment Plan</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="card-list-main ptc-80">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div class="main-head text-center mbc-50">
+                    <!-- <h2>Our Surgical Treatments Plan</h2> -->
+                    <h2 *ngIf="treatmentName">Treatments for {{ treatmentName }}</h2>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+                        been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div *ngIf="loading">Loading treatments...</div>
+            <div class="col-md-6 col-lg-4 mb-4" *ngFor="let t of treatments">
+                <div class="user-card" *ngIf="!loading && treatments.length > 0">
+                    <div class="card-inner">
+                        <div class="user-card-img">
+                            <img *ngIf="t.images && t.images.length > 0"
+                                [src]="'http://192.168.29.93:8000' + t.images[0].url" [alt]="t.name" class="img-fluid">
+                        </div>
+                        <div class="user-card-content">
+                            <h5 class="card-title">{{ t.name }}</h5>
+                            <div class="user-card-description">
+                                <p>{{ t.short_description }}</p>
+                            </div>
+                            <div class="user-card-rating">
+                                <div class="user-card-rating d-flex align-items-center">
+                                    <ng-container *ngFor="let star of getStars(t.rating)">
+                                        <!-- Full star -->
+                                        <i *ngIf="star === 'full'" class="fa fa-star text-warning"></i>
+                                        <!-- Half star -->
+                                        <i *ngIf="star === 'half'" class="fa fa-star-half-alt text-warning"></i>
+                                        <!-- Empty star with border -->
+                                        <i *ngIf="star === 'empty'" class="fa-regular fa-star text-warning"></i>
+                                    </ng-container>
+                                    <span class="ms-2" *ngIf="t.rating !== null"></span>
+                                </div>
+                            </div>
+                            <p class="treatment-price" *ngIf="t.price_exact">
+                                <strong>Price:</strong> ${{ t.price_exact }} <span class="ms-1">Onward</span>
+                            </p>
+                            <p class="treatment-price" *ngIf="t.price_min && t.price_max">
+                                <strong>Price:</strong> ${{ t.price_min }} – ${{ t.price_max }} <span
+                                    class="ms-1">Onward</span>
+                            </p>
+                            <div class="d-flex align-items-center card-location">
+                                <img [src]="'assets/images/card-location.svg'">
+                                <p class="user-card-location mb-0"> {{ t.location }}</p>
+                            </div>
+                        </div>
+                        <div class="read-more">
+                            <a hre class="btn">More Detail <i class="fa fa-arrow-up"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!loading && treatments.length === 0" class="alert alert-info mt-3">
+                No treatments found for {{ treatmentName }}.
+            </div>
+        </div>
+    </div>
+</section>

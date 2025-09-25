@@ -65,7 +65,7 @@
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/d-hospital.svg'">
-                            <p class="mb-0">{{ d.hospitalName }}</p>
+                            <p class="mb-0">{{ d.hospitalName || 'Loading hospital...' }}</p>
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/d-experience.svg'">

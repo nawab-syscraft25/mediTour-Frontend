@@ -51,6 +51,18 @@ export class Doctors implements OnInit {
           return ratingB - ratingA;
         });
 
+        // Track pending hospital requests
+        let pendingHospitalRequests = 0;
+        let completedHospitalRequests = 0;
+
+        // Count unique hospital IDs to track requests
+        const uniqueHospitalIds = [...new Set(this.doctors.map(doc => doc.hospital_id))];
+        
+        if (uniqueHospitalIds.length === 0) {
+          this.loading = false;
+          return;
+        }
+
         // fetch hospital names
         this.doctors.forEach((doc, index) => {
           console.log(`👨‍⚕️ Doctor ${index + 1}:`, {
@@ -69,21 +81,47 @@ export class Doctors implements OnInit {
             // already cached
             this.doctors[index].hospitalName = this.hospitalCache[hospitalId];
           } else {
+            // Only increment if this is the first time we're fetching this hospital
+            if (!uniqueHospitalIds.find(id => id === hospitalId && this.hospitalCache[id])) {
+              pendingHospitalRequests++;
+            }
+            
             // fetch hospital name once
             this.hospitalService.getHospitalById(hospitalId).subscribe({
               next: (hospital: Hospital) => {
                 this.hospitalCache[hospitalId] = hospital.name;
-                this.doctors[index].hospitalName = hospital.name;
+                
+                // Update all doctors with this hospital_id
+                this.doctors.forEach((doctor, idx) => {
+                  if (doctor.hospital_id === hospitalId) {
+                    this.doctors[idx].hospitalName = hospital.name;
+                  }
+                });
+                
                 console.log(`🏥 Hospital fetched for ID ${hospitalId}: ${hospital.name}`);
+                
+                completedHospitalRequests++;
+                if (completedHospitalRequests >= uniqueHospitalIds.length) {
+                  this.loading = false;
+                }
               },
               error: (err) => {
                 console.error(`❌ Error fetching hospital with ID ${hospitalId}:`, err);
+                this.doctors[index].hospitalName = 'Hospital not found';
+                
+                completedHospitalRequests++;
+                if (completedHospitalRequests >= uniqueHospitalIds.length) {
+                  this.loading = false;
+                }
               }
             });
           }
         });
 
-        this.loading = false;
+        // If all hospitals are already cached, set loading to false
+        if (uniqueHospitalIds.every(id => this.hospitalCache[id])) {
+          this.loading = false;
+        }
       },
       error: (err: unknown) => {
         console.error('❌ Error loading doctors:', err);

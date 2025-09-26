@@ -85,7 +85,7 @@ export class HeroSection implements OnInit {
     console.log('Selected treatment:', this.selectedTreatment);
 
     if (!this.selectedLocation && !this.selectedTreatment) {
-      alert('Please select a location or treatment type');
+      // alert('Please select a location or treatment type');
       return;
     }
 

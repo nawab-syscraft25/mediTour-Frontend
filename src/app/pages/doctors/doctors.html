@@ -29,6 +29,11 @@
             </div>
         </div>
 
+        <!-- Debug info (remove in production) -->
+        <!-- <div class="text-center mb-3" style="background: #f0f0f0; padding: 10px; border-radius: 5px;">
+            <small>Debug: loading = {{ loading }}, doctors.length = {{ doctors.length }}</small>
+        </div> -->
+
         <div *ngIf="loading" class="text-center">Loading doctors...</div>
 
         <div class="row" *ngIf="!loading && doctors.length">

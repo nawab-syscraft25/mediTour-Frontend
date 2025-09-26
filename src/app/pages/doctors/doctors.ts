@@ -1,5 +1,5 @@
 // src/app/pages/doctors/doctors.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DoctorService, Doctor } from 'src/app/core/services/doctors.service';
 import { HospitalService, Hospital } from 'src/app/core/services/hospital.service';
@@ -18,7 +18,8 @@ export class Doctors implements OnInit {
 
   constructor(
     private doctorService: DoctorService,
-    private hospitalService: HospitalService
+    private hospitalService: HospitalService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   getStars(rating: number | null): ('full' | 'half' | 'empty')[] {
@@ -39,10 +40,20 @@ export class Doctors implements OnInit {
 
   ngOnInit(): void {
     console.log('Doctors component initialized...');
+    console.log('Current loading state:', this.loading);
 
     this.doctorService.getDoctors().subscribe({
       next: (data: Doctor[]) => {
         console.log('✅ Doctor API raw data:', data);
+        console.log('Number of doctors received:', data?.length || 0);
+
+        if (!data || data.length === 0) {
+          console.log('No doctors found - setting loading to false');
+          this.doctors = [];
+          this.loading = false;
+          this.cdr.detectChanges(); // Force change detection
+          return;
+        }
 
         // ✅ sort doctors by rating (high → low, null last)
         this.doctors = data.sort((a, b) => {
@@ -51,81 +62,88 @@ export class Doctors implements OnInit {
           return ratingB - ratingA;
         });
 
-        // Track pending hospital requests
-        let pendingHospitalRequests = 0;
-        let completedHospitalRequests = 0;
-
-        // Count unique hospital IDs to track requests
+        // Get unique hospital IDs
         const uniqueHospitalIds = [...new Set(this.doctors.map(doc => doc.hospital_id))];
-        
+        console.log('Unique hospital IDs:', uniqueHospitalIds);
+
         if (uniqueHospitalIds.length === 0) {
           this.loading = false;
+          this.cdr.detectChanges(); // Force change detection
           return;
         }
 
-        // fetch hospital names
-        this.doctors.forEach((doc, index) => {
-          console.log(`👨‍⚕️ Doctor ${index + 1}:`, {
-            id: doc.id,
-            name: doc.name,
-            profile_photo: doc.profile_photo,
-            qualifications: doc.qualifications,
-            experience_years: doc.experience_years,
-            description: doc.description,
-            hospital_id: doc.hospital_id,
-          });
+        let hospitalRequestsCompleted = 0;
+        const totalHospitalRequests = uniqueHospitalIds.length;
 
-          const hospitalId = doc.hospital_id;
+        // Function to check if all hospital requests are done
+        const checkAllHospitalsLoaded = () => {
+          hospitalRequestsCompleted++;
+          console.log(`Hospital requests completed: ${hospitalRequestsCompleted}/${totalHospitalRequests}`);
+          if (hospitalRequestsCompleted >= totalHospitalRequests) {
+            this.loading = false;
+            console.log('All hospital data loaded, setting loading to false');
+            console.log('Doctors array:', this.doctors);
+            console.log('Loading state:', this.loading);
+            this.cdr.detectChanges(); // Force change detection
+          }
+        };
 
+        // Add timeout fallback in case hospital requests hang
+        setTimeout(() => {
+          if (this.loading) {
+            console.log('⚠️ Hospital loading timeout - forcing loading to false');
+            this.loading = false;
+            this.cdr.detectChanges(); // Force change detection
+          }
+        }, 10000); // 10 second timeout
+
+        // Fetch hospital names for unique IDs only
+        uniqueHospitalIds.forEach((hospitalId) => {
           if (this.hospitalCache[hospitalId]) {
-            // already cached
-            this.doctors[index].hospitalName = this.hospitalCache[hospitalId];
+            // Already cached, update all doctors with this hospital_id
+            this.doctors.forEach((doctor, index) => {
+              if (doctor.hospital_id === hospitalId) {
+                this.doctors[index].hospitalName = this.hospitalCache[hospitalId];
+              }
+            });
+            checkAllHospitalsLoaded();
           } else {
-            // Only increment if this is the first time we're fetching this hospital
-            if (!uniqueHospitalIds.find(id => id === hospitalId && this.hospitalCache[id])) {
-              pendingHospitalRequests++;
-            }
-            
-            // fetch hospital name once
+            // Fetch hospital data
             this.hospitalService.getHospitalById(hospitalId).subscribe({
               next: (hospital: Hospital) => {
+                console.log(`🏥 Hospital fetched for ID ${hospitalId}: ${hospital.name}`);
                 this.hospitalCache[hospitalId] = hospital.name;
                 
                 // Update all doctors with this hospital_id
-                this.doctors.forEach((doctor, idx) => {
+                this.doctors.forEach((doctor, index) => {
                   if (doctor.hospital_id === hospitalId) {
-                    this.doctors[idx].hospitalName = hospital.name;
+                    this.doctors[index].hospitalName = hospital.name;
                   }
                 });
                 
-                console.log(`🏥 Hospital fetched for ID ${hospitalId}: ${hospital.name}`);
-                
-                completedHospitalRequests++;
-                if (completedHospitalRequests >= uniqueHospitalIds.length) {
-                  this.loading = false;
-                }
+                checkAllHospitalsLoaded();
               },
               error: (err) => {
                 console.error(`❌ Error fetching hospital with ID ${hospitalId}:`, err);
-                this.doctors[index].hospitalName = 'Hospital not found';
+                this.hospitalCache[hospitalId] = 'Hospital not available';
                 
-                completedHospitalRequests++;
-                if (completedHospitalRequests >= uniqueHospitalIds.length) {
-                  this.loading = false;
-                }
+                // Update all doctors with this hospital_id
+                this.doctors.forEach((doctor, index) => {
+                  if (doctor.hospital_id === hospitalId) {
+                    this.doctors[index].hospitalName = 'Hospital not available';
+                  }
+                });
+                
+                checkAllHospitalsLoaded();
               }
             });
           }
         });
-
-        // If all hospitals are already cached, set loading to false
-        if (uniqueHospitalIds.every(id => this.hospitalCache[id])) {
-          this.loading = false;
-        }
       },
       error: (err: unknown) => {
         console.error('❌ Error loading doctors:', err);
         this.loading = false;
+        this.cdr.detectChanges(); // Force change detection
       }
     });
   }

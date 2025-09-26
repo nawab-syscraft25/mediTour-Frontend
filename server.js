@@ -31,7 +31,7 @@ app.use((req, res, next) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8090;
 app.listen(port, (err) => {
   if (err) {
     console.error('❌ Server failed to start:', err);

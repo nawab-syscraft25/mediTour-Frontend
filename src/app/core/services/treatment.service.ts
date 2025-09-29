@@ -7,7 +7,6 @@ import { Treatment, TreatmentSearchParams } from '../../shared/interfaces/treatm
 @Injectable({
   providedIn: 'root'
 })
-
 export class TreatmentService {
   constructor(private apiService: ApiService) {}
 
@@ -16,12 +15,10 @@ export class TreatmentService {
       .set('skip', params.skip?.toString() || '0')
       .set('limit', params.limit?.toString() || '100');
 
-    // Handle location parameter
     if (params.location) {
       httpParams = httpParams.set('location', params.location.trim());
     }
 
-    // Handle treatment_type parameter
     if (params.treatment_type) {
       httpParams = httpParams.set('treatment_type', params.treatment_type.trim());
     }
@@ -36,5 +33,10 @@ export class TreatmentService {
 
   getTreatmentTypes(): Observable<string[]> {
     return this.apiService.get<string[]>('/api/filters/treatment-types');
+  }
+
+  /** ✅ New method to get single treatment by ID */
+  getTreatmentById(id: number): Observable<Treatment> {
+    return this.apiService.get<Treatment>(`/api/v1/treatments/${id}`);
   }
 }

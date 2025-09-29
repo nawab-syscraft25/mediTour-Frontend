@@ -1,0 +1,62 @@
+<section class="inner-banner">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="inner-baner-dtl position-relative text-center">
+                    <!-- Banner Image -->
+                    <img [src]="'assets/images/login.png'" class="w-100 img-fluid rounded-5" />
+                    <div class="inner-heading">
+                        <h2>Login</h2>
+                        <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
+                            <li><a routerLink="/">Home</a></li>
+                            <li><img [src]="'assets/images/breadcumb.svg'" /></li>
+                            <li><a routerLink="/">Login</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="contact-form login-form ptc-80">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <img [src]="'assets/images/contact.png'" class="img-fluid w-100 rounded-4" />
+            </div>
+            <div class="col-md-6">
+                <div class="contact-form-inner">
+                    <h5>Login</h5>
+                    <p>Sign Into Your Account</p>
+                    <div class="login-form">
+                        <form class="mt-0 w-100">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Enter Email/Mobile Number">
+                            </div>
+                            <div class="mb-3">
+                                <div class="password position-relative">
+                                    <input [type]="showPassword ? 'text' : 'password'" class="form-control"
+                                        placeholder="Password" />
+                                    <a href="javascript:void(0)" (click)="togglePassword()">
+                                        <i class="fa-solid" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="forgot-password text-end">
+                                    <a href="forgot-password">Forgot password?</a>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <a href="#" class="btn-default">Login <i class="fa-solid fa-arrow-up"></i></a>
+                            </div>
+                            <div class="sing-option">
+                                <p class="mb-0">Don't have an account? <a href="/sign-up">Sign Up</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

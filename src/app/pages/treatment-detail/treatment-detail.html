@@ -1,19 +1,19 @@
-<section class="inner-banner" *ngIf="hospital">
+<section class="inner-banner" *ngIf="treatment">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="inner-baner-dtl position-relative text-center">
-                    <img *ngIf="hospital.images && hospital.images.length" [src]="baseUrl + hospital.images[1].url"
-                        class="w-100 img-fluid rounded-5 banner-img" [alt]="hospital.name" />
-                    <!-- <img [src]="'assets/images/associate-hospital.png'" class="w-100 img-fluid rounded-5" /> -->
+                    <!-- Banner Image -->
+                    <img *ngIf="treatment.images && treatment.images.length" [src]="baseUrl + treatment.images[0].url"
+                        class="w-100 img-fluid rounded-5 banner-img" [alt]="treatment.name || 'Treatment image'" />
                     <div class="inner-heading">
-                        <h2>{{ hospital.name }}</h2>
+                        <h2>{{ treatment.name }}</h2>
                         <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
                             <li><a routerLink="/">Home</a></li>
                             <li><img [src]="'assets/images/breadcumb.svg'" /></li>
                             <li><a routerLink="/associate-hospitals">Associate Hospitals</a></li>
                             <li><img [src]="'assets/images/breadcumb.svg'" /></li>
-                            <li><a routerLink="/">{{ hospital.name }}</a></li>
+                            <li><a routerLink="/">{{ treatment.name }}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -22,105 +22,130 @@
     </div>
 </section>
 
-<section class="hospital-detail ptc-80" *ngIf="hospital">
+<section class="hospital-detail ptc-80" *ngIf="treatment">
     <div class="container">
         <div class="row">
+            <!-- Main Image -->
             <div class="col-md-6">
                 <div class="detail-image">
-                    <img *ngIf="hospital.images && hospital.images.length" [src]="baseUrl + hospital.images[0].url"
-                        class="img-fluid w-100" [alt]="hospital.name" />
+                    <img *ngIf="treatment.images && treatment.images.length" [src]="baseUrl + treatment.images[0].url"
+                        class="img-fluid w-100" [alt]="treatment.name || 'Treatment image'" />
                 </div>
             </div>
+
+            <!-- Info -->
             <div class="col-md-6">
-                <div class="dtl-info hospital-info">
-                    <h2 class="section-title">{{ hospital.name }}</h2>
+                <div class="dtl-info hospital-info treatment-info">
+                    <h2 class="section-title">{{ treatment.name }}</h2>
+                    <div class="detail-description">
+                        <p>{{ treatment.short_description }}</p>
+                    </div>
+                    <!-- <p><strong>Type:</strong> {{ treatment.treatment_type }}</p> -->
                     <div class="detail-location d-flex align-items-center card-location">
                         <img [src]="'assets/images/card-location.svg'">
-                        <p class="mb-0">{{ hospital.location }}</p>
+                        <p class="mb-0">{{ treatment.location }}</p>
                     </div>
-                    <div class="detail-description">
-                        <p>{{ hospital.description }}</p>
+                    <!-- <p><strong>Rating:</strong> ⭐ {{ treatment.rating }}</p> -->
+                    <div class="treatment-price">
+                        <p *ngIf="treatment.price_exact"><strong>Price:</strong> ₹{{ treatment.price_exact | number }}
+                        </p>
                     </div>
+                    <div class="book-package">
+                        <button (click)="openModal()" class="btn-default">Book Package Now <i
+                                class="fa-solid fa-arrow-up"></i></button>
+                    </div>
+                    <app-modal [title]="'Book Package'" [show]="showModal" (close)="closeModal()">
+                        <div class="book-package-form">
+                            <form>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="First Name">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Last Name">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="Enter Email Id">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="number" class="form-control" placeholder="Enter Mobile Number">
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Select Service</option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Budget Preference</option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Doctor Preference">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Hospital Preference">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="formFileLg" class="form-label">Upload Your Medical History</label>
+                                    <input class="form-control form-control-lg" id="formFileLg" type="file">
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter Your Query"></textarea>
+                                </div>
+                                <div class="mb-2 form-check">
+                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                    <label class="form-check-label" for="exampleCheck1">Do You Need Travel Assistance?</label>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                    <label class="form-check-label" for="exampleCheck1">Do You Need Stay Assistance?</label>
+                                </div>
+                                <div class="package-book-note">
+                                    <p class="mb-0"><span>Note:</span> That travel and stay will incur additional charges</p>
+                                </div>
+                                
+                            </form>
+                        </div>
+                    </app-modal>
                 </div>
             </div>
         </div>
+
+        <!-- Long Description -->
         <div class="row">
             <div class="col-md-12">
                 <div class="detail-info">
                     <div class="dtl-head">
-                        <h2>Lorem ipsum is simply dummy text</h2>
+                        <h2>About {{ treatment.name }}</h2>
                     </div>
-                    <p class="mb-0">Cras vel bibendum nisl. Sed tincidunt purus nec vehicula aliquet. Vestibulum gravida molestie
-                        lectus, ut facilisis nisl ultrices eu. Ut sed nunc quis metus egestas fringilla sed at arcu.
-                        Aenean vel varius orci. Morbi sed augue at odio mattis vehicula. Quisque nisl dui, vehicula vel
-                        lacinia congue, pellentesque eget dolor. Aliquam ullamcorper tempus risus ut luctus. Curabitur
-                        nec nisi cursus, semper turpis in, bibendum risus. Aenean ac diam a nulla tincidunt lobortis a
-                        eu erat. Nullam sit amet mauris vel urna ornare suscipit at ac metus. Maecenas hendrerit magna
-                        efficitur felis ultrices, sit amet sollicitudin nisi porta. Curabitur in massa vel diam euismod
-                        vestibulum.</p>
+                    <p class="mb-0">{{ treatment.long_description }}</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="facilities ptc-60" *ngIf="hospital">
+<section class="dtl-center-image ptc-60" *ngIf="treatment">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <div class="dtl-head">
-                    <h2>Facilities :-</h2>
-                </div>
+            <div class="col-md-6" *ngIf="treatment.images && treatment.images.length > 2">
+                <img [src]="baseUrl + treatment.images[2].url" class="img-fluid w-100 rounded-4"
+                    [alt]="treatment.name || 'Treatment image'" />
             </div>
-        </div>
-        <div class="row" *ngIf="hospital?.facilities">
-            <div class="col-md-3" *ngFor="let facility of hospital.facilities.split('\n'); let i = index">
-                <div class="facility-item d-flex align-items-center justify-content-center">
-                    <img [src]="facilityIcons[i] || 'assets/images/facilities/default.png'" alt="facility {{ i + 1 }}"
-                        class="img-fluid" />
-                    <p class="mb-0">{{ facility.trim() }}</p>
-                </div>
+            <div class="col-md-6" *ngIf="treatment.images && treatment.images.length > 3">
+                <img [src]="baseUrl + treatment.images[3].url" class="img-fluid w-100 rounded-4"
+                    [alt]="treatment.name || 'Treatment image'" />
             </div>
         </div>
     </div>
 </section>
-<section class="facilities ptc-60" *ngIf="hospital">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="dtl-head">
-                    <h2>Key Features :-</h2>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div *ngIf="hospital?.features" class="dtl-features-list">
-                    <ul class="list-unstyled mb-0">
-                        <li *ngFor="let feature of hospital.features.split('\n')">
-                            <img [src]="featureIcon" alt="feature icon" />
-                            <span>{{ feature.trim() }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="dtl-center-image ptc-60" *ngIf="hospital">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <img *ngIf="hospital.images && hospital.images.length" [src]="baseUrl + hospital.images[2].url"
-                        class="img-fluid w-100 rounded-4" [alt]="hospital.name" />
-            </div>
-            <div class="col-md-6">
-                <img *ngIf="hospital.images && hospital.images.length" [src]="baseUrl + hospital.images[3].url"
-                        class="img-fluid w-100 rounded-4" [alt]="hospital.name" />
-            </div>
-        </div>
-    </div>
-</section>
+
 <section class="faq-main ptc-80">
     <div class="container">
         <div class="row">
@@ -134,7 +159,8 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne">Lorem Ipsum is simply dummy text of the printing</button>
+                                    data-bs-target="#collapseOne">Lorem Ipsum is simply dummy text of the
+                                    printing</button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show"
                                 data-bs-parent="#accordionExample">
@@ -152,7 +178,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -169,7 +196,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -186,7 +214,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -203,7 +232,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -224,7 +254,7 @@
                     </div>
                     <div class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">            
+                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
                         </div>
                         <div class="dtl-doctor-info">
                             <p>Dr. Prof Raju Vaishya</p>
@@ -236,7 +266,7 @@
                     </div>
                     <div class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">            
+                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
                         </div>
                         <div class="dtl-doctor-info">
                             <p>Dr. Prof Raju Vaishya</p>

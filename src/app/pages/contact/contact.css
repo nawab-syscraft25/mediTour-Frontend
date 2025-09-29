@@ -1,0 +1,26 @@
+.contact-inner img
+{
+    width: 70px;
+    margin-right: 20px;
+}
+.contact-inner h5
+{
+    font-size: 22px;
+    font-family: var(--primary-font);
+    color: var(--secondary-color);
+}
+.contact-inner p
+{
+    color: var(--info-color);
+}
+.contact-form-inner
+{
+    height: 100%;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: rgb(99 99 99 / 12%) 0px 2px 8px 0px;
+}
+.contact-map iframe
+{
+    border-radius: 20px;
+}

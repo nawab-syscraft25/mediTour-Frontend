@@ -23,16 +23,11 @@
             <div class="col-md-9">
                 <div class="main-head text-center mbc-50">
                     <h2>Our Doctors</h2>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
                         the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
                 </div>
             </div>
         </div>
-
-        <!-- Debug info (remove in production) -->
-        <!-- <div class="text-center mb-3" style="background: #f0f0f0; padding: 10px; border-radius: 5px;">
-            <small>Debug: loading = {{ loading }}, doctors.length = {{ doctors.length }}</small>
-        </div> -->
 
         <div *ngIf="loading" class="text-center">Loading doctors...</div>
 
@@ -42,7 +37,6 @@
                     <div class="user-card-img">
                         <img *ngIf="d.profile_photo?.length" [src]="'http://165.22.223.163:8000' + d.profile_photo"
                             [alt]="d.name" class="card-img-top img-fluid" />
-                        <!-- <img class="card-img-top img-fluid" [src]="'https://static.vecteezy.com/system/resources/thumbnails/030/928/115/small_2x/handsome-indian-doctor-generate-ai-photo.jpg'" [alt]="d.name" /> -->
                     </div>
                     <div class="user-card-content doctors-card-info">
                         <h5 class="card-title">{{ d.name }}</h5>
@@ -69,20 +63,24 @@
                             <p class="mb-0">{{ d.designation }}</p>
                         </div>
                         <div class="d-flex align-items-center card-location">
-                            <img [src]="'assets/images/d-hospital.svg'">
-                            <p class="mb-0">{{ d.hospitalName || 'Loading hospital...' }}</p>
+                            <img [src]="'assets/images/fees.svg'">
+                            <p class="mb-0">Consultation Fees: <span class="fee-amount">₹5478</span></p>
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/d-experience.svg'">
                             <p class="mb-0"> {{ d.experience_years || 'N/A' }} Years of Experience</p>
                         </div>
-                        <!-- <p><strong>Awards:</strong> {{ d.awards }}</p> -->
-                    </div>
-                    <div class="read-more">
-                        <!-- <a hre class="btn">More Detail <i class="fa fa-arrow-up"></i></a> -->
-                        <a *ngIf="d.id" [attr.href]="'/doctor-details/' + d.id" class="btn">
-                                More Detail <i class="fa fa-arrow-up"></i>
-                            </a>
+                        <div class="d-flex align-items-center card-location" *ngIf="d.hospitalName">
+                            <img [src]="'assets/images/hospital.svg'">
+                            <p class="mb-0">{{ d.hospitalName }}</p>
+                        </div>
+
+                        <!-- Add Book Consultation Button -->
+                        <div class="book-package mt-3">
+                            <button (click)="openModal(d)" class="btn-default">
+                                Book Consultation <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,6 +88,46 @@
 
         <div *ngIf="!loading && !doctors.length" class="text-center">
             No doctors found.
-        </div>
+        </div> 
     </div>
+
+    <!-- Modal Component -->
+    <app-modal [title]="'Book Consultation'" [show]="showModal" (close)="closeModal()">
+        <div class="book-package-form">
+            <form>
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="First Name">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Last Name">
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" placeholder="Enter Email Id">
+                </div>
+                <div class="mb-3">
+                    <input type="number" class="form-control" placeholder="Enter Mobile Number">
+                </div>
+                <div class="mb-3">
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Select Service</option>
+                        <option value="1">Online Consultation</option>
+                        <option value="2">In-Person Consultation</option>
+                        <option value="3">Emergency Consultation</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Select Slot</option>
+                        <option value="1">Below ₹1000</option>
+                        <option value="2">₹1000 - ₹5000</option>
+                        <option value="3">Above ₹5000</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                        placeholder="Enter Your Query"></textarea>
+                </div>
+            </form>
+        </div>
+    </app-modal> 
 </section>

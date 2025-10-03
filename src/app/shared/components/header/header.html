@@ -10,7 +10,7 @@
     </button>
 
     <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
-      <ul class="navbar-nav ms-auto align-items-center">
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a class="nav-link" routerLink="/" routerLinkActive="active"
             [routerLinkActiveOptions]="{exact: true}">Home</a>
@@ -24,16 +24,23 @@
             Treatments Plan
           </a>
           <ul class="dropdown-menu" aria-labelledby="treatmentsDropdown">
-            <li *ngFor="let treatment of treatmentTypes">
-              <a class="dropdown-item" [routerLink]="'/treatments/' + toSlug(treatment)" routerLinkActive="active">
-                {{ treatment }}
+            <li>
+              <a class="dropdown-item" routerLink="/treatments" routerLinkActive="active">
+                Surgical Treatment Plan
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" routerLink="/online-consultation" routerLinkActive="active">
+                Online Consultation
               </a>
             </li>
           </ul>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" routerLink="/associate-hospital" routerLinkActive="active">Associate Hospital</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/associate-hospital" routerLinkActive="active">Associate Hospitals</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/doctors" routerLinkActive="active">Our Doctors</a>
@@ -45,7 +52,21 @@
           <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact Us</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/login" routerLinkActive="active" class="btn-default login-btn ms-2"><i
+          <div class="head-searchbar">
+            <a class="nav-link header-search" (click)="toggleSearchBox()" id="show-search-box"><i class="fa fa-search flip-icon"></i></a>
+            <form id="hidden-search-box" class="navbar-form hidden-search-box" *ngIf="showSearchBox" id="hidden-search-box" role="search">
+              <div class="traingle"></div>
+              <div class="input-group add-on">
+                <input class="form-control addon-text-box" placeholder="Search Doctors And Packages" name="s"  type="text">
+                <button type="submit" class="input-group-btn addon-btn">
+                  <i class="fa fa-search flip-icon"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active" class="btn-default login-btn ms-3"><i
               class="ms-0 fa-regular fa-circle-user"></i> Login</a>
         </li>
       </ul>

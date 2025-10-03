@@ -1,0 +1,15 @@
+.attractions-detail a
+{
+    display: block;
+    margin-top: 20px;
+    width: fit-content;
+}
+.blogdtl-img img
+{
+    height: 220px;
+    object-fit: cover;
+}
+.blog-dtl-img
+{
+    padding: 20px 20px 0px 20px;
+}

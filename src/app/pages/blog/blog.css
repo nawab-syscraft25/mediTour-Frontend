@@ -62,3 +62,12 @@
 {
     border-color: #E3E3E3;
 }
+.blog-img
+{
+    min-height: 220px;
+}
+.blog-img img
+{
+    min-height: 220px;
+    object-fit: cover;
+}

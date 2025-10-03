@@ -115,7 +115,7 @@
 }
 
 .filter-main {
-    width: 60%;
+    width: 70%;
     justify-content: space-between;
 }
 
@@ -184,4 +184,93 @@
     font-size: 18px;
     margin: 7px 0px;
     font-family: var(--primary-font);
+}
+@media only screen and (min-width: 768px) and (max-width: 1024px)
+{
+    .hero-content-wrapper
+    {
+        position: initial;
+        margin-top: 20px;
+        background-color: transparent;
+    }
+    .hero-content h2
+    {
+        display: none;
+    }
+    .banner-filter ul.nav-tabs
+    {
+        width: 100%;
+        justify-content: center;
+    }
+    .modern-filter-container
+    {
+        position: initial;
+        flex-wrap: wrap;
+        padding: 30px;
+        width: 100%;
+        margin-top: 20px;
+        background-color: #f6fbff;
+    }
+    .filter-main
+    {
+        width: 100%;
+    }
+    .filter-btn
+    {
+        margin-top: 20px;
+    }
+}
+@media screen and (max-width: 767px)
+{
+    .hero-content-wrapper ul.nav li
+    {
+        width: 50%;
+    }
+    .hero-content-wrapper
+    {
+        position: initial;
+        background-color: transparent;
+    }
+    .hero-content h2
+    {
+        display: none;
+    }
+    .banner-filter ul.nav-tabs
+    {
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .modern-filter-container
+    {
+        width: 100%;
+        margin-top: 15px;
+        position: initial;
+        padding: 22px;
+        flex-wrap: wrap;
+        background-color: #f6fbff;
+    }
+    .hero-main img.main-bnr
+    {
+        border-radius: 15px;
+    }
+    .hero-content ul.nav-tabs button.nav-link
+    {
+        width: 100%;
+        font-size: 14px;
+        margin-top: 15px;
+        padding: 2px 8px;
+    }
+    .filter-main
+    {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .filter-main .filter-item
+    {
+        margin-bottom: 25px;
+    }
+    .filter-main .filter-item .filter-label
+    {
+        margin-bottom: 5px;
+    }
 }

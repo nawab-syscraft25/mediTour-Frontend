@@ -76,7 +76,12 @@
     margin-left: 13px;
     font-size: 16px;
 }
-.blog-pdtl-img
+.blog-dtl-img
 {
     padding: 20px 20px 0px 20px;
+}
+.blogdtl-img img
+{
+    height: 220px;
+    object-fit: cover;
 }

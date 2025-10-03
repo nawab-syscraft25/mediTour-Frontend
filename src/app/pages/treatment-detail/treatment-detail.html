@@ -1,7 +1,7 @@
 <section class="inner-banner" *ngIf="treatment">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="inner-baner-dtl position-relative text-center">
                     <!-- Banner Image -->
                     <img *ngIf="treatment.images && treatment.images.length" [src]="baseUrl + treatment.images[0].url"
@@ -26,7 +26,7 @@
     <div class="container">
         <div class="row">
             <!-- Main Image -->
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="detail-image">
                     <img *ngIf="treatment.images && treatment.images.length" [src]="baseUrl + treatment.images[0].url"
                         class="img-fluid w-100" [alt]="treatment.name || 'Treatment image'" />
@@ -34,7 +34,7 @@
             </div>
 
             <!-- Info -->
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="dtl-info hospital-info treatment-info">
                     <h2 class="section-title">{{ treatment.name }}</h2>
                     <div class="detail-description">
@@ -56,60 +56,155 @@
                     </div>
                     <app-modal [title]="'Book Package'" [show]="showModal" (close)="closeModal()">
                         <div class="book-package-form">
-                            <form>
+
+                            <!-- Success Message -->
+                            <div *ngIf="submitSuccess" class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Booking submitted successfully! We'll contact you soon.
+                            </div>
+
+                            <!-- Error Message -->
+                            <div *ngIf="submitError" class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ submitError }}
+                            </div>
+
+                            <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" *ngIf="!submitSuccess">
+
+                                <!-- First Name -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="First Name">
+                                    <input type="text" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name*"
+                                        formControlName="first_name">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('first_name')">
+                                        {{ getFieldError('first_name') }}
+                                    </div>
                                 </div>
+
+                                <!-- Last Name -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Last Name">
+                                    <input type="text" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name*"
+                                        formControlName="last_name">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('last_name')">
+                                        {{ getFieldError('last_name') }}
+                                    </div>
                                 </div>
+
+                                <!-- Email -->
                                 <div class="mb-3">
-                                    <input type="email" class="form-control" placeholder="Enter Email Id">
+                                    <input type="email" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id*"
+                                        formControlName="email">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                                        {{ getFieldError('email') }}
+                                    </div>
                                 </div>
+
+                                <!-- Mobile Number -->
                                 <div class="mb-3">
-                                    <input type="number" class="form-control" placeholder="Enter Mobile Number">
+                                    <input type="tel" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('mobile_no')"
+                                        placeholder="Enter Mobile Number*" formControlName="mobile_no">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile_no')">
+                                        {{ getFieldError('mobile_no') }}
+                                    </div>
                                 </div>
+
+                                <!-- Service Selection -->
                                 <div class="mb-3">
-                                    <select class="form-select" aria-label="Default select example">
-                                        <option selected>Select Service</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                    <select class="form-select" [class.is-invalid]="isFieldInvalid('treatment_id')"
+                                        formControlName="treatment_id">
+                                        <option value="" selected>Select Service*</option>
+                                        <option *ngFor="let service of serviceOptions" [value]="service.value">
+                                            {{ service.label }}
+                                        </option>
                                     </select>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('treatment_id')">
+                                        {{ getFieldError('treatment_id') }}
+                                    </div>
                                 </div>
+
+                                <!-- Budget Preference -->
                                 <div class="mb-3">
-                                    <select class="form-select" aria-label="Default select example">
-                                        <option selected>Budget Preference</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                    <select class="form-select" [class.is-invalid]="isFieldInvalid('budget')"
+                                        formControlName="budget">
+                                        <option value="" selected>Budget Preference*</option>
+                                        <option *ngFor="let budget of budgetOptions" [value]="budget.value">
+                                            {{ budget.label }}
+                                        </option>
                                     </select>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('budget')">
+                                        {{ getFieldError('budget') }}
+                                    </div>
                                 </div>
+
+                                <!-- Doctor Preference -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Doctor Preference">
+                                    <input type="text" class="form-control" placeholder="Doctor Preference (Optional)"
+                                        formControlName="doctor_preference">
                                 </div>
+
+                                <!-- Hospital Preference -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Hospital Preference">
+                                    <input type="text" class="form-control" placeholder="Hospital Preference (Optional)"
+                                        formControlName="hospital_preference">
                                 </div>
+
+                                <!-- Medical History File -->
                                 <div class="mb-3">
                                     <label for="formFileLg" class="form-label">Upload Your Medical History</label>
-                                    <input class="form-control form-control-lg" id="formFileLg" type="file">
+                                    <input class="form-control form-control-lg" id="formFileLg" type="file"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" (change)="onFileSelect($event)">
+                                    <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max
+                                        5MB)</small>
                                 </div>
+
+                                <!-- User Query -->
                                 <div class="mb-3">
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter Your Query"></textarea>
+                                    <textarea class="form-control" rows="3" placeholder="Enter Your Query (Optional)"
+                                        formControlName="user_query"></textarea>
                                 </div>
+
+                                <!-- Travel Assistance -->
                                 <div class="mb-2 form-check">
-                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                    <label class="form-check-label" for="exampleCheck1">Do You Need Travel Assistance?</label>
+                                    <input type="checkbox" class="form-check-input" id="travelCheck"
+                                        formControlName="travel_assistant">
+                                    <label class="form-check-label" for="travelCheck">
+                                        Do You Need Travel Assistance?
+                                    </label>
                                 </div>
+
+                                <!-- Stay Assistance -->
                                 <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                    <label class="form-check-label" for="exampleCheck1">Do You Need Stay Assistance?</label>
+                                    <input type="checkbox" class="form-check-input" id="stayCheck"
+                                        formControlName="stay_assistant">
+                                    <label class="form-check-label" for="stayCheck">
+                                        Do You Need Stay Assistance?
+                                    </label>
                                 </div>
+
+                                <!-- Note -->
                                 <div class="package-book-note">
-                                    <p class="mb-0"><span>Note:</span> That travel and stay will incur additional charges</p>
+                                    <p class="mb-3"><span>Note:</span> That travel and stay will incur additional charges.</p>
                                 </div>
-                                
+
+                                <!-- Submit Button -->
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="custom-submit btn-default" [disabled]="isSubmitting">
+                                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"
+                                            role="status"></span>
+                                        {{ isSubmitting ? 'Submitting...' : 'Send' }} <i class="fa-solid fa-arrow-up"></i>
+                                    </button>
+
+                                    <!-- Form validation summary -->
+                                    <div *ngIf="bookingForm.invalid && bookingForm.touched"
+                                        class="alert alert-warning mt-2" role="alert">
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>Please fill in all
+                                            required fields marked with *</small>
+                                    </div>
+                                </div>
+
                             </form>
                         </div>
                     </app-modal>
@@ -119,7 +214,7 @@
 
         <!-- Long Description -->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="detail-info">
                     <div class="dtl-head">
                         <h2>About {{ treatment.name }}</h2>
@@ -134,11 +229,11 @@
 <section class="dtl-center-image ptc-60" *ngIf="treatment">
     <div class="container">
         <div class="row">
-            <div class="col-md-6" *ngIf="treatment.images && treatment.images.length > 2">
+            <div class="col-lg-6 col-md-6" *ngIf="treatment.images && treatment.images.length > 2">
                 <img [src]="baseUrl + treatment.images[2].url" class="img-fluid w-100 rounded-4"
                     [alt]="treatment.name || 'Treatment image'" />
             </div>
-            <div class="col-md-6" *ngIf="treatment.images && treatment.images.length > 3">
+            <div class="col-lg-6 col-md-6" *ngIf="treatment.images && treatment.images.length > 3">
                 <img [src]="baseUrl + treatment.images[3].url" class="img-fluid w-100 rounded-4"
                     [alt]="treatment.name || 'Treatment image'" />
             </div>
@@ -149,7 +244,7 @@
 <section class="faq-main ptc-80">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="dtl-faq">
                     <div class="faq-head">
                         <p>Frequently Asked Questions</p>
@@ -246,50 +341,62 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="detail-doctors">
                     <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
                         <h4>Top Doctors</h4>
-                        <a href="#">View All</a>
+                        <a href="/doctors">View All</a>
                     </div>
-                    <div class="dtl-doctor-list d-flex align-items-center">
+                    
+                    
+                    <!-- Loading state -->
+                    <div *ngIf="loadingDoctors" class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading doctors...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Loading related doctors...</p>
+                    </div>
+                    
+                    <!-- Dynamic doctor list -->
+                    <div *ngFor="let doctor of relatedDoctors" class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
+                            <img *ngIf="doctor.profile_photo" 
+                                 [src]="baseUrl + doctor.profile_photo" 
+                                 [alt]="doctor.name" 
+                                 class="img-fluid">
+                            <img *ngIf="!doctor.profile_photo" 
+                                 [src]="'assets/images/dtl-doctor.png'" 
+                                 class="img-fluid">
                         </div>
                         <div class="dtl-doctor-info">
-                            <p>Dr. Prof Raju Vaishya</p>
+                            <p>{{ doctor.name }}</p>
                             <ul>
-                                <li>Orthopaedic Surgeon</li>
-                                <li>35 Years of Experience</li>
+                                <li>{{ doctor.designation || doctor.specialization }}</li>
+                                <li *ngIf="doctor.experience_years">{{ doctor.experience_years }} Years of Experience</li>
+                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{ doctor.consultancy_fee | number }}</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="dtl-doctor-list d-flex align-items-center">
-                        <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p>Dr. Prof Raju Vaishya</p>
-                            <ul>
-                                <li>Orthopaedic Surgeon</li>
-                                <li>35 Years of Experience</li>
-                            </ul>
-                        </div>
+                    
+                    <!-- No doctors found -->
+                    <div *ngIf="!loadingDoctors && relatedDoctors.length === 0" class="text-center py-3">
+                        <p class="mb-0 text-muted">No related doctors found for this treatment.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 <section class="dtl-cta ptc-80">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-cta-main position-relative">
                     <img [src]="'assets/images/dtl-cta.jpg'" class="img-fluid w-100 rounded-4">
                     <div class="dtl-cta-action">
                         <h2>Take the first step to <br> better health</h2>
-                        <a href="#" class="btn-default">Talk To Our Experts Now <i class="fa-solid fa-arrow-up"></i></a>
+                        <a href="/contact" class="btn-default">Talk To Our Experts Now <i class="fa-solid fa-arrow-up"></i></a>
                     </div>
                 </div>
             </div>

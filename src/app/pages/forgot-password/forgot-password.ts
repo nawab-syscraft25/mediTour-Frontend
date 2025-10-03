@@ -4,7 +4,7 @@ import { NgClass } from '@angular/common';
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [],
+  // imports: [NgClass],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.css']
 })

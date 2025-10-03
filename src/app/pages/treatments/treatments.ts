@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // for [(ngModel)]
 import { ActivatedRoute } from '@angular/router';
 import { TreatmentService } from 'src/app/core/services/treatment.service';
 import { Treatment } from 'src/app/shared/interfaces/treatment.interface';
@@ -7,15 +8,25 @@ import { Treatment } from 'src/app/shared/interfaces/treatment.interface';
 @Component({
   selector: 'app-treatments',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './treatments.html',
   styleUrls: ['./treatments.css']
 })
 export class Treatments implements OnInit {
   slug: string | null = null;
   treatmentName: string | null = null;
-  treatments: Treatment[] = [];
+
+  treatments: Treatment[] = [];            // all treatments
+  filteredTreatments: Treatment[] = [];    // treatments after filter
   loading = true;
+
+  // Filters
+  selectedLocation: string = '';
+  selectedTreatmentType: string = '';
+
+  // Dropdown data
+  availableLocations: string[] = [];
+  availableTreatmentTypes: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -23,37 +34,44 @@ export class Treatments implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.slug = params.get('slug');
-      this.loading = true;
+    this.loadTreatments();
+  }
 
-      const requestPayload: any = { skip: 0, limit: 100 };
+  /** Load all treatments from API */
+  loadTreatments(): void {
+    this.loading = true;
+    const requestPayload: any = { skip: 0, limit: 100 };
 
-      if (this.slug) {
-        // Convert slug (e.g. "cardiac-surgery") → "Cardiac Surgery"
-        this.treatmentName = this.slugToName(this.slug);
-        requestPayload.treatment_type = this.treatmentName;
+    this.treatmentService.searchTreatments(requestPayload).subscribe({
+      next: (data) => {
+        // Sort by rating (highest first, null → bottom)
+        this.treatments = data.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
+
+        // Dropdown values (unique)
+        this.availableLocations = Array.from(new Set(this.treatments.map(t => t.location).filter(Boolean)));
+        this.availableTreatmentTypes = Array.from(new Set(this.treatments.map(t => t.treatment_type).filter(Boolean)));
+
+        // Initialize filtered list (all by default)
+        this.filteredTreatments = [...this.treatments];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching treatments:', err);
+        this.loading = false;
       }
-
-      this.treatmentService.searchTreatments(requestPayload).subscribe({
-        next: (data) => {
-          // ✅ Sort by rating descending (null → bottom)
-          this.treatments = data.sort((a, b) => {
-            const ratingA = a.rating ?? -1; // unrated → lowest
-            const ratingB = b.rating ?? -1;
-            return ratingB - ratingA; // higher first
-          });
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error fetching treatments:', err);
-          this.loading = false;
-        }
-      });
     });
   }
 
-  /** Generate star array for ratings (supports half stars) */
+  /** Apply filters to treatments */
+  applyFilters(): void {
+    this.filteredTreatments = this.treatments.filter(t => {
+      const locationMatch = this.selectedLocation ? t.location === this.selectedLocation : true;
+      const treatmentMatch = this.selectedTreatmentType ? t.treatment_type === this.selectedTreatmentType : true;
+      return locationMatch && treatmentMatch;
+    });
+  }
+
+  /** Generate star array for ratings */
   getStars(rating: number | null): ('full' | 'half' | 'empty')[] {
     if (rating === null) {
       return Array(5).fill('empty');

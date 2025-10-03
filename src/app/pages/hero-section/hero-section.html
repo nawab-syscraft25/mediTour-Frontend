@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="hero-main">
                 <img [src]="'assets/images/home-banner.png'" alt="Hero Image" class="img-fluid w-100 main-bnr">
                 <div class="hero-content-wrapper">
@@ -23,9 +23,7 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="assistance-tab" data-bs-toggle="tab"
-                                        data-bs-target="#assistance" type="button" role="tab" aria-controls="contact"
-                                        aria-selected="false">
+                                    <button class="nav-link" type="button" (click)="goToContact()">
                                         <img [src]="'assets/images/assistance.svg'"> Assistance
                                     </button>
                                 </li>
@@ -89,6 +87,7 @@
                                     </div>
                                 </div>
 
+                                <!-- Updated Online Consultation Tab -->
                                 <div class="tab-pane fade" id="onlinecunsul" role="tabpanel"
                                     aria-labelledby="onlinecunsul">
                                     <div class="modern-filter-container">
@@ -99,46 +98,51 @@
                                                     <img [src]="'assets/images/location.svg'">
                                                     <span>Location</span>
                                                 </div>
-                                                <select [(ngModel)]="selectedLocation" class="filter-select">
-                                                    <option value="" disabled selected>Where you want to get treated
+                                                <select [(ngModel)]="selectedDoctorLocation" class="filter-select">
+                                                    <option value="" disabled selected>Select doctor location</option>
+                                                    <option *ngFor="let loc of doctorLocations; let i = index"
+                                                        [value]="loc">
+                                                        {{ loc }}
                                                     </option>
-                                                    <option *ngFor="let loc of locations; let i = index" [value]="loc">
-                                                        {{ loc }}</option>
                                                 </select>
                                                 <i class="fa-solid fa-caret-down"></i>
                                             </div>
-                                            <!-- Treatment Filter -->
+                                            <!-- Specialization Filter -->
                                             <div class="filter-item">
                                                 <div class="filter-label">
                                                     <img [src]="'assets/images/treatments.svg'">
-                                                    <span>Treatments</span>
+                                                    <span>Specialization</span>
                                                 </div>
-                                                <select [(ngModel)]="selectedTreatment" class="filter-select">
-                                                    <option value="" disabled selected>All Treatments</option>
-                                                    <option *ngFor="let t of treatments; let i = index" [value]="t">{{ t
-                                                        }}</option>
+                                                <select [(ngModel)]="selectedSpecialization" class="filter-select">
+                                                    <option value="" disabled selected>All Specializations</option>
+                                                    <option *ngFor="let spec of specializations; let i = index"
+                                                        [value]="spec">
+                                                        {{ spec }}
+                                                    </option>
                                                 </select>
                                                 <i class="fa-solid fa-caret-down"></i>
                                             </div>
                                         </div>
                                         <!-- Search Button -->
-                                        <button class="btn-default filter-btn" (click)="search()"
-                                            [disabled]="isSearching">
+                                        <button class="btn-default filter-btn" (click)="searchDoctors()"
+                                            [disabled]="isDoctorSearching">
                                             <img [src]="'assets/images/search.svg'">
-                                            {{ isSearching ? 'Searching...' : 'Search' }}
+                                            {{ isDoctorSearching ? 'Searching...' : 'Search' }}
                                         </button>
-
-                                        <!-- Test Button that changes color -->
-                                        <!-- <button 
-                                            (click)="testButtonClick()" 
-                                            [style.background-color]="buttonClicked ? 'green' : 'red'"
-                                            [style.color]="buttonClicked ? 'white' : 'yellow'"
-                                            style="padding: 15px 30px; margin: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; position: relative; z-index: 9999;">
-                                            {{ buttonClicked ? 'CLICKED!' : 'CLICK ME TEST' }}
-                                        </button> -->
                                     </div>
                                 </div>
 
+                                <!-- Doctor Loading Indicator -->
+                                <div class="row mt-4" *ngIf="isDoctorSearching">
+                                    <div class="col-lg-12">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Searching doctors...</span>
+                                            </div>
+                                            <p class="mt-2">Searching for doctors...</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="tab-pane fade" id="assistance" role="tabpanel" aria-labelledby="assistance">
                                     <div class="modern-filter-container">
                                         <div class="filter-main d-flex">
@@ -247,7 +251,7 @@
 
     <!-- Loading Indicator -->
     <div class="row mt-4" *ngIf="isSearching">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="text-center">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Searching...</span>
@@ -260,7 +264,7 @@
     <!-- Search Results Section -->
     <div class="container">
         <div class="row mt-4" *ngIf="searchResults.length > 0 && !isSearching">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="search-results-container">
                     <h3 class="mb-4">Search Results ({{ searchResults.length }} treatments found)</h3>
                     <div class="row">
@@ -300,7 +304,9 @@
                                     </div>
                                 </div>
                                 <div class="read-more">
-                                    <a hre class="btn">More Detail <i class="fa fa-arrow-up"></i></a>
+                                    <a *ngIf="treatment.id" [attr.href]="'/treatment-detail/' + treatment.id" class="btn">
+                                        More Detail <i class="fa fa-arrow-up"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -308,7 +314,7 @@
                 </div>
             </div>
             <div class="row mt-4" *ngIf="searchClicked && searchResults.length == 0 && !isSearching">
-                <div class="col-md-12">
+                <div class="col-lg-12">
                     <div class="search-results-container">
                         <div class="text-center">
                             <h4>No Results Found</h4>
@@ -321,9 +327,99 @@
         </div>
     </div>
 
+    <!-- Doctor Results Section -->
+    <div class="container">
+        <div class="row mt-4" *ngIf="doctorResults.length > 0 && !isDoctorSearching">
+            <div class="col-lg-12">
+                <div class="doctor-results-container">
+                    <h3 class="mb-4">Doctor Results ({{ doctorResults.length }} doctors
+                        found)</h3>
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 mb-4"
+                            *ngFor="let doctor of doctorResults">
+                            <div class="user-card">
+                                <div class="user-card-img" *ngIf="doctor.profile_photo">
+                                    <img [src]="'http://165.22.223.163:8000' + doctor.profile_photo"
+                                        [alt]="doctor.name" class="img-fluid">
+                                </div>
+                                <div class="user-card-content">
+                                    <h5>{{ doctor.name }}</h5>
+                                    <p class="doctor-designation">{{ doctor.designation }}
+                                    </p>
+                                    <div class="user-card-description">
+                                        <p class="doctor-description mb-0">{{
+                                            doctor.short_description }}</p>
+                                    </div>
+                                    <div class="user-card-rating">
+                                        <div
+                                            class="user-card-rating d-flex align-items-center">
+                                            <ng-container
+                                                *ngFor="let star of getStars(doctor.rating)">
+                                                <!-- Full star -->
+                                                <i *ngIf="star === 'full'"
+                                                    class="fa fa-star text-warning"></i>
+                                                <!-- Half star -->
+                                                <i *ngIf="star === 'half'"
+                                                    class="fa fa-star-half-alt text-warning"></i>
+                                                <!-- Empty star with border -->
+                                                <i *ngIf="star === 'empty'"
+                                                    class="fa-regular fa-star text-warning"></i>
+                                            </ng-container>
+                                            <span class="ms-2"
+                                                *ngIf="doctor.rating !== null">{{
+                                                doctor.rating }}/5</span>
+                                        </div>
+                                    </div>
+                                    <p class="doctor-specialization">
+                                        <strong>Specialization:</strong> {{
+                                        doctor.specialization }}
+                                    </p>
+                                    <p class="doctor-experience">
+                                        <strong>Experience:</strong> {{
+                                        doctor.experience_years }} years
+                                    </p>
+                                    <p class="doctor-fee" *ngIf="doctor.consultancy_fee">
+                                        <strong>Consultation Fee:</strong> ₹{{
+                                        doctor.consultancy_fee | number }}
+                                    </p>
+                                    <div class="d-flex align-items-center card-location"
+                                        *ngIf="doctor.location">
+                                        <img [src]="'assets/images/card-location.svg'">
+                                        <p class="user-card-location mb-0">{{
+                                            doctor.location }}</p>
+                                    </div>
+                                </div>
+                                <div class="read-more">
+                                    <a *ngIf="doctor.id" [attr.href]="'/doctor-details/' + doctor.id" class="btn">More Detail <i
+                                            class="fa fa-arrow-up"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Doctor Results Found -->
+        <div class="row mt-4"
+            *ngIf="doctorSearchClicked && doctorResults.length == 0 && !isDoctorSearching">
+            <div class="col-lg-12">
+                <div class="doctor-results-container">
+                    <div class="text-center">
+                        <h4>No Doctors Found</h4>
+                        <p>No doctors found matching your search criteria. Please try
+                            different filters.</p>
+                        <button class="btn btn-primary" (click)="clearDoctorSearch()">Clear
+                            Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- No Results Found -->
     <div class="row mt-4" *ngIf="searchClicked && searchResults.length == 0 && !isSearching">
-        <div class="col-md-12">
+        <div class="col-lg-12">
             <div class="search-results-container">
                 <div class="text-center">
                     <h4>No Results Found</h4>

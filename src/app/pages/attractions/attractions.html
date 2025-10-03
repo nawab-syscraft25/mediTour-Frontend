@@ -4,13 +4,13 @@
             <div class="col-lg-12">
                 <div class="inner-baner-dtl position-relative text-center">
                     <!-- Banner Image -->
-                    <img [src]="'assets/images/blog.png'" class="w-100 img-fluid rounded-5" />
+                    <img [src]="'assets/images/attractions.png'" class="w-100 img-fluid rounded-5" />
                     <div class="inner-heading">
-                        <h2>Blog/Articles</h2>
+                        <h2>Attractions</h2>
                         <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
                             <li><a routerLink="/">Home</a></li>
                             <li><img [src]="'assets/images/breadcumb.svg'" /></li>
-                            <li><a routerLink="/">Blog/Articles</a></li>
+                            <li><a routerLink="/">Attractions</a></li>
                         </ul>
                     </div>
                 </div>
@@ -18,115 +18,91 @@
         </div>
     </div>
 </section>
-<section class="blog-main ptc-80">
+<section class="blog-main blog-detail attraction-main ptc-80">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <div class="main-head text-center mbc-50">
-                    <h2>Blog/Articles</h2>
+                    <h2>Attractions</h2>
                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
                         the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-lg-6 col-md-6" *ngFor="let blog of blogs">
-                        <div class="blog-card">
-                            <!-- Blog image -->
-                            <div class="blog-img">
-                                <img [src]="getImageUrl(blog.featured_image)" class="w-100 img-fluid rounded-4"
-                                alt="{{ blog.title }}" />
-                            </div>
-
-                            <div class="blog-card-dtl">
-                                <!-- Blog date -->
-                                <div class="blog-date d-flex align-items-center">
-                                    <img [src]="'assets/images/date.svg'" class="img-fluid me-2" />
-                                    <p class="mb-0">{{ blog.published_at | date : 'MMMM d, y' }}</p>
-                                </div>
-
-                                <!-- Title -->
-                                <h4>{{ blog.title }}</h4>
-
-                                <!-- Excerpt -->
-                                <p class="mb-0">{{ blog.excerpt }}</p>
-
-                                <!-- Read More -->
-                                <div class="read-more">
-                                    <a class="btn" [attr.href]="'/blog-detail/' + blog.id">
-                                        Read More <i class="fa fa-arrow-up"></i>
-                                    </a>
-                                </div>
-                            </div>
+            <div class="col-lg-4">
+                <div class="detail-doctors recent-post">
+                    <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
+                        <h4>Recent Event</h4>
+                    </div>
+                    <div class="dtl-doctor-list d-flex align-items-center">
+                        <div class="dtl-doctor-img">
+                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
+                        </div>
+                        <div class="dtl-doctor-info">
+                            <p>Do’s and Don’ts or precautions after cataract</p>
+                        </div>
+                    </div>
+                    <div class="dtl-doctor-list d-flex align-items-center">
+                        <div class="dtl-doctor-img">
+                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
+                        </div>
+                        <div class="dtl-doctor-info">
+                            <p>Do’s and Don’ts or precautions after cataract</p>
+                        </div>
+                    </div>
+                    <div class="dtl-doctor-list d-flex align-items-center">
+                        <div class="dtl-doctor-img">
+                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
+                        </div>
+                        <div class="dtl-doctor-info">
+                            <p>Do’s and Don’ts or precautions after cataract</p>
+                        </div>
+                    </div>
+                    <div class="dtl-doctor-list d-flex align-items-center">
+                        <div class="dtl-doctor-img">
+                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
+                        </div>
+                        <div class="dtl-doctor-info">
+                            <p>Do’s and Don’ts or precautions after cataract</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="blog-category">
-                    <div class="detail-doctors">
-                        <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
-                            <h4>Categories</h4>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Health and Wellness</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Health News</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Advances and Technology</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Oncology</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Patient Stories</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Ayurveda & Wellness</a></p>
+            <div class="col-lg-8">
+                <div class="blog-card">
+                    <!-- Featured image -->
+                    <div class="blog-dtl-img">
+                        <img [src]="'assets/images/attractions1.png'" class="w-100 img-fluid rounded-4"/>
+                    </div>
+
+                    <div class="blog-card-dtl">
+                        <!-- Title -->
+                        <h4>Blood Cancers: Early Signs, Symptoms, Institute</h4>
+                        <!-- Main content (HTML from API) -->
+                        <div class="blog-dtl attractions-detail">
+                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                            <a href="/contact" class="btn-default mt-3">Connect <i class="fa-solid fa-arrow-up"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="detail-doctors recent-post">
-                    <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
-                        <h4>Recent Posts</h4>
+                <div class="blog-card">
+                    <!-- Featured image -->
+                    <div class="blog-dtl-img">
+                        <img [src]="'assets/images/attractions1.png'" class="w-100 img-fluid rounded-4"/>
                     </div>
-                    <div class="dtl-doctor-list d-flex align-items-center">
-                        <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p>Do’s and Don’ts or precautions after cataract</p>
-                        </div>
-                    </div>
-                    <div class="dtl-doctor-list d-flex align-items-center">
-                        <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p>Do’s and Don’ts or precautions after cataract</p>
-                        </div>
-                    </div>
-                    <div class="dtl-doctor-list d-flex align-items-center">
-                        <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p>Do’s and Don’ts or precautions after cataract</p>
-                        </div>
-                    </div>
-                    <div class="dtl-doctor-list d-flex align-items-center">
-                        <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p>Do’s and Don’ts or precautions after cataract</p>
+
+                    <div class="blog-card-dtl">
+                        <!-- Title -->
+                        <h4>Blood Cancers: Early Signs, Symptoms, Institute</h4>
+                        <!-- Main content (HTML from API) -->
+                        <div class="blog-dtl attractions-detail">
+                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                            <a href="/contact" class="btn-default mt-3">Connect <i class="fa-solid fa-arrow-up"></i></a>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

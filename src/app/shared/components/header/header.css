@@ -79,6 +79,92 @@
   border-bottom: none;
   border-radius: 0px 0px 5px 5px;
 }
+.head-searchbar .add-on .input-group-btn > .btn {
+  border-left-width:0;left:-2px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+/* stop the glowing blue shadow */
+.head-searchbar .add-on .form-control:focus {
+ box-shadow:none;
+ -webkit-box-shadow:none; 
+ border-color:#cccccc; 
+}
+.head-searchbar .form-control
+{
+  width:20%;
+  font-size: 15px;
+  margin-top: -5px;
+}
+.my-navbar-nav > li > a {
+  border-right: 1px solid #ddd;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+.head-searchbar .my-navbar-nav:last-child{ border-right:0}
+.round-btn{
+  height: 50px;
+  width: 50px;
+  background-color:transparent;
+  border-radius: 34px;
+  text-align: center;
+  line-height: 50px;
+  color:gray;
+  float: right;
+}
+.head-searchbar .flip-icon{
+   -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+.head-searchbar .hidden-search-box{
+  /* display: none;  <-- removed, Angular controls visibility */
+  position: absolute;
+    float: right;
+    background-color: rgb(255 255 255);
+    /* height: 50px; */
+    width: 30%;
+    z-index: 1000;
+    right: 120px;
+    /* border: 2px solid red; */
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    top: 70px;
+}
+.head-searchbar .addon-btn{
+  width: 50px;
+  height:50px;
+  background-color: rgb(14 153 255);
+  border: 0 none;
+  margin-top: -5px;
+  color: #ffffff;
+}
+.head-searchbar .addon-text-box, 
+.head-searchbar .addon-text-box:active
+{
+  background-color: transparent !important;
+  border: 0 none;
+  color: #1e1e1e !important;
+  border-radius: 0;
+}
+.head-searchbar .traingle{
+  height:15px;
+  width: 15px;
+  background-color: transparent;
+  border-left: 15px transparent solid;
+  border-right: 15px transparent solid;
+  border-bottom: 15px rgb(14 153 255) solid;
+  float:right;
+  margin-top: -10px;
+  margin-right: 10px;
+}
+.nav-link.header-search
+{
+      background-color: #0e99ff;
+    color: #fff !important;
+    padding: 10px 13px !important;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
 
 @media (max-width: 991px) {
   .navbar-collapse {
@@ -87,6 +173,7 @@
   
   .nav-link {
     padding: 0.5rem 0 !important;
+    border-bottom: 1px solid #d7d7d7;
   }
   
   .nav-link.active::after {

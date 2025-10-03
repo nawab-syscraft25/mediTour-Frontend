@@ -1,15 +1,15 @@
 <section class="inner-banner">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="inner-baner-dtl position-relative text-center">
                     <img [src]="'assets/images/our-doctors.png'" class="w-100 img-fluid rounded-5" />
                     <div class="inner-heading">
-                        <h2>Associate Hospital</h2>
+                        <h2>Online Consultation</h2>
                         <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
                             <li><a href="/">Home</a></li>
                             <li><img [src]="'assets/images/breadcumb.svg'"></li>
-                            <li><a href="/">Associate Hospital</a></li>
+                            <li><a href="/">Online Consultation</a></li>
                         </ul>
                     </div>
                 </div>
@@ -20,11 +20,10 @@
 <section class="card-list-main ptc-80">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-9">
+            <div class="col-lg-9">
                 <div class="main-head text-center mbc-50">
-                    <h2>Our Doctors</h2>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-                        the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
+                    <h2>Medical Procedure</h2>
+                    <p>Get expert guidance from the comfort of your home. Our online consultation service helps you understand medical procedures in detail—what they involve, the preparation required, recovery expectations, and possible alternatives. Whether you are exploring treatment options, seeking a second opinion, or preparing for surgery, we provide clear, reliable, and personalized information to support your healthcare decisions.</p>
                 </div>
             </div>
         </div>
@@ -32,7 +31,7 @@
         <div *ngIf="loading" class="text-center">Loading doctors...</div>
 
         <div class="row" *ngIf="!loading && doctors.length">
-            <div *ngFor="let d of doctors" class="col-md-4 mb-4">
+            <div *ngFor="let d of doctors" class="col-lg-4 col-md-6 mb-4">
                 <div class="user-card">
                     <div class="user-card-img">
                         <img *ngIf="d.profile_photo?.length" [src]="'http://165.22.223.163:8000' + d.profile_photo"
@@ -41,7 +40,7 @@
                     <div class="user-card-content doctors-card-info">
                         <h5 class="card-title">{{ d.name }}</h5>
                         <div class="user-card-description">
-                            <p class="card-text truncate-2">{{ d.description }}</p>
+                            <p class="card-text truncate-2">{{ d.short_description }}</p>
                         </div>
 
                         <div class="user-card-rating">
@@ -64,7 +63,7 @@
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/fees.svg'">
-                            <p class="mb-0">Consultation Fees: <span class="fee-amount">₹5478</span></p>
+                            <p class="mb-0">Consultation Fees: <span class="fee-amount">₹{{ d.consultancy_fee | number }}</span></p>
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/d-experience.svg'">

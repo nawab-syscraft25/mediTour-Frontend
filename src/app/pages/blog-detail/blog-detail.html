@@ -1,7 +1,7 @@
 <section class="inner-banner">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="inner-baner-dtl position-relative text-center">
                     <!-- Banner Image -->
                     <img [src]="'assets/images/blog.png'" class="w-100 img-fluid rounded-5" />
@@ -21,7 +21,7 @@
 <section class="blog-main blog-detail ptc-80">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-9">
+            <div class="col-lg-9">
                 <div class="main-head text-center mbc-50">
                     <h2>Blog/Articles</h2>
                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
@@ -30,94 +30,48 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8">
-                <div class="blog-card">
-                    <div class="blog-pdtl-img">
-                        <img [src]="'assets/images/blog-img.png'" class="w-100 img-fluid rounded-4" />
+            <div class="col-lg-8">
+                <div class="blog-card" *ngIf="blog">
+                    <!-- Featured image -->
+                    <div class="blog-dtl-img">
+                        <img [src]="getImageUrl(blog.featured_image)" class="w-100 img-fluid rounded-4"
+                            alt="{{ blog.title }}" />
                     </div>
+
                     <div class="blog-card-dtl">
+                        <!-- Date -->
                         <div class="blog-date d-flex align-items-center">
                             <img [src]="'assets/images/date.svg'" class="img-fluid me-2" />
-                            <p class="mb-0">August 29. 2023</p>
+                            <p class="mb-0">{{ blog.published_at | date : 'MMMM d, y' }}</p>
                         </div>
-                        <h4>Blood Cancers: Early Signs, Symptoms,Institute</h4>
-                        <p class="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                            Ipsum has been
-                            the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-                            galley of type and scrambled it to make a type specimen book. It has survived not only five
-                            centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-                            It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum
-                            passages, and more recently with desktop publishing software like Aldus PageMaker including
-                            versions of Lorem Ipsum.</p>
-                        <div class="blog-dtl mt-3">
-                            <h4>Lorem Ipsum is simply dummy text of the printing</h4>
-                            <p class="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                Lorem Ipsum has been
-                                the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-                                galley of type and scrambled it to make a type specimen book. It has survived not only
-                                five centuries, but also the leap into electronic typesetting, remaining essentially
-                                unchanged. It was popularised in the 1960s with the release of Letraset sheets
-                                containing Lorem Ipsum passages, and more recently with desktop publishing software like
-                                Aldus PageMaker including versions of Lorem Ipsum.</p>
-                        </div>
-                        <div class="blog-list mt-3">
-                            <h4>Lorem Ipsum is simply dummy text of the printing</h4>
-                            <ul class="mb-0 ps-0 mt-3">
-                                <li>
-                                    <img src="assets/images/features-check.svg">
-                                    <span>Lorem Ipsum is simply dummy text of the printing and typeing.
-                                    </span>
-                                </li>
-                                <li>
-                                    <img src="assets/images/features-check.svg">
-                                    <span>It is a lon established fact that a reader will be distracted by the readable content
-                                        of a page when looking.</span>
-                                    </li>
-                                <li>
-                                    <img src="assets/images/features-check.svg">
-                                    <span>Lorem Ipsum is simply dummy text of the printing and typeing.
-                                    </span>
-                                </li>
-                                <li>
-                                    <img src="assets/images/features-check.svg">
-                                    <span>It is a lon established fact that a reader will be distracted.</span>
-                                </li>
-                                <li>
-                                    <img src="assets/images/features-check.svg">
-                                    <span>Lorem Ipsum is simply dummy text of the printing and typeing.
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="blogdtl-img mt-4">
+
+                        <!-- Title -->
+                        <h4>{{ blog.title }}</h4>
+
+                        <!-- Subtitle -->
+                        <p class="mb-0"><em>{{ blog.subtitle }}</em></p>
+
+                        <!-- Main content (HTML from API) -->
+                        <div class="blog-dtl mt-3" [innerHTML]="blog.content"></div>
+
+                        <!-- Extra images (if available) -->
+                        <div class="blogdtl-img mt-4" *ngIf="blog.images?.length">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <img [src]="'assets/images/blog-dtl1.png'" class="img-fluid w-100 rounded-3" />
-                                </div>
-                                <div class="col-md-6">
-                                    <img [src]="'assets/images/blog-dtl2.png'" class="img-fluid w-100 rounded-3" />
+                                <div class="col-lg-6 col-md-6" *ngFor="let img of blog.images">
+                                    <img [src]="getImageUrl(img.url)" class="img-fluid w-100 rounded-3 mb-3" />
                                 </div>
                             </div>
                         </div>
-                        <div class="blog-dtl mt-3">
-                            <h4>Lorem Ipsum is simply dummy text of the printing</h4>
-                            <p class="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                Lorem Ipsum has been
-                                the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-                                galley of type and scrambled it to make a type specimen book. It has survived not only
-                                five centuries, but also the leap into electronic typesetting, remaining essentially
-                                unchanged. It was popularised in the 1960s with the release of Letraset sheets
-                                containing Lorem Ipsum passages, and more recently with desktop publishing software like
-                                Aldus PageMaker including versions of Lorem Ipsum.</p>
-                        </div>
                     </div>
                 </div>
+
+
             </div>
-            <div class="col-md-4">
+            <div class="col-lg-4">
                 <div class="blog-category">
                     <div class="detail-doctors">
                         <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
-                            <h4>Related Top Doctors</h4>
+                            <h4>Categories</h4>
                         </div>
                         <div class="dtl-doctor-info">
                             <p><a href="#">Health and Wellness</a></p>

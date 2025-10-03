@@ -19,7 +19,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/treatments/treatments').then(m => m.Treatments)
   },
   {
-    path: 'treatments/:slug',
+    path: 'treatments',
     loadComponent: () => import('./pages/treatments/treatments').then(m => m.Treatments)
   },
   {
@@ -52,15 +52,29 @@ export const routes: Routes = [
   },
   {
     path: 'blog',
-    loadComponent: () => import('./pages/blog/blog').then(m => m.Blog)
+    loadComponent: () =>
+    import('./pages/blog/blog').then(m => m.BlogComponent)
   },
   {
-    path: 'blog-detail',
-    loadComponent: () => import('./pages/blog-detail/blog-detail').then(m => m.BlogDetail)
+    path: 'blog-detail/:id',
+    loadComponent: () =>
+    import('./pages/blog-detail/blog-detail').then(m => m.BlogDetailComponent)
   },
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login)
+  },
+  {
+    path: 'privacy-policy',
+    loadComponent: () => import('./pages/privacy-policy/privacy-policy').then(m => m.PrivacyPolicy)
+  },
+  {
+    path: 'terms-conditions',
+    loadComponent: () => import('./pages/terms-conditions/terms-conditions').then(m => m.TermsConditions)
+  },
+  {
+    path: 'attractions',
+    loadComponent: () => import('./pages/attractions/attractions').then(m => m.Attractions)
   },
   {
     path: 'doctor-details/:id',

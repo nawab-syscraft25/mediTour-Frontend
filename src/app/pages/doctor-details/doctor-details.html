@@ -2,7 +2,7 @@
 <section class="inner-banner" *ngIf="doctor">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="inner-baner-dtl position-relative text-center">
                     <!-- Banner Image -->
                     <img *ngIf="doctor.images && doctor.images.length" [src]="baseUrl + doctor.images[0].url"
@@ -28,7 +28,7 @@
     <div class="container">
         <div class="row">
             <!-- Main Image -->
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="detail-image">
                     <img *ngIf="doctor.images && doctor.images.length" [src]="baseUrl + doctor.images[0].url"
                         class="img-fluid w-100 rounded-4" [alt]="doctor.name || 'Doctor image'" />
@@ -36,39 +36,39 @@
             </div>
 
             <!-- Info -->
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="dtl-info doctor-info">
                     <h2 class="section-title">{{ doctor.name }}</h2>
                     <div class="detail-description">
-                        <p class="mb-1">{{ doctor.description }}</p>
+                        <p class="mb-1">{{ doctor.short_description }}</p>
                     </div>
 
                     <div class="row doctor-feture">
-                        <div class="col-md-12">
+                        <div class="col-lg-12">
                             <div class="detail-location doctor-feture-lst d-flex align-items-center card-location">
                                 <img src="assets/images/hospital.svg">
                                 <p class="mb-0" *ngIf="hospitalName">{{ hospitalName }}</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-lg-6">
                             <div class="detail-location doctor-feture-lst d-flex align-items-center card-location">
                                 <img src="assets/images/experience.svg">
                                 <p class="mb-0">{{ doctor.experience_years || 'N/A' }} years</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-lg-6">
                             <div class="detail-location doctor-feture-lst d-flex align-items-center card-location">
                                 <img src="assets/images/card-location.svg">
-                                <p class="mb-0">New Delhi - India</p>
+                                <p class="mb-0"> Indore, M.p., India</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-lg-6">
                             <div class="detail-location doctor-feture-lst d-flex align-items-center card-location">
                                 <img src="assets/images/designation.svg">
                                 <p class="mb-0">{{ doctor.designation }}</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-lg-6">
                             <div class="detail-location doctor-feture-lst d-flex align-items-center card-location">
                                 <img src="assets/images/gender.svg">
                                 <p class="mb-0">{{ doctor.gender }}</p>
@@ -77,7 +77,7 @@
                     </div>
                     <div class="doctor-skill">
                         <ul class="ps-0">
-                            <li *ngFor="let skill of doctor.skills.split(',')">
+                            <li *ngFor="let skill of doctor.skills.split('\n')">
                                 <!-- <img [src]="featureIcon" alt="feature icon" /> -->
                                 <span>{{ skill.trim() }}</span>
                             </li>
@@ -93,62 +93,169 @@
 
                     <app-modal [title]="'Book Consultation'" [show]="showModal" (close)="closeModal()">
                         <div class="book-package-form">
-                            <form>
+
+                            <!-- Success Message -->
+                            <div *ngIf="submitSuccess" class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Consultation booking submitted successfully! We'll contact you soon to confirm your
+                                appointment.
+                            </div>
+
+                            <!-- Error Message -->
+                            <div *ngIf="submitError" class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ submitError }}
+                            </div>
+
+                            <form [formGroup]="consultationForm" (ngSubmit)="onSubmit()" *ngIf="!submitSuccess">
+
+                                <!-- First Name -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="First Name">
+                                    <input type="text" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name*"
+                                        formControlName="first_name">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('first_name')">
+                                        {{ getFieldError('first_name') }}
+                                    </div>
                                 </div>
+
+                                <!-- Last Name -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Last Name">
+                                    <input type="text" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name*"
+                                        formControlName="last_name">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('last_name')">
+                                        {{ getFieldError('last_name') }}
+                                    </div>
                                 </div>
+
+                                <!-- Email -->
                                 <div class="mb-3">
-                                    <input type="email" class="form-control" placeholder="Enter Email Id">
+                                    <input type="email" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id*"
+                                        formControlName="email">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                                        {{ getFieldError('email') }}
+                                    </div>
                                 </div>
+
+                                <!-- Mobile Number -->
                                 <div class="mb-3">
-                                    <input type="number" class="form-control" placeholder="Enter Mobile Number">
+                                    <input type="tel" class="form-control"
+                                        [class.is-invalid]="isFieldInvalid('mobile_no')"
+                                        placeholder="Enter Mobile Number*" formControlName="mobile_no">
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile_no')">
+                                        {{ getFieldError('mobile_no') }}
+                                    </div>
                                 </div>
+
+                                <!-- Service Selection -->
                                 <div class="mb-3">
-                                    <select class="form-select" aria-label="Default select example">
-                                        <option selected>Select Service</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                    <select class="form-select" [class.is-invalid]="isFieldInvalid('treatment_id')"
+                                        formControlName="treatment_id">
+                                        <option value="" selected>Select Service*</option>
+                                        <option *ngFor="let service of serviceOptions" [value]="service.value">
+                                            {{ service.label }}
+                                        </option>
                                     </select>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('treatment_id')">
+                                        {{ getFieldError('treatment_id') }}
+                                    </div>
                                 </div>
+
+                                <!-- Budget Preference -->
                                 <div class="mb-3">
-                                    <select class="form-select" aria-label="Default select example">
-                                        <option selected>Budget Preference</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                    <select class="form-select" [class.is-invalid]="isFieldInvalid('budget')"
+                                        formControlName="budget">
+                                        <option value="" selected>Budget Preference*</option>
+                                        <option *ngFor="let budget of budgetOptions" [value]="budget.value">
+                                            {{ budget.label }}
+                                        </option>
                                     </select>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalid('budget')">
+                                        {{ getFieldError('budget') }}
+                                    </div>
                                 </div>
+
+                                <!-- Doctor Preference (Pre-filled) -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Doctor Preference">
+                                    <input type="text" class="form-control" placeholder="Doctor Preference"
+                                        formControlName="doctor_preference" readonly>
+                                    <small class="form-text text-muted" *ngIf="doctor">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Pre-selected based on current doctor: {{ doctor.name }}
+                                    </small>
                                 </div>
+
+                                <!-- Hospital Preference (Pre-filled) -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Hospital Preference">
+                                    <input type="text" class="form-control" placeholder="Hospital Preference"
+                                        formControlName="hospital_preference" readonly>
+                                    <small class="form-text text-muted" *ngIf="hospitalName">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Pre-selected hospital: {{ hospitalName }}
+                                    </small>
                                 </div>
+
+                                <!-- Medical History File -->
                                 <div class="mb-3">
-                                    <label for="formFileLg" class="form-label">Upload Your Medical History</label>
-                                    <input class="form-control form-control-lg" id="formFileLg" type="file">
+                                    <label for="consultationFile" class="form-label">Upload Your Medical History</label>
+                                    <input class="form-control form-control-lg" id="consultationFile" type="file"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" (change)="onFileSelect($event)">
+                                    <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max
+                                        5MB)</small>
                                 </div>
+
+                                <!-- User Query -->
                                 <div class="mb-3">
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                                        placeholder="Enter Your Query"></textarea>
+                                    <textarea class="form-control" rows="3"
+                                        placeholder="Enter Your Query or Consultation Requirements"
+                                        formControlName="user_query"></textarea>
+                                    <small class="form-text text-muted">
+                                        Please describe your symptoms, concerns, or specific requirements for the
+                                        consultation
+                                    </small>
                                 </div>
+
+                                <!-- Travel Assistance -->
                                 <div class="mb-2 form-check">
-                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                    <label class="form-check-label" for="exampleCheck1">Do You Need Travel
-                                        Assistance?</label>
+                                    <input type="checkbox" class="form-check-input" id="travelConsultationCheck"
+                                        formControlName="travel_assistant">
+                                    <label class="form-check-label" for="travelConsultationCheck">
+                                        Do You Need Travel Assistance?
+                                    </label>
                                 </div>
+
+                                <!-- Stay Assistance -->
                                 <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                    <label class="form-check-label" for="exampleCheck1">Do You Need Stay
-                                        Assistance?</label>
+                                    <input type="checkbox" class="form-check-input" id="stayConsultationCheck"
+                                        formControlName="stay_assistant">
+                                    <label class="form-check-label" for="stayConsultationCheck">
+                                        Do You Need Stay Assistance?
+                                    </label>
                                 </div>
+
+                                <!-- Note -->
                                 <div class="package-book-note">
-                                    <p class="mb-0"><span>Note:</span> That travel and stay will incur additional
-                                        charges</p>
+                                    <p class="mb-3">
+                                        <span>Note:</span> That travel and stay will incur additional charges.
+                                    </p>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn-default custom-submit" [disabled]="isSubmitting">
+                                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"
+                                            role="status"></span>
+                                        {{ isSubmitting ? 'Booking...' : 'Send' }} <i class="fa-solid fa-arrow-up"></i>
+                                    </button>
+
+                                    <!-- Form validation summary -->
+                                    <div *ngIf="consultationForm.invalid && consultationForm.touched"
+                                        class="alert alert-warning mt-2 mb-0" role="alert">
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>Please fill in all
+                                            required fields marked with *</small>
+                                    </div>
                                 </div>
 
                             </form>
@@ -160,12 +267,12 @@
 
         <!-- Doctor Long Description -->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="detail-info">
                     <div class="dtl-head">
                         <h2>About Dr. {{ doctor.name }}</h2>
                     </div>
-                    <p class="mb-0">{{ doctor.description }}</p>
+                    <p class="mb-0">{{ doctor.long_description }}</p>
                 </div>
             </div>
         </div>
@@ -174,14 +281,14 @@
 <section class="facilities ptc-60" *ngIf="doctor">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-head">
                     <h2>Qualifications :-</h2>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-features-list">
                     <ul class="list-unstyled mb-0">
                         <li *ngFor="let quli of doctor.qualifications.split('\n')">
@@ -197,14 +304,14 @@
 <section class="facilities ptc-60" *ngIf="doctor">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-head">
                     <h2>Highlights :-</h2>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-features-list">
                     <ul class="list-unstyled mb-0">
                         <li *ngFor="let hig of doctor.highlights.split('\n')">
@@ -221,14 +328,14 @@
 <section class="facilities ptc-60" *ngIf="doctor">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-head">
                     <h2>Awards And Achievements :-</h2>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-features-list">
                     <ul class="list-unstyled mb-0">
                         <li *ngFor="let award of doctor.awards.split(',')">
@@ -246,11 +353,11 @@
 <section class="dtl-center-image ptc-60" *ngIf="doctor && doctor.images">
     <div class="container">
         <div class="row">
-            <div class="col-md-6" *ngIf="doctor.images.length > 1">
+            <div class="col-lg-6 col-md-6" *ngIf="doctor.images.length > 1">
                 <img *ngIf="doctor.images && doctor.images.length" [src]="baseUrl + doctor.images[1].url"
                     class="img-fluid w-100 rounded-4" [alt]="doctor.name || 'Doctor image'" />
             </div>
-            <div class="col-md-6" *ngIf="doctor.images.length > 2">
+            <div class="col-lg-6 col-md-6" *ngIf="doctor.images.length > 2">
                 <img *ngIf="doctor.images && doctor.images.length" [src]="baseUrl + doctor.images[2].url"
                     class="img-fluid w-100 rounded-4" [alt]="doctor.name || 'Doctor image'" />
             </div>
@@ -262,7 +369,7 @@
 <section class="faq-main ptc-80">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="dtl-faq">
                     <div class="faq-head">
                         <p>Frequently Asked Questions</p>
@@ -272,7 +379,8 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne">Lorem Ipsum is simply dummy text of the printing</button>
+                                    data-bs-target="#collapseOne">Lorem Ipsum is simply dummy text of the
+                                    printing</button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show"
                                 data-bs-parent="#accordionExample">
@@ -290,7 +398,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -307,7 +416,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -324,7 +434,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -341,7 +452,8 @@
                                     Lorem Ipsum is simply dummy text of the printing
                                 </button>
                             </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div id="collapsetwo" class="accordion-collapse collapse"
+                                data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <p class="mb-0">
                                         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -354,7 +466,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="detail-doctors">
                     <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
                         <h4>Related Top Doctors</h4>
@@ -362,7 +474,7 @@
                     </div>
                     <div class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">            
+                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
                         </div>
                         <div class="dtl-doctor-info">
                             <p>Dr. Prof Raju Vaishya</p>
@@ -374,7 +486,7 @@
                     </div>
                     <div class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
-                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">            
+                            <img [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
                         </div>
                         <div class="dtl-doctor-info">
                             <p>Dr. Prof Raju Vaishya</p>
@@ -394,7 +506,7 @@
 <section class="dtl-cta ptc-80">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <div class="dtl-cta-main position-relative">
                     <img [src]="'assets/images/dtl-cta.jpg'" class="img-fluid w-100 rounded-4">
                     <div class="dtl-cta-action">

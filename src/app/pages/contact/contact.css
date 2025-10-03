@@ -24,3 +24,7 @@
 {
     border-radius: 20px;
 }
+.contact-form .contact-form-inner .text-danger
+{
+    font-size: 12px;
+}

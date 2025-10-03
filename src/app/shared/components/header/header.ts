@@ -12,6 +12,7 @@ import { TreatmentService } from 'src/app/core/services/treatment.service';
 })
 export class HeaderComponent implements OnInit {
   isMenuOpen = false;
+  showSearchBox = false;   // 👈 added for search toggle
   treatmentTypes: string[] = [];
 
   constructor(private treatmentService: TreatmentService) {}
@@ -29,6 +30,10 @@ export class HeaderComponent implements OnInit {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  toggleSearchBox() {   // 👈 added function for search toggle
+    this.showSearchBox = !this.showSearchBox;
   }
 
   /** Utility to convert API string into a route slug */

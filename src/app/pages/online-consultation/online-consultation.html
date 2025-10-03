@@ -91,41 +91,171 @@
     </div>
 
     <!-- Modal Component -->
-    <app-modal [title]="'Book Consultation'" [show]="showModal" (close)="closeModal()">
+    <app-modal [title]="'Book Online Consultation'" [show]="showModal" (close)="closeModal()">
         <div class="book-package-form">
-            <form>
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="First Name">
+            <!-- Success Message -->
+            <div *ngIf="submitSuccess" class="alert alert-success text-center">
+                <i class="fas fa-check-circle me-2"></i>
+                Your online consultation booking has been submitted successfully! We'll contact you soon.
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="submitError" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ submitError }}
+            </div>
+
+            <!-- Doctor Info (if selected) -->
+            <div *ngIf="selectedDoctor" class="selected-doctor-info mb-3 p-3 bg-light rounded">
+                <h6 class="mb-2">Selected Doctor:</h6>
+                <div class="d-flex align-items-center">
+                    <img *ngIf="selectedDoctor.profile_photo?.length" 
+                         [src]="'http://165.22.223.163:8000' + selectedDoctor.profile_photo"
+                         [alt]="selectedDoctor.name" 
+                         class="rounded-circle me-3" 
+                         style="width: 50px; height: 50px; object-fit: cover;" />
+                    <div>
+                        <strong>{{ selectedDoctor.name }}</strong><br>
+                        <small class="text-muted">{{ selectedDoctor.designation }}</small><br>
+                        <small class="text-primary">Consultation Fee: ₹{{ selectedDoctor.consultancy_fee | number }}</small>
+                    </div>
                 </div>
+            </div>
+
+            <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" *ngIf="!submitSuccess">
+
+                <!-- First Name -->
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Last Name">
+                    <input type="text" class="form-control"
+                           [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name*"
+                           formControlName="first_name">
+                    <div class="invalid-feedback" *ngIf="isFieldInvalid('first_name')">
+                        {{ getFieldError('first_name') }}
+                    </div>
                 </div>
+
+                <!-- Last Name -->
                 <div class="mb-3">
-                    <input type="email" class="form-control" placeholder="Enter Email Id">
+                    <input type="text" class="form-control"
+                           [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name*"
+                           formControlName="last_name">
+                    <div class="invalid-feedback" *ngIf="isFieldInvalid('last_name')">
+                        {{ getFieldError('last_name') }}
+                    </div>
                 </div>
+
+                <!-- Email -->
                 <div class="mb-3">
-                    <input type="number" class="form-control" placeholder="Enter Mobile Number">
+                    <input type="email" class="form-control"
+                           [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id*"
+                           formControlName="email">
+                    <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                        {{ getFieldError('email') }}
+                    </div>
                 </div>
+
+                <!-- Mobile Number -->
                 <div class="mb-3">
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Select Service</option>
-                        <option value="1">Online Consultation</option>
-                        <option value="2">In-Person Consultation</option>
-                        <option value="3">Emergency Consultation</option>
+                    <input type="tel" class="form-control"
+                           [class.is-invalid]="isFieldInvalid('mobile_no')"
+                           placeholder="Enter Mobile Number*" formControlName="mobile_no">
+                    <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile_no')">
+                        {{ getFieldError('mobile_no') }}
+                    </div>
+                </div>
+
+                <!-- Service Selection -->
+                <div class="mb-3">
+                    <select class="form-select" [class.is-invalid]="isFieldInvalid('treatment_id')"
+                            formControlName="treatment_id">
+                        <option value="" selected>Select Service*</option>
+                        <option *ngFor="let service of serviceOptions" [value]="service.value">
+                            {{ service.label }}
+                        </option>
                     </select>
+                    <div class="invalid-feedback" *ngIf="isFieldInvalid('treatment_id')">
+                        {{ getFieldError('treatment_id') }}
+                    </div>
                 </div>
+
+                <!-- Budget Preference -->
                 <div class="mb-3">
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Select Slot</option>
-                        <option value="1">Below ₹1000</option>
-                        <option value="2">₹1000 - ₹5000</option>
-                        <option value="3">Above ₹5000</option>
+                    <select class="form-select" [class.is-invalid]="isFieldInvalid('budget')"
+                            formControlName="budget">
+                        <option value="" selected>Budget Preference*</option>
+                        <option *ngFor="let budget of budgetOptions" [value]="budget.value">
+                            {{ budget.label }}
+                        </option>
                     </select>
+                    <div class="invalid-feedback" *ngIf="isFieldInvalid('budget')">
+                        {{ getFieldError('budget') }}
+                    </div>
                 </div>
+
+                <!-- Doctor Preference -->
                 <div class="mb-3">
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                        placeholder="Enter Your Query"></textarea>
+                    <input type="text" class="form-control" placeholder="Doctor Preference (Optional)"
+                           formControlName="doctor_preference">
                 </div>
+
+                <!-- Hospital Preference -->
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Hospital Preference (Optional)"
+                           formControlName="hospital_preference">
+                </div>
+
+                <!-- Medical History File -->
+                <div class="mb-3">
+                    <label for="formFileLg" class="form-label">Upload Your Medical History</label>
+                    <input class="form-control form-control-lg" id="formFileLg" type="file"
+                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" (change)="onFileSelect($event)">
+                    <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
+                </div>
+
+                <!-- User Query -->
+                <div class="mb-3">
+                    <textarea class="form-control" rows="3" placeholder="Enter Your Query (Optional)"
+                              formControlName="user_query"></textarea>
+                </div>
+
+                <!-- Travel Assistance -->
+                <div class="mb-2 form-check">
+                    <input type="checkbox" class="form-check-input" id="travelCheck"
+                           formControlName="travel_assistant">
+                    <label class="form-check-label" for="travelCheck">
+                        Do You Need Travel Assistance?
+                    </label>
+                </div>
+
+                <!-- Stay Assistance -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="stayCheck"
+                           formControlName="stay_assistant">
+                    <label class="form-check-label" for="stayCheck">
+                        Do You Need Stay Assistance?
+                    </label>
+                </div>
+
+                <!-- Note -->
+                <div class="package-book-note">
+                    <p class="mb-3"><span>Note:</span> Travel and stay assistance will incur additional charges.</p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="custom-submit btn-default" [disabled]="isSubmitting">
+                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"
+                              role="status"></span>
+                        {{ isSubmitting ? 'Booking...' : 'Book Consultation' }} <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+
+                    <!-- Form validation summary -->
+                    <div *ngIf="bookingForm.invalid && bookingForm.touched"
+                         class="alert alert-warning mt-2" role="alert">
+                        <small><i class="fas fa-exclamation-triangle me-1"></i>Please fill in all
+                            required fields marked with *</small>
+                    </div>
+                </div>
+
             </form>
         </div>
     </app-modal> 

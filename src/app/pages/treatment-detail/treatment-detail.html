@@ -220,6 +220,13 @@
                         <h2>About {{ treatment.name }}</h2>
                     </div>
                     <p class="mb-0">{{ treatment.long_description }}</p>
+
+                    <div *ngIf="treatment.features" class="treatment-features mt-3">
+                        <h5>Features:</h5>
+                        <ul class="features-list">
+                            <li *ngFor="let feature of getFeaturesList()">{{ feature }}</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

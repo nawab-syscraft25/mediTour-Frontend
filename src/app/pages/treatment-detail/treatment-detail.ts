@@ -336,6 +336,29 @@ export class TreatmentDetail implements OnInit {
     return keywords;
   }
 
+  // Method to get features as an array for line-by-line display
+  getFeaturesList(): string[] {
+    if (!this.treatment?.features) {
+      return [];
+    }
+    
+    // If features is already a string, split it by common delimiters
+    if (typeof this.treatment.features === 'string') {
+      // Split by various delimiters and clean up
+      return this.treatment.features
+        .split(/[,;|\n\r]/) // Split by comma, semicolon, pipe, or newlines
+        .map(feature => feature.trim())
+        .filter(feature => feature.length > 0);
+    }
+    
+    // If features is an array, return as-is
+    if (Array.isArray(this.treatment.features)) {
+      return this.treatment.features;
+    }
+    
+    return [];
+  }
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {

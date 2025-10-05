@@ -7,14 +7,27 @@ export interface Treatment {
   price_min: number | null;
   price_max: number | null;
   price_exact: number | null;
-  rating: number | null,
+  rating: number | null;
   hospital_id: number | null;
   other_hospital_name?: string | null;
   doctor_id: number | null;
   other_doctor_name?: string | null;
   location: string;
+  features: any | null;
+  is_featured: boolean;
   created_at: string;
-  images?: TreatmentImage[];   // <-- add this line
+  images?: TreatmentImage[];
+  faqs?: any[];
+  faq1_question?: string | null;
+  faq1_answer?: string | null;
+  faq2_question?: string | null;
+  faq2_answer?: string | null;
+  faq3_question?: string | null;
+  faq3_answer?: string | null;
+  faq4_question?: string | null;
+  faq4_answer?: string | null;
+  faq5_question?: string | null;
+  faq5_answer?: string | null;
 }
 export interface TreatmentImage {
   id: number;

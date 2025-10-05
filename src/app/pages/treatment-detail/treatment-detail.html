@@ -186,7 +186,8 @@
 
                                 <!-- Note -->
                                 <div class="package-book-note">
-                                    <p class="mb-3"><span>Note:</span> That travel and stay will incur additional charges.</p>
+                                    <p class="mb-3"><span>Note:</span> That travel and stay will incur additional
+                                        charges.</p>
                                 </div>
 
                                 <!-- Submit Button -->
@@ -194,7 +195,8 @@
                                     <button type="submit" class="custom-submit btn-default" [disabled]="isSubmitting">
                                         <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"
                                             role="status"></span>
-                                        {{ isSubmitting ? 'Submitting...' : 'Send' }} <i class="fa-solid fa-arrow-up"></i>
+                                        {{ isSubmitting ? 'Submitting...' : 'Send' }} <i
+                                            class="fa-solid fa-arrow-up"></i>
                                     </button>
 
                                     <!-- Form validation summary -->
@@ -257,105 +259,45 @@
                         <p>Frequently Asked Questions</p>
                         <h4>Helping you understand healthcare</h4>
                     </div>
-                    <div class="accordion accordion-main" id="accordionExample">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne">Lorem Ipsum is simply dummy text of the
-                                    printing</button>
+
+                    <div class="accordion accordion-main" *ngIf="treatment">
+                        <!-- Dynamic FAQ items -->
+                        <div class="accordion-item" *ngFor="let faq of getDynamicFaqs(); let i = index">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" 
+                                        [class.collapsed]="!isFaqExpanded(i)"
+                                        type="button" 
+                                        (click)="toggleFaq(i)"
+                                        [attr.aria-expanded]="isFaqExpanded(i)"
+                                        [attr.aria-controls]="'collapse' + i">
+                                    {{ faq.question }}
+                                </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show"
-                                data-bs-parent="#accordionExample">
+                            <div [id]="'collapse' + i" 
+                                 class="accordion-collapse collapse"
+                                 [class.show]="isFaqExpanded(i)">
                                 <div class="accordion-body">
-                                    <p class="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting
-                                        industry. Lorem Ipsum has been the industry's standard dummy text ever since the
-                                        1500s, when an unknown printer took a galley of type and scrambled.</p>
+                                    <p class="mb-0">{{ faq.answer }}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapsetwo" aria-expanded="false" aria-controls="collapsetwo">
-                                    Lorem Ipsum is simply dummy text of the printing
-                                </button>
-                            </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse"
-                                data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <p class="mb-0">
-                                        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                        when an unknown printer took a galley of type and scrambled.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapsetwo" aria-expanded="false" aria-controls="collapsetwo">
-                                    Lorem Ipsum is simply dummy text of the printing
-                                </button>
-                            </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse"
-                                data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <p class="mb-0">
-                                        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                        when an unknown printer took a galley of type and scrambled.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapsetwo" aria-expanded="false" aria-controls="collapsetwo">
-                                    Lorem Ipsum is simply dummy text of the printing
-                                </button>
-                            </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse"
-                                data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <p class="mb-0">
-                                        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                        when an unknown printer took a galley of type and scrambled.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapsetwo" aria-expanded="false" aria-controls="collapsetwo">
-                                    Lorem Ipsum is simply dummy text of the printing
-                                </button>
-                            </h2>
-                            <div id="collapsetwo" class="accordion-collapse collapse"
-                                data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <p class="mb-0">
-                                        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                        when an unknown printer took a galley of type and scrambled.
-                                    </p>
-                                </div>
-                            </div>
+                        
+                        <!-- Fallback message if no FAQs -->
+                        <div *ngIf="getDynamicFaqs().length === 0" class="text-center py-4">
+                            <p class="mb-0 text-muted">No frequently asked questions available for this treatment.</p>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-6">
                 <div class="detail-doctors">
                     <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
                         <h4>Top Doctors</h4>
                         <a href="/doctors">View All</a>
                     </div>
-                    
-                    
+
+
                     <!-- Loading state -->
                     <div *ngIf="loadingDoctors" class="text-center py-3">
                         <div class="spinner-border spinner-border-sm" role="status">
@@ -363,28 +305,26 @@
                         </div>
                         <p class="mt-2 mb-0">Loading related doctors...</p>
                     </div>
-                    
+
                     <!-- Dynamic doctor list -->
                     <div *ngFor="let doctor of relatedDoctors" class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
-                            <img *ngIf="doctor.profile_photo" 
-                                 [src]="baseUrl + doctor.profile_photo" 
-                                 [alt]="doctor.name" 
-                                 class="img-fluid">
-                            <img *ngIf="!doctor.profile_photo" 
-                                 [src]="'assets/images/dtl-doctor.png'" 
-                                 class="img-fluid">
+                            <img *ngIf="doctor.profile_photo" [src]="baseUrl + doctor.profile_photo" [alt]="doctor.name"
+                                class="img-fluid">
+                            <img *ngIf="!doctor.profile_photo" [src]="'assets/images/dtl-doctor.png'" class="img-fluid">
                         </div>
                         <div class="dtl-doctor-info">
                             <p>{{ doctor.name }}</p>
                             <ul>
                                 <li>{{ doctor.designation || doctor.specialization }}</li>
-                                <li *ngIf="doctor.experience_years">{{ doctor.experience_years }} Years of Experience</li>
-                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{ doctor.consultancy_fee | number }}</li>
+                                <li *ngIf="doctor.experience_years">{{ doctor.experience_years }} Years of Experience
+                                </li>
+                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{
+                                    doctor.consultancy_fee | number }}</li>
                             </ul>
                         </div>
                     </div>
-                    
+
                     <!-- No doctors found -->
                     <div *ngIf="!loadingDoctors && relatedDoctors.length === 0" class="text-center py-3">
                         <p class="mb-0 text-muted">No related doctors found for this treatment.</p>
@@ -403,7 +343,8 @@
                     <img [src]="'assets/images/dtl-cta.jpg'" class="img-fluid w-100 rounded-4">
                     <div class="dtl-cta-action">
                         <h2>Take the first step to <br> better health</h2>
-                        <a href="/contact" class="btn-default">Talk To Our Experts Now <i class="fa-solid fa-arrow-up"></i></a>
+                        <a href="/contact" class="btn-default">Talk To Our Experts Now <i
+                                class="fa-solid fa-arrow-up"></i></a>
                     </div>
                 </div>
             </div>

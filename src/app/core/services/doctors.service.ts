@@ -30,9 +30,22 @@ export interface Doctor {
   skills: string;
   highlights: string;
   awards: string;
+  is_featured: boolean;
+  is_active: boolean;
   created_at: string;
   images: DoctorImage[];
   faqs: any[]; // can define proper type later if API stabilizes
+  // Individual FAQ fields
+  faq1_question?: string;
+  faq1_answer?: string;
+  faq2_question?: string;
+  faq2_answer?: string;
+  faq3_question?: string;
+  faq3_answer?: string;
+  faq4_question?: string;
+  faq4_answer?: string;
+  faq5_question?: string;
+  faq5_answer?: string;
 }
 
 @Injectable({

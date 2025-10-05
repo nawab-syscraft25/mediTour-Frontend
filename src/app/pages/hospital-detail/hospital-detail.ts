@@ -19,6 +19,9 @@ export class HospitalDetail implements OnInit {
   // Doctor-related properties
   hospitalDoctors: Doctor[] = [];
   loadingDoctors = false;
+  
+  // FAQ-related properties
+  expandedFaqIndex: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -98,5 +101,42 @@ export class HospitalDetail implements OnInit {
         this.loadingDoctors = false;
       }
     });
+  }
+
+  // Method to get dynamic FAQs from hospital data
+  getDynamicFaqs(): { question: string; answer: string }[] {
+    if (!this.hospital) return [];
+
+    const faqs: { question: string; answer: string }[] = [];
+
+    // Collect faq1..faq5 if present
+    for (let i = 1; i <= 5; i++) {
+      const q = (this.hospital as any)[`faq${i}_question`];
+      const a = (this.hospital as any)[`faq${i}_answer`];
+      if (q && a) {
+        faqs.push({ question: q, answer: a });
+      }
+    }
+
+    // Merge faqs array if present
+    if (Array.isArray(this.hospital.faqs)) {
+      this.hospital.faqs.forEach((faq: any) => {
+        if (faq.question && faq.answer) {
+          faqs.push({ question: faq.question, answer: faq.answer });
+        }
+      });
+    }
+
+    return faqs;
+  }
+
+  // Method to toggle FAQ expansion
+  toggleFaq(index: number): void {
+    this.expandedFaqIndex = this.expandedFaqIndex === index ? null : index;
+  }
+
+  // Method to check if FAQ is expanded
+  isFaqExpanded(index: number): boolean {
+    return this.expandedFaqIndex === index;
   }
 }

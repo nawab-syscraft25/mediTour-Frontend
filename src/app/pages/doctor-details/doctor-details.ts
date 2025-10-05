@@ -44,12 +44,15 @@ interface BookingResponse extends BookingRequest {
 export class DoctorDetails implements OnInit {
   doctor: Doctor | null = null;
   hospitalName = '';
+  relatedDoctors: Doctor[] = [];
+  loadingRelatedDoctors = false;
   showModal = false;
   baseUrl = 'http://165.22.223.163:8000';
   consultationForm: FormGroup;
   isSubmitting = false;
   submitSuccess = false;
   submitError = '';
+  expandedFaqIndex: number | null = null; // Track which FAQ is expanded
 
   // Budget options
   budgetOptions = [
@@ -99,6 +102,7 @@ export class DoctorDetails implements OnInit {
       this.fetchDoctor(doctorId);
     }
   }
+  
 
   fetchDoctor(id: number) {
     this.doctorService.getDoctorById(id).subscribe({
@@ -106,6 +110,7 @@ export class DoctorDetails implements OnInit {
         this.doctor = data;
         if (data.hospital_id) {
           this.fetchHospitalName(data.hospital_id);
+          this.fetchRelatedDoctors(data.hospital_id, id);
         }
       },
       error: (err) => console.error(err)
@@ -119,6 +124,60 @@ export class DoctorDetails implements OnInit {
       },
       error: (err) => console.error('Error fetching hospital', err)
     });
+  }
+
+  fetchRelatedDoctors(hospitalId: number, currentDoctorId: number) {
+    this.loadingRelatedDoctors = true;
+    this.doctorService.getDoctorsByHospital(hospitalId, 0, 10).subscribe({
+      next: (doctors) => {
+        // Filter out the current doctor and take only first 3 related doctors
+        this.relatedDoctors = doctors
+          .filter(doctor => doctor.id !== currentDoctorId)
+          .slice(0, 3);
+        this.loadingRelatedDoctors = false;
+      },
+      error: (err) => {
+        console.error('Error fetching related doctors', err);
+        this.loadingRelatedDoctors = false;
+      }
+    });
+  }
+
+  // Method to get dynamic FAQs from doctor data
+  getDynamicFaqs(): { question: string; answer: string }[] {
+    if (!this.doctor) return [];
+
+    const faqs: { question: string; answer: string }[] = [];
+
+    // Collect faq1..faq5 if present
+    for (let i = 1; i <= 5; i++) {
+      const q = (this.doctor as any)[`faq${i}_question`];
+      const a = (this.doctor as any)[`faq${i}_answer`];
+      if (q && a) {
+        faqs.push({ question: q, answer: a });
+      }
+    }
+
+    // Merge faqs array if present
+    if (Array.isArray(this.doctor.faqs)) {
+      this.doctor.faqs.forEach((faq: any) => {
+        if (faq.question && faq.answer) {
+          faqs.push({ question: faq.question, answer: faq.answer });
+        }
+      });
+    }
+
+    return faqs;
+  }
+
+  // Method to toggle FAQ expansion
+  toggleFaq(index: number): void {
+    this.expandedFaqIndex = this.expandedFaqIndex === index ? null : index;
+  }
+
+  // Method to check if FAQ is expanded
+  isFaqExpanded(index: number): boolean {
+    return this.expandedFaqIndex === index;
   }
 
   openModal() {

@@ -48,6 +48,7 @@ export class TreatmentDetail implements OnInit {
   loading = true;
   baseUrl = 'http://165.22.223.163:8000';
   showModal = false;
+  expandedFaqIndex: number | null = null; // Track which FAQ is expanded
   bookingForm: FormGroup;
   isSubmitting = false;
   submitSuccess = false;
@@ -98,6 +99,43 @@ export class TreatmentDetail implements OnInit {
     });
   }
 
+  // Method to get dynamic FAQs from treatment data
+  getDynamicFaqs(): { question: string; answer: string }[] {
+    if (!this.treatment) return [];
+
+    const faqs: { question: string; answer: string }[] = [];
+
+    // Collect faq1..faq5 if present
+    for (let i = 1; i <= 5; i++) {
+      const q = (this.treatment as any)[`faq${i}_question`];
+      const a = (this.treatment as any)[`faq${i}_answer`];
+      if (q && a) {
+        faqs.push({ question: q, answer: a });
+      }
+    }
+
+    // Merge faqs array if present
+    if (Array.isArray(this.treatment.faqs)) {
+      this.treatment.faqs.forEach((faq: any) => {
+        if (faq.question && faq.answer) {
+          faqs.push({ question: faq.question, answer: faq.answer });
+        }
+      });
+    }
+
+    return faqs;
+  }
+
+  // Method to toggle FAQ expansion
+  toggleFaq(index: number): void {
+    this.expandedFaqIndex = this.expandedFaqIndex === index ? null : index;
+  }
+
+  // Method to check if FAQ is expanded
+  isFaqExpanded(index: number): boolean {
+    return this.expandedFaqIndex === index;
+  }
+
   openModal() {
     this.showModal = true;
     this.resetForm();
@@ -113,7 +151,7 @@ export class TreatmentDetail implements OnInit {
     this.isSubmitting = false;
     this.submitSuccess = false;
     this.submitError = '';
-    
+
     // Set default values
     this.bookingForm.patchValue({
       travel_assistant: false,
@@ -145,7 +183,7 @@ export class TreatmentDetail implements OnInit {
 
     try {
       const formData = this.bookingForm.value;
-      
+
       // Prepare the request payload
       const bookingRequest: BookingRequest = {
         first_name: formData.first_name,
@@ -175,7 +213,7 @@ export class TreatmentDetail implements OnInit {
 
       console.log('Booking created successfully:', response);
       this.submitSuccess = true;
-      
+
       // Close modal after 2 seconds
       setTimeout(() => {
         this.closeModal();
@@ -217,12 +255,12 @@ export class TreatmentDetail implements OnInit {
   loadRelatedDoctors(treatmentName: string) {
     this.loadingDoctors = true;
     console.log('Searching for doctors with treatment name:', treatmentName);
-    
+
     // First try: Search using full treatment name
     this.doctorService.searchDoctors(0, 10, treatmentName).subscribe({
       next: (doctors) => {
         console.log('Search results for full name:', doctors);
-        
+
         if (doctors.length > 0) {
           this.relatedDoctors = doctors.slice(0, 3); // Limit to 3 doctors
           this.loadingDoctors = false;
@@ -244,13 +282,13 @@ export class TreatmentDetail implements OnInit {
     // Extract potential medical keywords
     const keywords = this.extractMedicalKeywords(treatmentName);
     console.log('Extracted keywords:', keywords);
-    
+
     if (keywords.length > 0) {
       // Try searching with the first keyword
       this.doctorService.searchDoctors(0, 10, keywords[0]).subscribe({
         next: (doctors) => {
           console.log('Search results for keyword:', keywords[0], doctors);
-          
+
           if (doctors.length > 0) {
             this.relatedDoctors = doctors.slice(0, 3);
           } else if (keywords.length > 1) {
@@ -313,26 +351,26 @@ export class TreatmentDetail implements OnInit {
   private extractMedicalKeywords(treatmentName: string): string[] {
     const keywords: string[] = [];
     const medicalTerms = [
-      'cardiac', 'cardiology', 'heart', 'surgery', 'orthopedic', 'orthopedics', 
+      'cardiac', 'cardiology', 'heart', 'surgery', 'orthopedic', 'orthopedics',
       'bone', 'joint', 'oncology', 'cancer', 'tumor', 'neurology', 'brain',
       'spine', 'kidney', 'liver', 'lung', 'gastro', 'dental', 'eye', 'skin',
       'plastic', 'cosmetic', 'urology', 'gynecology', 'pediatric', 'ENT'
     ];
-    
+
     const words = treatmentName.toLowerCase().split(/[\s\-_]+/);
-    
+
     // First, look for exact medical terms
     words.forEach(word => {
       if (medicalTerms.some(term => word.includes(term) || term.includes(word))) {
         keywords.push(word);
       }
     });
-    
+
     // If no medical terms found, use the first few words
     if (keywords.length === 0) {
       keywords.push(...words.slice(0, 2));
     }
-    
+
     return keywords;
   }
 
@@ -341,7 +379,7 @@ export class TreatmentDetail implements OnInit {
     if (!this.treatment?.features) {
       return [];
     }
-    
+
     // If features is already a string, split it by common delimiters
     if (typeof this.treatment.features === 'string') {
       // Split by various delimiters and clean up
@@ -350,14 +388,17 @@ export class TreatmentDetail implements OnInit {
         .map(feature => feature.trim())
         .filter(feature => feature.length > 0);
     }
-    
+
     // If features is an array, return as-is
     if (Array.isArray(this.treatment.features)) {
       return this.treatment.features;
     }
-    
+
     return [];
   }
+
+  // Method to get dynamic FAQs from treatment data
+
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -366,7 +407,7 @@ export class TreatmentDetail implements OnInit {
         next: (res) => {
           this.treatment = res;
           this.loading = false;
-          
+
           // Load related doctors based on treatment name
           if (this.treatment?.name) {
             this.loadRelatedDoctors(this.treatment.name);

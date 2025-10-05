@@ -1,23 +1,23 @@
-<section class="inner-banner">
+<section class="inner-banner" *ngIf="banner">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="inner-baner-dtl position-relative text-center">
-                    <!-- Banner Image -->
-                    <img [src]="'assets/images/blog.png'" class="w-100 img-fluid rounded-5" />
-                    <div class="inner-heading">
-                        <h2>Blog/Articles</h2>
-                        <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
-                            <li><a routerLink="/">Home</a></li>
-                            <li><img [src]="'assets/images/breadcumb.svg'" /></li>
-                            <li><a routerLink="/">Blog/Articles</a></li>
-                        </ul>
-                    </div>
-                </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="inner-baner-dtl position-relative text-center">
+            <img [src]="'http://165.22.223.163:8000' + banner.image_url" class="w-100 img-fluid rounded-5" />
+            <div class="inner-heading">
+              <h2>{{ banner.title }}</h2>
+              <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
+                <li><a routerLink="/">Home</a></li>
+                <li><img [src]="'assets/images/breadcumb.svg'" /></li>
+                <li><a routerLink="/blog">{{ banner.title }}</a></li>
+              </ul>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</section>
+  </section>
+  
 <section class="blog-main ptc-80">
     <div class="container">
         <div class="row justify-content-center">

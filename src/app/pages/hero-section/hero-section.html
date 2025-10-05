@@ -2,10 +2,15 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="hero-main">
-                <img [src]="'assets/images/home-banner.png'" alt="Hero Image" class="img-fluid w-100 main-bnr">
+                <div class="hero-image">
+                    <img  [src]="'http://165.22.223.163:8000' + banner?.image_url" [alt]="banner?.title || 'Hero Image'" class="img-fluid w-100 main-bnr" />
+                </div>
                 <div class="hero-content-wrapper">
                     <div class="hero-content">
-                        <h2 class="display-4 text-white text-center">LOREM IPSUM IS SIMPLY <br> DUMMY TEXT</h2>
+                        <!-- <h2 class="display-4 text-white text-center">LOREM IPSUM IS SIMPLY <br> DUMMY TEXT</h2> -->
+                        <h2 class="display-4 text-white text-center">
+                            {{ banner?.title || 'Medi Tourist' }}
+                          </h2>
                         <div class="banner-filter">
                             <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
                                 <li class="nav-item" role="presentation">
@@ -28,9 +33,7 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="attractions-tab" data-bs-toggle="tab"
-                                        data-bs-target="#attractions" type="button" role="tab" aria-controls="contact"
-                                        aria-selected="false">
+                                    <button class="nav-link" type="button" (click)="goToAttractions()">
                                         <img [src]="'assets/images/attractions.svg'"> Attractions
                                     </button>
                                 </li>
@@ -42,32 +45,52 @@
                                     <div class="modern-filter-container">
                                         <div class="filter-main d-flex">
                                             <!-- Location Filter -->
-                                            <div class="filter-item">
-                                                <div class="filter-label">
-                                                    <img [src]="'assets/images/location.svg'">
-                                                    <span>Location</span>
-                                                </div>
-                                                <select [(ngModel)]="selectedLocation" class="filter-select">
-                                                    <option value="" disabled selected>Where you want to get treated
-                                                    </option>
-                                                    <option *ngFor="let loc of locations; let i = index" [value]="loc">
-                                                        {{ loc }}</option>
-                                                </select>
-                                                <i class="fa-solid fa-caret-down"></i>
-                                            </div>
-                                            <!-- Treatment Filter -->
-                                            <div class="filter-item">
-                                                <div class="filter-label">
-                                                    <img [src]="'assets/images/treatments.svg'">
-                                                    <span>Treatments</span>
-                                                </div>
-                                                <select [(ngModel)]="selectedTreatment" class="filter-select">
-                                                    <option value="" disabled selected>All Treatments</option>
-                                                    <option *ngFor="let t of treatments; let i = index" [value]="t">{{ t
-                                                        }}</option>
-                                                </select>
-                                                <i class="fa-solid fa-caret-down"></i>
-                                            </div>
+                                            <!-- 🔹 Location Filter -->
+<div class="filter-item">
+    <div class="filter-label">
+      <img [src]="'assets/images/location.svg'" alt="Location Icon">
+      <span>Location</span>
+    </div>
+  
+    <div class="custom-dropdown" (click)="toggleDropdown('location')">
+      <div class="selected-option">
+        {{ selectedLocation || 'Where you want to get treated' }}
+        <i class="fa-solid fa-caret-down"></i>
+      </div>
+  
+      <ul *ngIf="openDropdown === 'location'" class="dropdown-options">
+        <li *ngFor="let loc of locations"
+            (click)="selectLocation(loc, $event)"
+            [class.active]="loc === selectedLocation">
+          {{ loc }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- 🔹 Treatment Filter -->
+  <div class="filter-item">
+    <div class="filter-label">
+      <img [src]="'assets/images/treatments.svg'" alt="Treatment Icon">
+      <span>Treatments</span>
+    </div>
+  
+    <div class="custom-dropdown" (click)="toggleDropdown('treatment')">
+      <div class="selected-option">
+        {{ selectedTreatment || 'All Treatments' }}
+        <i class="fa-solid fa-caret-down"></i>
+      </div>
+  
+      <ul *ngIf="openDropdown === 'treatment'" class="dropdown-options">
+        <li *ngFor="let t of treatments"
+            (click)="selectTreatment(t, $event)"
+            [class.active]="t === selectedTreatment">
+          {{ t }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  
                                         </div>
                                         <!-- Search Button -->
                                         <button class="btn-default filter-btn" (click)="search()"
@@ -304,7 +327,8 @@
                                     </div>
                                 </div>
                                 <div class="read-more">
-                                    <a *ngIf="treatment.id" [attr.href]="'/treatment-detail/' + treatment.id" class="btn">
+                                    <a *ngIf="treatment.id" [attr.href]="'/treatment-detail/' + treatment.id"
+                                        class="btn">
                                         More Detail <i class="fa fa-arrow-up"></i>
                                     </a>
                                 </div>
@@ -335,63 +359,57 @@
                     <h3 class="mb-4">Doctor Results ({{ doctorResults.length }} doctors
                         found)</h3>
                     <div class="row">
-                        <div class="col-md-6 col-lg-4 mb-4"
-                            *ngFor="let doctor of doctorResults">
+                        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let doctor of doctorResults">
                             <div class="user-card">
                                 <div class="user-card-img" *ngIf="doctor.profile_photo">
-                                    <img [src]="'http://165.22.223.163:8000' + doctor.profile_photo"
-                                        [alt]="doctor.name" class="img-fluid">
+                                    <img [src]="'http://165.22.223.163:8000' + doctor.profile_photo" [alt]="doctor.name"
+                                        class="img-fluid">
                                 </div>
-                                <div class="user-card-content">
+                                <div class="user-card-content doctors-card-info">
                                     <h5>{{ doctor.name }}</h5>
-                                    <p class="doctor-designation">{{ doctor.designation }}
-                                    </p>
                                     <div class="user-card-description">
-                                        <p class="doctor-description mb-0">{{
-                                            doctor.short_description }}</p>
+                                        <p class="doctor-description mb-0">{{ doctor.short_description }}</p>
                                     </div>
                                     <div class="user-card-rating">
-                                        <div
-                                            class="user-card-rating d-flex align-items-center">
-                                            <ng-container
-                                                *ngFor="let star of getStars(doctor.rating)">
+                                        <div class="user-card-rating d-flex align-items-center">
+                                            <ng-container *ngFor="let star of getStars(doctor.rating)">
                                                 <!-- Full star -->
-                                                <i *ngIf="star === 'full'"
-                                                    class="fa fa-star text-warning"></i>
+                                                <i *ngIf="star === 'full'" class="fa fa-star text-warning"></i>
                                                 <!-- Half star -->
-                                                <i *ngIf="star === 'half'"
-                                                    class="fa fa-star-half-alt text-warning"></i>
+                                                <i *ngIf="star === 'half'" class="fa fa-star-half-alt text-warning"></i>
                                                 <!-- Empty star with border -->
-                                                <i *ngIf="star === 'empty'"
-                                                    class="fa-regular fa-star text-warning"></i>
+                                                <i *ngIf="star === 'empty'" class="fa-regular fa-star text-warning"></i>
                                             </ng-container>
-                                            <span class="ms-2"
-                                                *ngIf="doctor.rating !== null">{{
-                                                doctor.rating }}/5</span>
                                         </div>
                                     </div>
-                                    <p class="doctor-specialization">
-                                        <strong>Specialization:</strong> {{
-                                        doctor.specialization }}
-                                    </p>
-                                    <p class="doctor-experience">
-                                        <strong>Experience:</strong> {{
-                                        doctor.experience_years }} years
-                                    </p>
-                                    <p class="doctor-fee" *ngIf="doctor.consultancy_fee">
-                                        <strong>Consultation Fee:</strong> ₹{{
-                                        doctor.consultancy_fee | number }}
-                                    </p>
-                                    <div class="d-flex align-items-center card-location"
+                                    <div class="d-flex align-items-center card-location">
+                                        <img src="assets/images/d-designation.svg">
+                                        <p class="mb-0">{{ doctor.designation }}</p>
+                                    </div>
+                                    <div class="d-flex align-items-center card-location">
+                                        <img src="assets/images/fees.svg">
+                                        <p class="mb-0" *ngIf="doctor.consultancy_fee">Consultation Fee:
+                                            ₹{{doctor.consultancy_fee | number }}</p>
+                                    </div>
+                                    <div class="d-flex align-items-center card-location">
+                                        <img src="assets/images/d-experience.svg">
+                                        <p class="mb-0">{{doctor.experience_years }} Years of Experience</p>
+                                    </div>
+                                    <div class="d-flex align-items-center card-location">
+                                        <img src="assets/images/d-hospital.svg">
+                                        <p class="mb-0">Central Medical Hospital</p>
+                                    </div>
+                                    <!-- <p class="doctor-specialization"><strong>Specialization:</strong> {{doctor.specialization }}</p> -->
+                                    <!-- <div class="d-flex align-items-center card-location"
                                         *ngIf="doctor.location">
                                         <img [src]="'assets/images/card-location.svg'">
                                         <p class="user-card-location mb-0">{{
                                             doctor.location }}</p>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <div class="read-more">
-                                    <a *ngIf="doctor.id" [attr.href]="'/doctor-details/' + doctor.id" class="btn">More Detail <i
-                                            class="fa fa-arrow-up"></i></a>
+                                    <a *ngIf="doctor.id" [attr.href]="'/doctor-details/' + doctor.id" class="btn">More
+                                        Detail <i class="fa fa-arrow-up"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -401,8 +419,7 @@
         </div>
 
         <!-- No Doctor Results Found -->
-        <div class="row mt-4"
-            *ngIf="doctorSearchClicked && doctorResults.length == 0 && !isDoctorSearching">
+        <div class="row mt-4" *ngIf="doctorSearchClicked && doctorResults.length == 0 && !isDoctorSearching">
             <div class="col-lg-12">
                 <div class="doctor-results-container">
                     <div class="text-center">

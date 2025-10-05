@@ -1,9 +1,9 @@
-// src/app/pages/doctors/doctors.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { DoctorService, Doctor } from 'src/app/core/services/doctors.service';
 import { HospitalService, Hospital } from 'src/app/core/services/hospital.service';
+import { BannerService, Banner } from 'src/app/core/services/banner.service'; // ✅ import banner service
 
 @Component({
   selector: 'app-doctors',
@@ -23,15 +23,34 @@ export class Doctors implements OnInit {
   selectedLocation: string = '';
   selectedSpecialization: string = '';
 
+  // 🔹 banner
+  banner: Banner | null = null;
+
   constructor(
     private doctorService: DoctorService,
     private hospitalService: HospitalService,
+    private bannerService: BannerService, // ✅ banner service
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.loadBanner();    // 🔹 load Doctors banner
     this.loadFilters();   // fetch dropdown data
     this.loadDoctors();   // fetch doctor list
+  }
+
+  // 🔹 fetch dynamic banner
+  loadBanner() {
+    this.bannerService.getBannerByTitle('Doctors').subscribe({
+      next: (banner) => {
+        if (banner) {
+          this.banner = banner;
+          console.log('✅ Doctors banner loaded:', this.banner);
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('❌ Error loading banner:', err)
+    });
   }
 
   // 🔹 fetch dynamic dropdown data
@@ -65,7 +84,7 @@ export class Doctors implements OnInit {
         // sort by rating
         this.doctors = doctorsList.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 
-        // fetch hospital names like before
+        // fetch hospital names
         const uniqueHospitalIds = [...new Set(this.doctors.map(doc => doc.hospital_id))];
         if (uniqueHospitalIds.length === 0) {
           this.loading = false;

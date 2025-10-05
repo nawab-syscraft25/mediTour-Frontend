@@ -1,15 +1,17 @@
-<section class="inner-banner">
+<section class="inner-banner" *ngIf="banner">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
                 <div class="inner-baner-dtl position-relative text-center">
-                    <img [src]="'assets/images/our-doctors.png'" class="w-100 img-fluid rounded-5" />
+                    <!-- 🔹 Use dynamic banner image -->
+                    <img [src]="'http://165.22.223.163:8000' + banner.image_url" class="w-100 img-fluid rounded-5" />
                     <div class="inner-heading">
-                        <h2>Online Consultation</h2>
+                        <!-- 🔹 Use dynamic title -->
+                        <h2>{{ banner.title }}</h2>
                         <ul class="breadcumb d-flex justify-content-center align-items-center gap-3">
-                            <li><a href="/">Home</a></li>
-                            <li><img [src]="'assets/images/breadcumb.svg'"></li>
-                            <li><a href="/">Online Consultation</a></li>
+                            <li><a routerLink="/">Home</a></li>
+                            <li><img [src]="'assets/images/breadcumb.svg'" /></li>
+                            <li><a routerLink="/online-consultation">{{ banner.title }}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -17,13 +19,18 @@
         </div>
     </div>
 </section>
+
 <section class="card-list-main ptc-80">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <div class="main-head text-center mbc-50">
                     <h2>Medical Procedure</h2>
-                    <p>Get expert guidance from the comfort of your home. Our online consultation service helps you understand medical procedures in detail—what they involve, the preparation required, recovery expectations, and possible alternatives. Whether you are exploring treatment options, seeking a second opinion, or preparing for surgery, we provide clear, reliable, and personalized information to support your healthcare decisions.</p>
+                    <p>Get expert guidance from the comfort of your home. Our online consultation service helps you
+                        understand medical procedures in detail—what they involve, the preparation required, recovery
+                        expectations, and possible alternatives. Whether you are exploring treatment options, seeking a
+                        second opinion, or preparing for surgery, we provide clear, reliable, and personalized
+                        information to support your healthcare decisions.</p>
                 </div>
             </div>
         </div>
@@ -63,7 +70,8 @@
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/fees.svg'">
-                            <p class="mb-0">Consultation Fees: <span class="fee-amount">₹{{ d.consultancy_fee | number }}</span></p>
+                            <p class="mb-0">Consultation Fees: <span class="fee-amount">₹{{ d.consultancy_fee | number
+                                    }}</span></p>
                         </div>
                         <div class="d-flex align-items-center card-location">
                             <img [src]="'assets/images/d-experience.svg'">
@@ -87,7 +95,7 @@
 
         <div *ngIf="!loading && !doctors.length" class="text-center">
             No doctors found.
-        </div> 
+        </div>
     </div>
 
     <!-- Modal Component -->
@@ -105,7 +113,7 @@
             </div>
 
             <!-- Doctor Info (if selected) -->
-            <div *ngIf="selectedDoctor" class="selected-doctor-info mb-3 p-3 bg-light rounded">
+            <!-- <div *ngIf="selectedDoctor" class="selected-doctor-info mb-3 p-3 bg-light rounded">
                 <h6 class="mb-2">Selected Doctor:</h6>
                 <div class="d-flex align-items-center">
                     <img *ngIf="selectedDoctor.profile_photo?.length" 
@@ -119,15 +127,14 @@
                         <small class="text-primary">Consultation Fee: ₹{{ selectedDoctor.consultancy_fee | number }}</small>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" *ngIf="!submitSuccess">
 
                 <!-- First Name -->
                 <div class="mb-3">
-                    <input type="text" class="form-control"
-                           [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name*"
-                           formControlName="first_name">
+                    <input type="text" class="form-control" [class.is-invalid]="isFieldInvalid('first_name')"
+                        placeholder="First Name*" formControlName="first_name">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('first_name')">
                         {{ getFieldError('first_name') }}
                     </div>
@@ -135,9 +142,8 @@
 
                 <!-- Last Name -->
                 <div class="mb-3">
-                    <input type="text" class="form-control"
-                           [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name*"
-                           formControlName="last_name">
+                    <input type="text" class="form-control" [class.is-invalid]="isFieldInvalid('last_name')"
+                        placeholder="Last Name*" formControlName="last_name">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('last_name')">
                         {{ getFieldError('last_name') }}
                     </div>
@@ -145,9 +151,8 @@
 
                 <!-- Email -->
                 <div class="mb-3">
-                    <input type="email" class="form-control"
-                           [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id*"
-                           formControlName="email">
+                    <input type="email" class="form-control" [class.is-invalid]="isFieldInvalid('email')"
+                        placeholder="Enter Email Id*" formControlName="email">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
                         {{ getFieldError('email') }}
                     </div>
@@ -155,9 +160,8 @@
 
                 <!-- Mobile Number -->
                 <div class="mb-3">
-                    <input type="tel" class="form-control"
-                           [class.is-invalid]="isFieldInvalid('mobile_no')"
-                           placeholder="Enter Mobile Number*" formControlName="mobile_no">
+                    <input type="tel" class="form-control" [class.is-invalid]="isFieldInvalid('mobile_no')"
+                        placeholder="Enter Mobile Number*" formControlName="mobile_no">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile_no')">
                         {{ getFieldError('mobile_no') }}
                     </div>
@@ -166,7 +170,7 @@
                 <!-- Service Selection -->
                 <div class="mb-3">
                     <select class="form-select" [class.is-invalid]="isFieldInvalid('treatment_id')"
-                            formControlName="treatment_id">
+                        formControlName="treatment_id">
                         <option value="" selected>Select Service*</option>
                         <option *ngFor="let service of serviceOptions" [value]="service.value">
                             {{ service.label }}
@@ -179,8 +183,7 @@
 
                 <!-- Budget Preference -->
                 <div class="mb-3">
-                    <select class="form-select" [class.is-invalid]="isFieldInvalid('budget')"
-                            formControlName="budget">
+                    <select class="form-select" [class.is-invalid]="isFieldInvalid('budget')" formControlName="budget">
                         <option value="" selected>Budget Preference*</option>
                         <option *ngFor="let budget of budgetOptions" [value]="budget.value">
                             {{ budget.label }}
@@ -194,31 +197,31 @@
                 <!-- Doctor Preference -->
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="Doctor Preference (Optional)"
-                           formControlName="doctor_preference">
+                        formControlName="doctor_preference">
                 </div>
 
                 <!-- Hospital Preference -->
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="Hospital Preference (Optional)"
-                           formControlName="hospital_preference">
+                        formControlName="hospital_preference">
                 </div>
 
                 <!-- Medical History File -->
                 <div class="mb-3">
                     <label for="formFileLg" class="form-label">Upload Your Medical History</label>
                     <input class="form-control form-control-lg" id="formFileLg" type="file"
-                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" (change)="onFileSelect($event)">
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" (change)="onFileSelect($event)">
                     <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
                 </div>
 
                 <!-- User Query -->
                 <div class="mb-3">
                     <textarea class="form-control" rows="3" placeholder="Enter Your Query (Optional)"
-                              formControlName="user_query"></textarea>
+                        formControlName="user_query"></textarea>
                 </div>
 
                 <!-- Travel Assistance -->
-                <div class="mb-2 form-check">
+                <!-- <div class="mb-2 form-check">
                     <input type="checkbox" class="form-check-input" id="travelCheck"
                            formControlName="travel_assistant">
                     <label class="form-check-label" for="travelCheck">
@@ -226,14 +229,13 @@
                     </label>
                 </div>
 
-                <!-- Stay Assistance -->
                 <div class="mb-3 form-check">
                     <input type="checkbox" class="form-check-input" id="stayCheck"
                            formControlName="stay_assistant">
                     <label class="form-check-label" for="stayCheck">
                         Do You Need Stay Assistance?
                     </label>
-                </div>
+                </div> -->
 
                 <!-- Note -->
                 <div class="package-book-note">
@@ -243,14 +245,13 @@
                 <!-- Submit Button -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="custom-submit btn-default" [disabled]="isSubmitting">
-                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"
-                              role="status"></span>
+                        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
                         {{ isSubmitting ? 'Booking...' : 'Book Consultation' }} <i class="fa-solid fa-arrow-up"></i>
                     </button>
 
                     <!-- Form validation summary -->
-                    <div *ngIf="bookingForm.invalid && bookingForm.touched"
-                         class="alert alert-warning mt-2" role="alert">
+                    <div *ngIf="bookingForm.invalid && bookingForm.touched" class="alert alert-warning mt-2"
+                        role="alert">
                         <small><i class="fas fa-exclamation-triangle me-1"></i>Please fill in all
                             required fields marked with *</small>
                     </div>
@@ -258,5 +259,5 @@
 
             </form>
         </div>
-    </app-modal> 
+    </app-modal>
 </section>

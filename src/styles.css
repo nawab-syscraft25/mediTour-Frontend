@@ -33,5 +33,9 @@ body
     font-family: 'OpenSans-SemiBold';
     src: url('../src/assets/fonts/OpenSans-SemiBold.ttf');
 }
+@font-face {
+    font-family: 'Raleway';
+    src: url('../src/assets/fonts/Raleway-Medium.ttf');
+}
 /* Add any custom global styles below */
 

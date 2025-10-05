@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'ngx-owl-carousel-o';
+import { BannerService, Banner } from 'src/app/core/services/banner.service';
 
 @Component({
   selector: 'app-about',
@@ -9,8 +10,7 @@ import { CarouselModule } from 'ngx-owl-carousel-o';
   templateUrl: './about.html',
   styleUrls: ['./about.css']
 })
-export class AboutComponent {
-
+export class AboutComponent implements OnInit {
   customOptions = {
     loop: true,
     autoplay: true,
@@ -25,4 +25,13 @@ export class AboutComponent {
     }
   };
 
+  banner: Banner | undefined;
+
+  constructor(private bannerService: BannerService) {}
+
+  ngOnInit(): void {
+    this.bannerService.getBannerByTitle('About Us').subscribe(banner => {
+      this.banner = banner;
+    });
+  }
 }

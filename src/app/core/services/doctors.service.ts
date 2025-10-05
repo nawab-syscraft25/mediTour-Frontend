@@ -58,7 +58,7 @@ export class DoctorService {
   }
 
   getSpecializations(): Observable<string[]> {
-    return this.apiService.get<string[]>(`/api/filters/specializations`);
+    return this.apiService.get<string[]>(`/api/v1/filters/specializations`);
   }
 
   searchDoctors(skip = 0, limit = 100, searchTerm?: string, location?: string): Observable<Doctor[]> {

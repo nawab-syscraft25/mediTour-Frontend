@@ -32,11 +32,21 @@ export class TreatmentService {
   }
 
   getTreatmentTypes(): Observable<string[]> {
-    return this.apiService.get<string[]>('/api/filters/treatment-types');
+    return this.apiService.get<string[]>('/api/v1/filters/treatment-types');
   }
 
-  /** ✅ New method to get single treatment by ID */
+  /** ✅ Get single treatment by ID */
   getTreatmentById(id: number): Observable<Treatment> {
     return this.apiService.get<Treatment>(`/api/v1/treatments/${id}`);
+  }
+
+  /** ✅ New universal search method (Doctors + Treatments + Hospitals) */
+  searchAll(query: string, limit: number = 10): Observable<any> {
+    const httpParams = new HttpParams()
+      .set('query', query.trim())
+      .set('limit', limit.toString());
+
+    console.log('API Request URL:', '/api/v1/search?' + httpParams.toString());
+    return this.apiService.get<any>('/api/v1/search', httpParams);
   }
 }

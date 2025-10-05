@@ -61,6 +61,11 @@ export const routes: Routes = [
     import('./pages/blog-detail/blog-detail').then(m => m.BlogDetailComponent)
   },
   {
+    path: 'attractions-detail/:id',
+    loadComponent: () =>
+    import('./pages/attractions-detail/attractions-detail').then(m => m.AttractionsDetail)
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login)
   },
@@ -79,6 +84,10 @@ export const routes: Routes = [
   {
     path: 'doctor-details/:id',
     loadComponent: () => import('./pages/doctor-details/doctor-details').then(m => m.DoctorDetails)
+  },
+  {
+    path: 'search',
+    loadComponent: () => import('./pages/search-results/search-results.component').then(m => m.SearchResultsComponent)
   },
   {
     path: '**',

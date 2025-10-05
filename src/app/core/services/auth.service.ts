@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
-import { ApiResponse, User } from '../../shared/interfaces/api.interface';
+import { LoginRequest, LoginResponse, SignupRequest, SignupResponse, ForgotPasswordRequest, ForgotPasswordResponse, User } from '../../shared/interfaces/api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +15,30 @@ export class AuthService {
     this.loadStoredUser();
   }
 
-  login(email: string, password: string): Observable<ApiResponse<{ token: string; user: User }>> {
-    return this.apiService.post<ApiResponse<{ token: string; user: User }>>('/auth/login', { email, password })
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.apiService.post<LoginResponse>('/api/v1/auth/login', { email, password })
       .pipe(
         tap(response => {
-          if (response.success) {
-            localStorage.setItem(this.TOKEN_KEY, response.data.token);
-            this.currentUserSubject.next(response.data.user);
-          }
+          localStorage.setItem(this.TOKEN_KEY, response.access_token);
+          this.currentUserSubject.next(response.user);
+        })
+      );
+  }
+
+  signup(signupData: SignupRequest): Observable<SignupResponse> {
+    return this.apiService.post<SignupResponse>('/api/v1/auth/signup', signupData);
+    // Note: We don't auto-login after signup to encourage email verification
+  }
+
+  forgotPassword(email: string): Observable<ForgotPasswordResponse> {
+    return this.apiService.post<ForgotPasswordResponse>('/api/v1/auth/forgot-password', { email });
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.apiService.get<User>('/api/v1/auth/me')
+      .pipe(
+        tap(user => {
+          this.currentUserSubject.next(user);
         })
       );
   }
@@ -43,13 +59,8 @@ export class AuthService {
   private loadStoredUser(): void {
     const token = this.getToken();
     if (token) {
-      // You might want to validate the token with the backend
-      this.apiService.get<ApiResponse<User>>('/auth/me').subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.currentUserSubject.next(response.data);
-          }
-        },
+      // Validate the token with the backend and load user data
+      this.getCurrentUser().subscribe({
         error: () => this.logout()
       });
     }

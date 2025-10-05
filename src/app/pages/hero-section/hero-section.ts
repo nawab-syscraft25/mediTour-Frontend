@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,23 +6,32 @@ import { TreatmentService } from '../../core/services/treatment.service';
 import { DoctorService } from '../../core/services/doctors.service';
 import { Treatment } from '../../shared/interfaces/treatment.interface';
 import { Doctor } from '../../core/services/doctors.service';
+import { BannerService, Banner } from 'src/app/core/services/banner.service';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './hero-section.html',
-  styleUrl: './hero-section.css'
+  styleUrls: ['./hero-section.css']
 })
-export class HeroSection implements OnInit {
-
+export class HeroSection implements OnInit, OnDestroy {
   @Output() searchResultsChange = new EventEmitter<boolean>();
 
+  /** ✅ Banner */
+  banner: Banner | null = null;
+
+  /** Treatment search */
   locations: string[] = [];
   treatments: string[] = [];
   searchResults: Treatment[] = [];
+  selectedLocation: string = '';
+  selectedTreatment: string = '';
+  isSearching = false;
+  searchClicked = false;
+  buttonClicked = false;
 
-  // Doctor-related properties for Online Consultation
+  /** Doctor search */
   doctorLocations: string[] = [];
   specializations: string[] = [];
   doctorResults: Doctor[] = [];
@@ -31,40 +40,118 @@ export class HeroSection implements OnInit {
   isDoctorSearching = false;
   doctorSearchClicked = false;
 
-  isSearching = false;
-  searchClicked = false;   // ✅ new flag to show "No Results Found" only after searching
-  buttonClicked = false;
+  /** Custom dropdown state */
+  openDropdown: 'location' | 'treatment' | null = null;
 
-  selectedLocation: string = '';
-  selectedTreatment: string = '';
-
-constructor(
-  private treatmentService: TreatmentService,
-  private doctorService: DoctorService,
-  private router: Router
-) {}
+  constructor(
+    private treatmentService: TreatmentService,
+    private doctorService: DoctorService,
+    private router: Router,
+    private bannerService: BannerService
+  ) {}
 
   ngOnInit(): void {
     console.log('HeroSection ngOnInit called');
 
-    // fallback demo data
-    this.locations = ['Bangalore', 'Indore', 'Mumbai', 'Test City'];
-    this.treatments = ['Cardiac Surgery', 'Neurology', 'Oncology', 'Orthopedics'];
-
+    this.loadBannerBasedOnRoute();
     this.loadLocations();
     this.loadTreatments();
     this.loadDoctorLocations();
     this.loadSpecializations();
-  }
-   goToContact() {
-    this.router.navigate(['/contact']); // 👈 navigate to Contact page
+
+    /** 🔹 Close dropdown when clicking outside */
+    document.addEventListener('click', this.handleOutsideClick.bind(this));
   }
 
+  ngOnDestroy(): void {
+    document.removeEventListener('click', this.handleOutsideClick.bind(this));
+  }
+
+  // --------------------------
+  // 🔹 Dropdown Methods
+  // --------------------------
+  toggleDropdown(type: 'location' | 'treatment') {
+    this.openDropdown = this.openDropdown === type ? null : type;
+  }
+
+  selectLocation(loc: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.selectedLocation = loc;
+    this.openDropdown = null;
+  }
+
+  selectTreatment(treatment: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.selectedTreatment = treatment;
+    this.openDropdown = null;
+  }
+
+  handleOutsideClick(event: MouseEvent) {
+    const dropdowns = document.querySelectorAll('.custom-dropdown');
+    let clickedInside = false;
+
+    dropdowns.forEach((dropdown) => {
+      if (dropdown.contains(event.target as Node)) {
+        clickedInside = true;
+      }
+    });
+
+    if (!clickedInside) this.openDropdown = null;
+  }
+
+  // --------------------------
+  // 🔹 Banner
+  // --------------------------
+  loadBannerBasedOnRoute(): void {
+    let pageName = 'Home';
+    const currentPath = this.router.url.toLowerCase();
+
+    if (currentPath.includes('contact')) pageName = 'Contact';
+    else if (currentPath.includes('login')) pageName = 'Login';
+    else if (currentPath.includes('signup')) pageName = 'Sign Up';
+    else if (currentPath.includes('forgot-password')) pageName = 'Forgot Password';
+    else if (currentPath.includes('online-consultation')) pageName = 'Online Consultation';
+    else if (currentPath.includes('doctors')) pageName = 'Doctors';
+    else if (currentPath.includes('blog')) pageName = 'Blog';
+    else if (currentPath.includes('about')) pageName = 'About Us';
+    else if (currentPath.includes('treatment')) pageName = 'Treatment Plan';
+    else if (currentPath.includes('attractions')) pageName = 'Attractions';
+    else if (currentPath.includes('associate-hospital')) pageName = 'Associate Hospital';
+
+    console.log('Fetching banner for:', pageName);
+
+    this.bannerService.getBannerByName(pageName).subscribe({
+      next: (banner) => {
+        if (banner) {
+          this.banner = banner;
+          console.log('Banner loaded:', banner);
+        } else {
+          console.warn(`Banner not found for ${pageName}, using fallback.`);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching banner:', error);
+      }
+    });
+  }
+
+  // --------------------------
+  // 🔹 Navigation
+  // --------------------------
+  goToContact() {
+    this.router.navigate(['/contact']);
+  }
+
+  goToAttractions() {
+    this.router.navigate(['/attractions']);
+  }
+
+  // --------------------------
+  // 🔹 Treatment Search
+  // --------------------------
   loadLocations(): void {
     this.treatmentService.getLocations().subscribe({
-      next: (locations) => {
-        this.locations = locations;
-      },
+      next: (locations) => (this.locations = locations),
       error: (error) => {
         console.error('Error fetching locations:', error);
         this.locations = ['Indore', 'Bhopal', 'Delhi', 'Mumbai']; // fallback
@@ -72,27 +159,9 @@ constructor(
     });
   }
 
-  getStars(rating: number | null): ('full' | 'half' | 'empty')[] {
-    if (rating === null) {
-      return Array(5).fill('empty');
-    }
-
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStar;
-
-    return [
-      ...Array(fullStars).fill('full'),
-      ...Array(halfStar).fill('half'),
-      ...Array(emptyStars).fill('empty')
-    ];
-  }
-
   loadTreatments(): void {
     this.treatmentService.getTreatmentTypes().subscribe({
-      next: (treatments) => {
-        this.treatments = treatments;
-      },
+      next: (treatments) => (this.treatments = treatments),
       error: (error) => {
         console.error('Error fetching treatments:', error);
         this.treatments = ['Cardiology', 'Neurology', 'Orthopedics', 'Cancer Treatment']; // fallback
@@ -100,169 +169,120 @@ constructor(
     });
   }
 
+  getStars(rating: number | null): ('full' | 'half' | 'empty')[] {
+    if (rating === null) return Array(5).fill('empty');
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+    return [
+      ...Array(fullStars).fill('full'),
+      ...Array(halfStar).fill('half'),
+      ...Array(emptyStars).fill('empty')
+    ];
+  }
+
   search() {
-    console.log('Search button clicked!');
-    console.log('Selected location:', this.selectedLocation);
-    console.log('Selected treatment:', this.selectedTreatment);
+    if (!this.selectedLocation && !this.selectedTreatment) return;
 
-    if (!this.selectedLocation && !this.selectedTreatment) {
-      // alert('Please select a location or treatment type');
-      return;
-    }
-
-    this.searchClicked = true;   // ✅ mark that user searched
+    this.searchClicked = true;
     this.isSearching = true;
-    
-    // Clear doctor results when searching for treatments
     this.doctorResults = [];
     this.doctorSearchClicked = false;
 
-    const searchParams: any = {
-      skip: 0,
-      limit: 100
-    };
+    const params: any = { skip: 0, limit: 100 };
+    if (this.selectedLocation) params.location = this.selectedLocation.toLowerCase();
+    if (this.selectedTreatment) params.treatment_type = this.selectedTreatment;
 
-    if (this.selectedLocation) {
-      searchParams.location = this.selectedLocation.toLowerCase();
-    }
-    if (this.selectedTreatment) {
-      searchParams.treatment_type = this.selectedTreatment;
-    }
-
-    this.treatmentService.searchTreatments(searchParams).subscribe({
+    this.treatmentService.searchTreatments(params).subscribe({
       next: (results) => {
-        // ✅ sort by rating high → low, null last
-        this.searchResults = results.sort((a, b) => {
-          const ratingA = a.rating ?? 0;
-          const ratingB = b.rating ?? 0;
-          return ratingB - ratingA;
-        });
-
+        this.searchResults = results.sort(
+          (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
+        );
         this.isSearching = false;
-
-        // notify parent - emit true if either treatment or doctor results exist
-        this.searchResultsChange.emit(this.searchResults.length > 0 || this.doctorResults.length > 0);
-
-        // smooth scroll to results
+        this.searchResultsChange.emit(this.searchResults.length > 0);
         setTimeout(() => {
-          const resultsElement = document.querySelector('.search-results-container');
-          if (resultsElement) {
-            resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          document.querySelector('.search-results-container')?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       },
       error: (error) => {
         console.error('Error searching treatments:', error);
         this.isSearching = false;
         this.searchResults = [];
-        this.searchResultsChange.emit(this.searchResults.length > 0 || this.doctorResults.length > 0);
-        alert('Error occurred while searching: ' + error.message);
+        this.searchResultsChange.emit(false);
       }
     });
   }
 
   clearSearch() {
-    console.log('Clearing search...');
     this.selectedLocation = '';
     this.selectedTreatment = '';
     this.searchResults = [];
     this.isSearching = false;
-    this.searchClicked = false;   // ✅ reset flag
-
-    this.searchResultsChange.emit(this.searchResults.length > 0 || this.doctorResults.length > 0);
+    this.searchClicked = false;
+    this.searchResultsChange.emit(false);
   }
 
-  testButtonClick() {
-    this.buttonClicked = !this.buttonClicked;
-    console.log('Button clicked state:', this.buttonClicked);
-  }
-
-  // Doctor-related methods for Online Consultation
+  // --------------------------
+  // 🔹 Doctor Search
+  // --------------------------
   loadDoctorLocations(): void {
     this.doctorService.getLocations().subscribe({
-      next: (locations) => {
-        this.doctorLocations = locations;
-      },
+      next: (locations) => (this.doctorLocations = locations),
       error: (error) => {
         console.error('Error fetching doctor locations:', error);
-        this.doctorLocations = ['Indore', 'Mumbai', 'Delhi', 'Bangalore']; // fallback
+        this.doctorLocations = ['Indore', 'Mumbai', 'Delhi', 'Bangalore'];
       }
     });
   }
 
   loadSpecializations(): void {
     this.doctorService.getSpecializations().subscribe({
-      next: (specializations) => {
-        this.specializations = specializations;
-      },
+      next: (specializations) => (this.specializations = specializations),
       error: (error) => {
         console.error('Error fetching specializations:', error);
-        this.specializations = ['Interventional Cardiology', 'Neurology', 'Orthopedics', 'Oncology']; // fallback
+        this.specializations = ['Interventional Cardiology', 'Neurology', 'Orthopedics', 'Oncology'];
       }
     });
   }
 
   searchDoctors() {
-    console.log('Doctor search button clicked!');
-    console.log('Selected doctor location:', this.selectedDoctorLocation);
-    console.log('Selected specialization:', this.selectedSpecialization);
-
     this.doctorSearchClicked = true;
     this.isDoctorSearching = true;
-    
-    // Clear treatment results when searching for doctors
     this.searchResults = [];
     this.searchClicked = false;
 
     this.doctorService.getDoctors(0, 100, this.selectedDoctorLocation || undefined).subscribe({
       next: (doctors) => {
-        // Filter by specialization if selected
+        let filtered = doctors;
         if (this.selectedSpecialization) {
-          this.doctorResults = doctors.filter(doctor => 
-            doctor.specialization && 
-            doctor.specialization.toLowerCase().includes(this.selectedSpecialization.toLowerCase())
+          filtered = doctors.filter(d =>
+            d.specialization?.toLowerCase().includes(this.selectedSpecialization.toLowerCase())
           );
-        } else {
-          this.doctorResults = doctors;
         }
-
-        // Sort by rating high → low, null last
-        this.doctorResults = this.doctorResults.sort((a, b) => {
-          const ratingA = a.rating ?? 0;
-          const ratingB = b.rating ?? 0;
-          return ratingB - ratingA;
-        });
-
+        this.doctorResults = filtered.sort(
+          (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
+        );
         this.isDoctorSearching = false;
-
-        // notify parent - emit true if either treatment or doctor results exist
-        this.searchResultsChange.emit(this.searchResults.length > 0 || this.doctorResults.length > 0);
-
-        // Smooth scroll to results
+        this.searchResultsChange.emit(this.doctorResults.length > 0);
         setTimeout(() => {
-          const resultsElement = document.querySelector('.doctor-results-container');
-          if (resultsElement) {
-            resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          document.querySelector('.doctor-results-container')?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       },
       error: (error) => {
         console.error('Error searching doctors:', error);
         this.isDoctorSearching = false;
         this.doctorResults = [];
-        this.searchResultsChange.emit(this.searchResults.length > 0 || this.doctorResults.length > 0);
-        alert('Error occurred while searching doctors: ' + error.message);
+        this.searchResultsChange.emit(false);
       }
     });
   }
 
   clearDoctorSearch() {
-    console.log('Clearing doctor search...');
     this.selectedDoctorLocation = '';
     this.selectedSpecialization = '';
     this.doctorResults = [];
     this.isDoctorSearching = false;
     this.doctorSearchClicked = false;
-    this.searchResultsChange.emit(this.searchResults.length > 0 || this.doctorResults.length > 0);
+    this.searchResultsChange.emit(false);
   }
 }

@@ -8,36 +8,46 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
-  constructor() {}
+  constructor(private authService: AuthService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Get the auth token
+    const token = this.authService.getToken();
+    
     // Clone the request to add headers
-    const modifiedRequest = request.clone({
+    let modifiedRequest = request.clone({
       setHeaders: {
-        'Content-Type': 'application/json',
-        // Add authorization header if needed
-        // 'Authorization': `Bearer ${this.authService.getToken()}`
+        'Content-Type': 'application/json'
       }
     });
 
+    // Add authorization header if token exists
+    if (token) {
+      modifiedRequest = modifiedRequest.clone({
+        setHeaders: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+    }
+
     return next.handle(modifiedRequest).pipe(
       catchError((error: HttpErrorResponse) => {
-        let errorMessage = 'An error occurred';
-        
         if (error.error instanceof ErrorEvent) {
           // Client-side error
-          errorMessage = error.error.message;
+          console.error('Client-side error:', error.error.message);
         } else {
           // Server-side error
-          errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+          console.error(`Server-side error: ${error.status} - ${error.message}`);
           
           // Handle specific error cases
           switch (error.status) {
             case 401:
-              // Handle unauthorized
+              // Handle unauthorized - logout user
+              this.authService.logout();
               break;
             case 403:
               // Handle forbidden
@@ -51,7 +61,7 @@ export class ApiInterceptor implements HttpInterceptor {
           }
         }
         
-        return throwError(() => new Error(errorMessage));
+        return throwError(() => error);
       })
     );
   }

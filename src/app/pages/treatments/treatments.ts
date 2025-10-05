@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // for [(ngModel)]
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TreatmentService } from 'src/app/core/services/treatment.service';
 import { Treatment } from 'src/app/shared/interfaces/treatment.interface';
+import { BannerService, Banner } from 'src/app/core/services/banner.service';
 
 @Component({
   selector: 'app-treatments',
@@ -16,9 +17,12 @@ export class Treatments implements OnInit {
   slug: string | null = null;
   treatmentName: string | null = null;
 
-  treatments: Treatment[] = [];            // all treatments
-  filteredTreatments: Treatment[] = [];    // treatments after filter
+  treatments: Treatment[] = [];
+  filteredTreatments: Treatment[] = [];
   loading = true;
+
+  // Banner
+  banner: Banner | undefined;
 
   // Filters
   selectedLocation: string = '';
@@ -28,13 +32,26 @@ export class Treatments implements OnInit {
   availableLocations: string[] = [];
   availableTreatmentTypes: string[] = [];
 
+  // Dropdown open/close states
+  isLocationOpen = false;
+  isTreatmentOpen = false;
+
   constructor(
     private route: ActivatedRoute,
-    private treatmentService: TreatmentService
+    private treatmentService: TreatmentService,
+    private bannerService: BannerService
   ) {}
 
   ngOnInit(): void {
     this.loadTreatments();
+
+    // ✅ Load Treatments Banner
+    this.bannerService.getBannerByTitle('Treatment Plan').subscribe({
+      next: (banner) => {
+        this.banner = banner;
+      },
+      error: (err) => console.error('Error loading banner:', err)
+    });
   }
 
   /** Load all treatments from API */
@@ -44,14 +61,11 @@ export class Treatments implements OnInit {
 
     this.treatmentService.searchTreatments(requestPayload).subscribe({
       next: (data) => {
-        // Sort by rating (highest first, null → bottom)
         this.treatments = data.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
 
-        // Dropdown values (unique)
         this.availableLocations = Array.from(new Set(this.treatments.map(t => t.location).filter(Boolean)));
         this.availableTreatmentTypes = Array.from(new Set(this.treatments.map(t => t.treatment_type).filter(Boolean)));
 
-        // Initialize filtered list (all by default)
         this.filteredTreatments = [...this.treatments];
         this.loading = false;
       },
@@ -62,7 +76,36 @@ export class Treatments implements OnInit {
     });
   }
 
-  /** Apply filters to treatments */
+  toggleLocationDropdown(): void {
+    this.isLocationOpen = !this.isLocationOpen;
+    this.isTreatmentOpen = false;
+  }
+
+  toggleTreatmentDropdown(): void {
+    this.isTreatmentOpen = !this.isTreatmentOpen;
+    this.isLocationOpen = false;
+  }
+
+  selectLocation(loc: string): void {
+    this.selectedLocation = loc;
+    this.isLocationOpen = false;
+    this.applyFilters();
+  }
+
+  selectTreatment(type: string): void {
+    this.selectedTreatmentType = type;
+    this.isTreatmentOpen = false;
+    this.applyFilters();
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: any): void {
+    if (!event.target.closest('.custom-select-wrapper')) {
+      this.isLocationOpen = false;
+      this.isTreatmentOpen = false;
+    }
+  }
+
   applyFilters(): void {
     this.filteredTreatments = this.treatments.filter(t => {
       const locationMatch = this.selectedLocation ? t.location === this.selectedLocation : true;
@@ -71,7 +114,6 @@ export class Treatments implements OnInit {
     });
   }
 
-  /** Generate star array for ratings */
   getStars(rating: number | null): ('full' | 'half' | 'empty')[] {
     if (rating === null) {
       return Array(5).fill('empty');
@@ -88,7 +130,6 @@ export class Treatments implements OnInit {
     ];
   }
 
-  /** Utility: turn "cardiac-surgery" into "Cardiac Surgery" */
   private slugToName(slug: string): string {
     return slug
       .split('-')

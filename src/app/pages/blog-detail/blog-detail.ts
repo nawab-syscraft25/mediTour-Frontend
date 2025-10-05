@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { BannerService, Banner } from 'src/app/core/services/banner.service'; // ✅ import BannerService
 
 interface BlogDetail {
   id: number;
@@ -24,8 +25,9 @@ interface BlogDetail {
 export class BlogDetailComponent implements OnInit {
   blog!: BlogDetail;
   baseUrl = 'http://165.22.223.163:8000';
+  banner: Banner | null = null; // 🔹 Blog Detail banner
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private bannerService: BannerService) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id'); // from /blog/:id
@@ -36,6 +38,17 @@ export class BlogDetailComponent implements OnInit {
           this.blog = data;
         });
     }
+
+    // 🔹 Load Blog Detail Banner
+    this.bannerService.getBannerByTitle('Blog Detail').subscribe({
+      next: (banner) => {
+        if (banner) {
+          this.banner = banner;
+          console.log('✅ Blog Detail banner loaded:', this.banner);
+        }
+      },
+      error: (err) => console.error('❌ Error loading blog detail banner:', err)
+    });
   }
 
   getImageUrl(path: string): string {

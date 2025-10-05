@@ -2,3 +2,15 @@
   font-size: 2rem;
   color: #333;
 }
+.partner-logo
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.user-card-rating i
+{
+  font-size: 18px;
+  color: #F66F4D !important;
+}

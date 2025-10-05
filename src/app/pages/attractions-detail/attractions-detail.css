@@ -25,7 +25,7 @@
     background-color: #f8f9fa;
     border-radius: 5px;
     padding: 10px 15px;
-    margin-top: 15px;
+    margin: 15px 0px;
 }
 
 .offer-meta i {
@@ -60,4 +60,10 @@
 .blog-meta i {
     width: 16px;
     text-align: center;
+}
+.blog-inner-dtl img
+{
+    height: 280px;
+    width: 100%;
+    object-fit: cover;
 }

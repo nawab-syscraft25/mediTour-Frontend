@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TreatmentService } from '../../core/services/treatment.service';
-import { DoctorService } from '../../core/services/doctors.service';
+import { DoctorService, Doctor } from '../../core/services/doctors.service';
 import { Treatment } from '../../shared/interfaces/treatment.interface';
-import { Doctor } from '../../core/services/doctors.service';
 import { BannerService, Banner } from 'src/app/core/services/banner.service';
 
 @Component({
@@ -41,7 +40,7 @@ export class HeroSection implements OnInit, OnDestroy {
   doctorSearchClicked = false;
 
   /** Custom dropdown state */
-  openDropdown: 'location' | 'treatment' | null = null;
+  openDropdown: 'location' | 'treatment' | 'doctorLocation' | 'specialization' | null = null;
 
   constructor(
     private treatmentService: TreatmentService,
@@ -59,7 +58,6 @@ export class HeroSection implements OnInit, OnDestroy {
     this.loadDoctorLocations();
     this.loadSpecializations();
 
-    /** 🔹 Close dropdown when clicking outside */
     document.addEventListener('click', this.handleOutsideClick.bind(this));
   }
 
@@ -70,7 +68,7 @@ export class HeroSection implements OnInit, OnDestroy {
   // --------------------------
   // 🔹 Dropdown Methods
   // --------------------------
-  toggleDropdown(type: 'location' | 'treatment') {
+  toggleDropdown(type: 'location' | 'treatment' | 'doctorLocation' | 'specialization') {
     this.openDropdown = this.openDropdown === type ? null : type;
   }
 
@@ -83,6 +81,18 @@ export class HeroSection implements OnInit, OnDestroy {
   selectTreatment(treatment: string, event: MouseEvent) {
     event.stopPropagation();
     this.selectedTreatment = treatment;
+    this.openDropdown = null;
+  }
+
+  selectDoctorLocation(loc: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.selectedDoctorLocation = loc;
+    this.openDropdown = null;
+  }
+
+  selectSpecialization(spec: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.selectedSpecialization = spec;
     this.openDropdown = null;
   }
 
@@ -154,7 +164,7 @@ export class HeroSection implements OnInit, OnDestroy {
       next: (locations) => (this.locations = locations),
       error: (error) => {
         console.error('Error fetching locations:', error);
-        this.locations = ['Indore', 'Bhopal', 'Delhi', 'Mumbai']; // fallback
+        this.locations = ['Indore', 'Bhopal', 'Delhi', 'Mumbai'];
       }
     });
   }
@@ -164,7 +174,7 @@ export class HeroSection implements OnInit, OnDestroy {
       next: (treatments) => (this.treatments = treatments),
       error: (error) => {
         console.error('Error fetching treatments:', error);
-        this.treatments = ['Cardiology', 'Neurology', 'Orthopedics', 'Cancer Treatment']; // fallback
+        this.treatments = ['Cardiology', 'Neurology', 'Orthopedics', 'Cancer Treatment'];
       }
     });
   }

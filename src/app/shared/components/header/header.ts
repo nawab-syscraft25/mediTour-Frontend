@@ -16,19 +16,27 @@ import { User } from 'src/app/shared/interfaces/api.interface';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isMenuOpen = false;
-  showSearchBox = false;
+  showMobileSearchBox = false;
+  showDesktopSearchBox = false;
   showUserDropdown = false;
 
   searchQuery: string = '';
+  mobileSearchQuery: string = '';
+  desktopSearchQuery: string = '';
   searchResults: any = null; // stores doctors, treatments, hospitals
+  mobileSearchResults: any = null;
+  desktopSearchResults: any = null;
   private searchSubject = new Subject<string>();
+  private mobileSearchSubject = new Subject<string>();
+  private desktopSearchSubject = new Subject<string>();
   private subscription = new Subscription();
 
   // Authentication state
   currentUser: User | null = null;
   isAuthenticated = false;
 
-  @ViewChild('searchContainer') searchContainer!: ElementRef;
+  @ViewChild('mobileSearchContainer') mobileSearchContainer!: ElementRef;
+  @ViewChild('desktopSearchContainer') desktopSearchContainer!: ElementRef;
 
   constructor(
     private treatmentService: TreatmentService,
@@ -47,8 +55,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Check initial authentication state
     this.isAuthenticated = this.authService.isAuthenticated();
 
-    // Debounce search input
-    const searchSub = this.searchSubject
+    // Debounce search input for mobile
+    const mobileSearchSub = this.mobileSearchSubject
       .pipe(
         debounceTime(400),
         distinctUntilChanged()
@@ -58,18 +66,42 @@ export class HeaderComponent implements OnInit, OnDestroy {
           this.treatmentService.searchAll(query, 10).subscribe({
             next: (data) => {
               // API returns { query, total_results, results: { doctors, treatments, hospitals } }
-              this.searchResults = data.results;
+              this.mobileSearchResults = data.results;
             },
             error: (err) => {
-              console.error('Search error:', err);
-              this.searchResults = null;
+              console.error('Mobile search error:', err);
+              this.mobileSearchResults = null;
             }
           });
         } else {
-          this.searchResults = null;
+          this.mobileSearchResults = null;
         }
       });
-    this.subscription.add(searchSub);
+    this.subscription.add(mobileSearchSub);
+
+    // Debounce search input for desktop
+    const desktopSearchSub = this.desktopSearchSubject
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      )
+      .subscribe((query) => {
+        if (query && query.length > 2) {
+          this.treatmentService.searchAll(query, 10).subscribe({
+            next: (data) => {
+              // API returns { query, total_results, results: { doctors, treatments, hospitals } }
+              this.desktopSearchResults = data.results;
+            },
+            error: (err) => {
+              console.error('Desktop search error:', err);
+              this.desktopSearchResults = null;
+            }
+          });
+        } else {
+          this.desktopSearchResults = null;
+        }
+      });
+    this.subscription.add(desktopSearchSub);
   }
 
   ngOnDestroy(): void {
@@ -80,10 +112,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+  toggleMobileSearchBox() {
+    this.showMobileSearchBox = !this.showMobileSearchBox;
+    this.mobileSearchResults = null;
+    this.mobileSearchQuery = '';
+  }
+
+  toggleDesktopSearchBox() {
+    this.showDesktopSearchBox = !this.showDesktopSearchBox;
+    this.desktopSearchResults = null;
+    this.desktopSearchQuery = '';
+  }
+
+  // Legacy method for backward compatibility
   toggleSearchBox() {
-    this.showSearchBox = !this.showSearchBox;
-    this.searchResults = null;
-    this.searchQuery = '';
+    this.toggleDesktopSearchBox();
   }
 
   toggleUserDropdown() {
@@ -101,31 +144,64 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard']);
   }
 
+  onMobileSearchChange(query: string) {
+    this.mobileSearchSubject.next(query);
+  }
+
+  onDesktopSearchChange(query: string) {
+    this.desktopSearchSubject.next(query);
+  }
+
+  // Legacy method for backward compatibility
   onSearchChange(query: string) {
-    this.searchSubject.next(query);
+    this.onDesktopSearchChange(query);
   }
 
   toSlug(name: string): string {
     return name.toLowerCase().replace(/\s+/g, '-');
   }
 
-  onSearchSubmit(): void {
-    if (this.searchQuery && this.searchQuery.trim().length > 0) {
+  onMobileSearchSubmit(): void {
+    if (this.mobileSearchQuery && this.mobileSearchQuery.trim().length > 0) {
       this.router.navigate(['/search'], { 
-        queryParams: { q: this.searchQuery.trim() } 
+        queryParams: { q: this.mobileSearchQuery.trim() } 
       });
-      this.showSearchBox = false;
-      this.searchResults = null;
+      this.showMobileSearchBox = false;
+      this.mobileSearchResults = null;
     }
   }
 
-  navigateToSearchResults(): void {
-    this.onSearchSubmit();
+  onDesktopSearchSubmit(): void {
+    if (this.desktopSearchQuery && this.desktopSearchQuery.trim().length > 0) {
+      this.router.navigate(['/search'], { 
+        queryParams: { q: this.desktopSearchQuery.trim() } 
+      });
+      this.showDesktopSearchBox = false;
+      this.desktopSearchResults = null;
+    }
   }
 
-  selectSearchResult(type: string, id: number): void {
-    this.showSearchBox = false;
-    this.searchResults = null;
+  // Legacy method for backward compatibility
+  onSearchSubmit(): void {
+    this.onDesktopSearchSubmit();
+  }
+
+  navigateToMobileSearchResults(): void {
+    this.onMobileSearchSubmit();
+  }
+
+  navigateToDesktopSearchResults(): void {
+    this.onDesktopSearchSubmit();
+  }
+
+  // Legacy method for backward compatibility
+  navigateToSearchResults(): void {
+    this.onDesktopSearchSubmit();
+  }
+
+  selectMobileSearchResult(type: string, id: number): void {
+    this.showMobileSearchBox = false;
+    this.mobileSearchResults = null;
     
     switch (type) {
       case 'doctor':
@@ -140,18 +216,50 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  selectDesktopSearchResult(type: string, id: number): void {
+    this.showDesktopSearchBox = false;
+    this.desktopSearchResults = null;
+    
+    switch (type) {
+      case 'doctor':
+        this.router.navigate(['/doctor-details', id]);
+        break;
+      case 'treatment':
+        this.router.navigate(['/treatment-detail', id]);
+        break;
+      case 'hospital':
+        this.router.navigate(['/hospital-detail', id]);
+        break;
+    }
+  }
+
+  // Legacy method for backward compatibility
+  selectSearchResult(type: string, id: number): void {
+    this.selectDesktopSearchResult(type, id);
+  }
+
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: Event) {
     const target = event.target as HTMLElement;
     
-    // Handle search box click outside
+    // Handle mobile search box click outside
     if (
-      this.showSearchBox &&
-      this.searchContainer &&
-      !this.searchContainer.nativeElement.contains(target)
+      this.showMobileSearchBox &&
+      this.mobileSearchContainer &&
+      !this.mobileSearchContainer.nativeElement.contains(target)
     ) {
-      this.showSearchBox = false;
-      this.searchResults = null;
+      this.showMobileSearchBox = false;
+      this.mobileSearchResults = null;
+    }
+
+    // Handle desktop search box click outside
+    if (
+      this.showDesktopSearchBox &&
+      this.desktopSearchContainer &&
+      !this.desktopSearchContainer.nativeElement.contains(target)
+    ) {
+      this.showDesktopSearchBox = false;
+      this.desktopSearchResults = null;
     }
 
     // Handle user dropdown click outside

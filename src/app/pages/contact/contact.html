@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <select class="form-select" formControlName="department">
                                     <option value="">Select Treatment Type</option>
                                     <option *ngFor="let type of treatmentTypes" [value]="type">
@@ -130,7 +130,27 @@
                                     *ngIf="contactForm.get('department')?.touched && contactForm.get('department')?.invalid">
                                     Treatment type is required
                                 </div>
-                            </div>
+                            </div> -->
+                            <div class="mb-3">
+                                <select
+                                  class="form-select"
+                                  formControlName="department"
+                                  [class.placeholder]="!contactForm.get('department')?.value"
+                                >
+                                  <option value="">Select Treatment Type</option>
+                                  <option *ngFor="let type of treatmentTypes" [value]="type">
+                                    {{ type }}
+                                  </option>
+                                </select>
+                              
+                                <div
+                                  class="text-danger"
+                                  *ngIf="contactForm.get('department')?.touched && contactForm.get('department')?.invalid"
+                                >
+                                  Treatment type is required
+                                </div>
+                              </div>
+                              
                             <div class="mb-3">
                                 <textarea class="form-control" rows="3" placeholder="Enter Your Query"
                                     formControlName="query"></textarea>

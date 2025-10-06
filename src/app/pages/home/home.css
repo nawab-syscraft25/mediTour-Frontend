@@ -14,3 +14,16 @@
   font-size: 18px;
   color: #F66F4D !important;
 }
+@media screen and (max-width: 767px)
+{
+  .we-offer .offer-box img
+  {
+    max-height: 270px;
+    width: 100%;
+    object-fit: cover;
+  }
+  .partner-logo
+  {
+    margin-bottom: 15px;
+  }
+}

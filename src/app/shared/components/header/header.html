@@ -3,11 +3,81 @@
     <a class="navbar-brand" routerLink="/">
       <span class="text-primary-custom">Logo</span>
     </a>
+    <div class="mob-head d-flex align-items-center">
+      <div class="search-box-mob" #mobileSearchContainer>
+        <div class="head-searchbar">
+          <!-- Toggle Button -->
+          <a class="nav-link header-search" (click)="toggleMobileSearchBox()" id="show-mobile-search-box">
+            <i class="fa fa-search flip-icon"></i>
+          </a>
+          <!-- Search Box -->
+          <form class="navbar-form hidden-search-box" *ngIf="showMobileSearchBox" role="search"
+            (submit)="onMobileSearchSubmit(); $event.preventDefault()">
+            <div class="traingle"></div>
+            <div class="input-group add-on">
+              <input class="form-control addon-text-box" placeholder="Search Doctors, Treatments and Hospitals"
+                name="s" type="text" [(ngModel)]="mobileSearchQuery" (ngModelChange)="onMobileSearchChange($event)" 
+                (keyup.enter)="onMobileSearchSubmit()" />
+              <button type="submit" class="input-group-btn addon-btn" (click)="onMobileSearchSubmit()">
+                <i class="fa fa-search flip-icon"></i>
+              </button>
+            </div>
 
-    <button class="navbar-toggler" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen"
-      aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+            <!-- Search Results Dropdown -->
+            <div class="search-results" *ngIf="mobileSearchResults">
+
+              <!-- Doctors -->
+              <div *ngIf="mobileSearchResults.doctors?.count">
+                <h6>Doctors</h6>
+                <div *ngFor="let doctor of mobileSearchResults.doctors.data" class="result-item" 
+                    (click)="selectMobileSearchResult('doctor', doctor.id)">
+                  <!-- <img *ngIf="doctor.profile_photo" [src]="doctor.profile_photo" alt="{{ doctor.name }}" width="30"
+                    height="30" /> -->
+                  <span>{{ doctor.name }} ({{ doctor.specialization }})</span>
+                </div>
+              </div>
+
+              <!-- Treatments -->
+              <div *ngIf="mobileSearchResults.treatments?.count">
+                <h6>Treatments</h6>
+                <div *ngFor="let treatment of mobileSearchResults.treatments.data" class="result-item"
+                    (click)="selectMobileSearchResult('treatment', treatment.id)">
+                  <span>{{ treatment.name }}</span>
+                  <small class="text-muted" *ngIf="treatment.location">- {{ treatment.location }}</small>
+                </div>
+              </div>
+
+              <!-- Hospitals -->
+              <div *ngIf="mobileSearchResults.hospitals?.count">
+                <h6>Hospitals</h6>
+                <div *ngFor="let hospital of mobileSearchResults.hospitals.data" class="result-item"
+                    (click)="selectMobileSearchResult('hospital', hospital.id)">
+                  <span>{{ hospital.name }}</span>
+                </div>
+              </div>
+
+              <!-- View All Results -->
+              <div *ngIf="mobileSearchResults.doctors?.count || mobileSearchResults.treatments?.count || mobileSearchResults.hospitals?.count" 
+                  class="view-all-results">
+                <button class="btn btn-primary btn-sm w-100" (click)="navigateToMobileSearchResults()">
+                  View All Results
+                </button>
+              </div>
+
+              <!-- No Results -->
+              <div
+                *ngIf="!mobileSearchResults.doctors?.count && !mobileSearchResults.treatments?.count && !mobileSearchResults.hospitals?.count">
+                <p class="text-muted m-2">No results found</p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
 
     <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
       <ul class="navbar-nav ms-auto">
@@ -51,34 +121,33 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact Us</a>
         </li>
-        <li class="nav-item" #searchContainer>
+        <li class="nav-item search-box" #desktopSearchContainer>
           <div class="head-searchbar">
             <!-- Toggle Button -->
-            <a class="nav-link header-search" (click)="toggleSearchBox()" id="show-search-box">
+            <a class="nav-link header-search" (click)="toggleDesktopSearchBox()" id="show-desktop-search-box">
               <i class="fa fa-search flip-icon"></i>
             </a>
-
             <!-- Search Box -->
-            <form class="navbar-form hidden-search-box" *ngIf="showSearchBox" role="search"
-              (submit)="onSearchSubmit(); $event.preventDefault()">
+            <form class="navbar-form hidden-search-box" *ngIf="showDesktopSearchBox" role="search"
+              (submit)="onDesktopSearchSubmit(); $event.preventDefault()">
               <div class="traingle"></div>
               <div class="input-group add-on">
                 <input class="form-control addon-text-box" placeholder="Search Doctors, Treatments and Hospitals"
-                  name="s" type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)" 
-                  (keyup.enter)="onSearchSubmit()" />
-                <button type="submit" class="input-group-btn addon-btn" (click)="onSearchSubmit()">
+                  name="s" type="text" [(ngModel)]="desktopSearchQuery" (ngModelChange)="onDesktopSearchChange($event)" 
+                  (keyup.enter)="onDesktopSearchSubmit()" />
+                <button type="submit" class="input-group-btn addon-btn" (click)="onDesktopSearchSubmit()">
                   <i class="fa fa-search flip-icon"></i>
                 </button>
               </div>
 
               <!-- Search Results Dropdown -->
-              <div class="search-results" *ngIf="searchResults">
+              <div class="search-results" *ngIf="desktopSearchResults">
 
                 <!-- Doctors -->
-                <div *ngIf="searchResults.doctors?.count">
+                <div *ngIf="desktopSearchResults.doctors?.count">
                   <h6>Doctors</h6>
-                  <div *ngFor="let doctor of searchResults.doctors.data" class="result-item" 
-                       (click)="selectSearchResult('doctor', doctor.id)">
+                  <div *ngFor="let doctor of desktopSearchResults.doctors.data" class="result-item" 
+                      (click)="selectDesktopSearchResult('doctor', doctor.id)">
                     <!-- <img *ngIf="doctor.profile_photo" [src]="doctor.profile_photo" alt="{{ doctor.name }}" width="30"
                       height="30" /> -->
                     <span>{{ doctor.name }} ({{ doctor.specialization }})</span>
@@ -86,35 +155,35 @@
                 </div>
 
                 <!-- Treatments -->
-                <div *ngIf="searchResults.treatments?.count">
+                <div *ngIf="desktopSearchResults.treatments?.count">
                   <h6>Treatments</h6>
-                  <div *ngFor="let treatment of searchResults.treatments.data" class="result-item"
-                       (click)="selectSearchResult('treatment', treatment.id)">
+                  <div *ngFor="let treatment of desktopSearchResults.treatments.data" class="result-item"
+                      (click)="selectDesktopSearchResult('treatment', treatment.id)">
                     <span>{{ treatment.name }}</span>
                     <small class="text-muted" *ngIf="treatment.location">- {{ treatment.location }}</small>
                   </div>
                 </div>
 
                 <!-- Hospitals -->
-                <div *ngIf="searchResults.hospitals?.count">
+                <div *ngIf="desktopSearchResults.hospitals?.count">
                   <h6>Hospitals</h6>
-                  <div *ngFor="let hospital of searchResults.hospitals.data" class="result-item"
-                       (click)="selectSearchResult('hospital', hospital.id)">
+                  <div *ngFor="let hospital of desktopSearchResults.hospitals.data" class="result-item"
+                      (click)="selectDesktopSearchResult('hospital', hospital.id)">
                     <span>{{ hospital.name }}</span>
                   </div>
                 </div>
 
                 <!-- View All Results -->
-                <div *ngIf="searchResults.doctors?.count || searchResults.treatments?.count || searchResults.hospitals?.count" 
-                     class="view-all-results">
-                  <button class="btn btn-primary btn-sm w-100" (click)="navigateToSearchResults()">
+                <div *ngIf="desktopSearchResults.doctors?.count || desktopSearchResults.treatments?.count || desktopSearchResults.hospitals?.count" 
+                    class="view-all-results">
+                  <button class="btn btn-primary btn-sm w-100" (click)="navigateToDesktopSearchResults()">
                     View All Results
                   </button>
                 </div>
 
                 <!-- No Results -->
                 <div
-                  *ngIf="!searchResults.doctors?.count && !searchResults.treatments?.count && !searchResults.hospitals?.count">
+                  *ngIf="!desktopSearchResults.doctors?.count && !desktopSearchResults.treatments?.count && !desktopSearchResults.hospitals?.count">
                   <p class="text-muted m-2">No results found</p>
                 </div>
               </div>
@@ -132,10 +201,10 @@
 
         <!-- User Profile Dropdown (when authenticated) -->
         <li class="nav-item dropdown user-dropdown-container" *ngIf="isAuthenticated">
-          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" 
+          <a class="nav-link dropdown-toggle d-flex align-items-center btn-default user-btn" href="#" role="button" 
              (click)="toggleUserDropdown()" [class.show]="showUserDropdown">
             <div class="user-avatar me-2">
-              <i class="fa-solid fa-circle-user fa-lg text-primary"></i>
+              <i class="fa-solid fa-circle-user fa-lg"></i>
             </div>
             <span class="user-name d-none d-md-inline">{{ currentUser?.name || 'User' }}</span>
           </a>
@@ -150,11 +219,11 @@
               </div>
             </li>
             <li><hr class="dropdown-divider"></li>
-            <li>
+            <!-- <li>
               <a class="dropdown-item" (click)="navigateToProfile()">
                 <i class="fa-solid fa-user me-2"></i>Profile & Dashboard
               </a>
-            </li>
+            </li> -->
             <li>
               <a class="dropdown-item" href="#" *ngIf="currentUser?.is_email_verified">
                 <i class="fa-solid fa-check-circle me-2 text-success"></i>Email Verified

@@ -3,14 +3,15 @@
         <div class="col-lg-12">
             <div class="hero-main">
                 <div class="hero-image">
-                    <img  [src]="'http://165.22.223.163:8000' + banner?.image_url" [alt]="banner?.title || 'Hero Image'" class="img-fluid w-100 main-bnr" />
+                    <img [src]="'http://165.22.223.163:8000' + banner?.image_url" [alt]="banner?.title || 'Hero Image'"
+                        class="img-fluid w-100 main-bnr" />
                 </div>
                 <div class="hero-content-wrapper">
                     <div class="hero-content">
                         <!-- <h2 class="display-4 text-white text-center">LOREM IPSUM IS SIMPLY <br> DUMMY TEXT</h2> -->
                         <h2 class="display-4 text-white text-center">
                             {{ banner?.title || 'Medi Tourist' }}
-                          </h2>
+                        </h2>
                         <div class="banner-filter">
                             <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
                                 <li class="nav-item" role="presentation">
@@ -46,51 +47,51 @@
                                         <div class="filter-main d-flex">
                                             <!-- Location Filter -->
                                             <!-- 🔹 Location Filter -->
-<div class="filter-item">
-    <div class="filter-label">
-      <img [src]="'assets/images/location.svg'" alt="Location Icon">
-      <span>Location</span>
-    </div>
-  
-    <div class="custom-dropdown" (click)="toggleDropdown('location')">
-      <div class="selected-option">
-        {{ selectedLocation || 'Where you want to get treated' }}
-        <i class="fa-solid fa-caret-down"></i>
-      </div>
-  
-      <ul *ngIf="openDropdown === 'location'" class="dropdown-options">
-        <li *ngFor="let loc of locations"
-            (click)="selectLocation(loc, $event)"
-            [class.active]="loc === selectedLocation">
-          {{ loc }}
-        </li>
-      </ul>
-    </div>
-  </div>
-  
-  <!-- 🔹 Treatment Filter -->
-  <div class="filter-item">
-    <div class="filter-label">
-      <img [src]="'assets/images/treatments.svg'" alt="Treatment Icon">
-      <span>Treatments</span>
-    </div>
-  
-    <div class="custom-dropdown" (click)="toggleDropdown('treatment')">
-      <div class="selected-option">
-        {{ selectedTreatment || 'All Treatments' }}
-        <i class="fa-solid fa-caret-down"></i>
-      </div>
-  
-      <ul *ngIf="openDropdown === 'treatment'" class="dropdown-options">
-        <li *ngFor="let t of treatments"
-            (click)="selectTreatment(t, $event)"
-            [class.active]="t === selectedTreatment">
-          {{ t }}
-        </li>
-      </ul>
-    </div>
-  </div>
-  
+                                            <div class="filter-item">
+                                                <div class="filter-label">
+                                                    <img [src]="'assets/images/location.svg'" alt="Location Icon">
+                                                    <span>Location</span>
+                                                </div>
+
+                                                <div class="custom-dropdown" (click)="toggleDropdown('location')">
+                                                    <div class="selected-option">
+                                                        {{ selectedLocation || 'Where you want to get treated' }}
+                                                        <i class="fa-solid fa-caret-down"></i>
+                                                    </div>
+
+                                                    <ul *ngIf="openDropdown === 'location'" class="dropdown-options">
+                                                        <li *ngFor="let loc of locations"
+                                                            (click)="selectLocation(loc, $event)"
+                                                            [class.active]="loc === selectedLocation">
+                                                            {{ loc }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <!-- 🔹 Treatment Filter -->
+                                            <div class="filter-item">
+                                                <div class="filter-label">
+                                                    <img [src]="'assets/images/treatments.svg'" alt="Treatment Icon">
+                                                    <span>Treatments</span>
+                                                </div>
+
+                                                <div class="custom-dropdown" (click)="toggleDropdown('treatment')">
+                                                    <div class="selected-option">
+                                                        {{ selectedTreatment || 'All Treatments' }}
+                                                        <i class="fa-solid fa-caret-down"></i>
+                                                    </div>
+
+                                                    <ul *ngIf="openDropdown === 'treatment'" class="dropdown-options">
+                                                        <li *ngFor="let t of treatments"
+                                                            (click)="selectTreatment(t, $event)"
+                                                            [class.active]="t === selectedTreatment">
+                                                            {{ t }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <!-- Search Button -->
                                         <button class="btn-default filter-btn" (click)="search()"
@@ -116,35 +117,48 @@
                                     <div class="modern-filter-container">
                                         <div class="filter-main d-flex">
                                             <!-- Location Filter -->
-                                            <div class="filter-item">
+                                            <!-- Doctor Location Filter -->
+                                            <div class="filter-item custom-dropdown"
+                                                (click)="toggleDropdown('doctorLocation')">
                                                 <div class="filter-label">
                                                     <img [src]="'assets/images/location.svg'">
                                                     <span>Location</span>
                                                 </div>
-                                                <select [(ngModel)]="selectedDoctorLocation" class="filter-select">
-                                                    <option value="" disabled selected>Select doctor location</option>
-                                                    <option *ngFor="let loc of doctorLocations; let i = index"
-                                                        [value]="loc">
+
+                                                <div class="selected-option">
+                                                    {{ selectedDoctorLocation || 'Select doctor location' }}
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                </div>
+
+                                                <ul class="dropdown-options" *ngIf="openDropdown === 'doctorLocation'">
+                                                    <li *ngFor="let loc of doctorLocations"
+                                                        (click)="selectDoctorLocation(loc, $event)">
                                                         {{ loc }}
-                                                    </option>
-                                                </select>
-                                                <i class="fa-solid fa-caret-down"></i>
+                                                    </li>
+                                                </ul>
                                             </div>
+
                                             <!-- Specialization Filter -->
-                                            <div class="filter-item">
+                                            <div class="filter-item custom-dropdown"
+                                                (click)="toggleDropdown('specialization')">
                                                 <div class="filter-label">
                                                     <img [src]="'assets/images/treatments.svg'">
                                                     <span>Specialization</span>
                                                 </div>
-                                                <select [(ngModel)]="selectedSpecialization" class="filter-select">
-                                                    <option value="" disabled selected>All Specializations</option>
-                                                    <option *ngFor="let spec of specializations; let i = index"
-                                                        [value]="spec">
+
+                                                <div class="selected-option">
+                                                    {{ selectedSpecialization || 'All Specializations' }}
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                </div>
+
+                                                <ul class="dropdown-options" *ngIf="openDropdown === 'specialization'">
+                                                    <li *ngFor="let spec of specializations"
+                                                        (click)="selectSpecialization(spec, $event)">
                                                         {{ spec }}
-                                                    </option>
-                                                </select>
-                                                <i class="fa-solid fa-caret-down"></i>
+                                                    </li>
+                                                </ul>
                                             </div>
+
                                         </div>
                                         <!-- Search Button -->
                                         <button class="btn-default filter-btn" (click)="searchDoctors()"

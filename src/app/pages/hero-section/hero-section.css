@@ -7,7 +7,7 @@
     font-weight: 600;
     color: var(--secondary-color);
     margin-bottom: 1rem;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     font-family: 'Raleway';
     font-weight: 600;
     text-transform: uppercase;
@@ -32,7 +32,8 @@
     background-color: transparent;
     color: #fff;
     border: none;
-    padding: 2px 20px;
+    padding: 2px 25px;
+    font-size: 15px;
     font-family: 'Lexend-Regular';
 }
 
@@ -203,18 +204,6 @@
     display: inline-block;
     margin-right: 20px;
   }
-  
-  .filter-label {
-    display: flex;
-    align-items: center;
-  }
-  
-  .filter-label img {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-  }
-  
   /* Custom dropdown box */
   .custom-dropdown {
     position: relative;
@@ -224,15 +213,13 @@
   }
   
   .selected-option {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px 15px;
-    background-color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     transition: 0.3s;
+    white-space: nowrap;
+    color: #8A8D94;
+    font-family: 'Lexend-Regular';
   }
   
   .selected-option:hover {
@@ -242,15 +229,16 @@
   /* Dropdown list (options box) */
   .dropdown-options {
     position: absolute;
-    top: 105%;
+    top: 135%;
     left: 0;
     right: 0;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    max-height: 220px;
+    max-height: 230px;
     overflow-y: auto;
+    padding-left: 0px;
     z-index: 1000;
     animation: fadeIn 0.2s ease-in-out;
   }
@@ -258,16 +246,17 @@
   .dropdown-options li {
     padding: 10px 15px;
     cursor: pointer;
+    list-style: none;
     transition: background 0.2s, color 0.2s;
   }
   
   .dropdown-options li:hover {
-    background: #f0f8ff;
-    color: #007bff;
+    background: #0e99ff;
+    color: #fff;
   }
   
   .dropdown-options li.active {
-    background: #007bff;
+    background: #0e99ff;
     color: #fff;
   }
   
@@ -344,6 +333,7 @@
     .hero-main img.main-bnr
     {
         border-radius: 15px;
+        min-height: 170px !important;
     }
     .hero-content ul.nav-tabs button.nav-link
     {

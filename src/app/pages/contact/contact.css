@@ -28,3 +28,13 @@
 {
     font-size: 12px;
 }
+.form-select {
+    color: #000; /* normal color for selected option text */
+  }
+  
+  .form-select.placeholder {
+    color: #AEAEAE;
+    opacity: 1;
+    background-color: transparent;
+  }
+  

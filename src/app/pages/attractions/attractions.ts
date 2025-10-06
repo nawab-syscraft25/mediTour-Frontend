@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
@@ -49,6 +49,8 @@ export interface Blog {
 export class Attractions implements OnInit {
   offers: Offer[] = [];
   blogs: Blog[] = [];
+  recentPosts: Blog[] = [];
+  recentOffers: Offer[] = [];
   loading = true;
   offersLoaded = false;
   blogsLoaded = false;
@@ -92,6 +94,7 @@ export class Attractions implements OnInit {
             this.offers = [];
           }
           
+          this.extractRecentOffers();
           this.offersLoaded = true;
           this.checkLoadingComplete();
           console.log('✅ Offers loaded successfully:', this.offers.length, 'items');
@@ -120,6 +123,7 @@ export class Attractions implements OnInit {
         next: (data) => {
           console.log('📦 Alternative API response:', data);
           this.offers = Array.isArray(data) ? data : (data?.data || []);
+          this.extractRecentOffers();
           this.offersLoaded = true;
           this.checkLoadingComplete();
           console.log('✅ Offers loaded from alternative endpoint:', this.offers.length, 'items');
@@ -184,6 +188,7 @@ export class Attractions implements OnInit {
             }
           ];
           
+          this.extractRecentOffers();
           this.offersLoaded = true;
           this.checkLoadingComplete();
         }
@@ -199,6 +204,7 @@ export class Attractions implements OnInit {
         next: (data) => {
           console.log('📰 Raw blog response:', data);
           this.blogs = Array.isArray(data) ? data : [];
+          this.extractRecentPosts();
           this.blogsLoaded = true;
           this.checkLoadingComplete();
           console.log('✅ Blogs loaded successfully:', this.blogs.length, 'items');
@@ -265,5 +271,29 @@ export class Attractions implements OnInit {
       day: 'numeric', 
       year: 'numeric' 
     });
+  }
+
+  // Extract recent posts (latest 4 blogs)
+  private extractRecentPosts(): void {
+    // Sort blogs by published_at in descending order and take first 4
+    this.recentPosts = [...this.blogs]
+      .sort((a, b) => {
+        const dateA = new Date(a.published_at);
+        const dateB = new Date(b.published_at);
+        return dateB.getTime() - dateA.getTime();
+      })
+      .slice(0, 4);
+  }
+
+  // Extract recent offers (latest 4 offers)
+  private extractRecentOffers(): void {
+    // Sort offers by created_at in descending order and take first 4
+    this.recentOffers = [...this.offers]
+      .sort((a, b) => {
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
+        return dateB.getTime() - dateA.getTime();
+      })
+      .slice(0, 4);
   }
 }

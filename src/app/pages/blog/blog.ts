@@ -45,6 +45,7 @@ interface Blog {
 export class BlogComponent implements OnInit {
   blogs: Blog[] = [];
   categories: string[] = [];
+  recentPosts: Blog[] = [];
   baseUrl = 'http://165.22.223.163:8000'; // API base URL
   banner: Banner | null = null;           // 🔹 Blog banner
 
@@ -68,6 +69,7 @@ export class BlogComponent implements OnInit {
       .subscribe((data) => {
         this.blogs = data || [];
         this.extractCategories();
+        this.extractRecentPosts();
       });
   }
 
@@ -84,6 +86,18 @@ export class BlogComponent implements OnInit {
     
     // Get unique categories and sort them
     this.categories = [...new Set(allCategories)].sort();
+  }
+
+  // Extract recent posts (latest 4 blogs)
+  private extractRecentPosts(): void {
+    // Sort blogs by published_at or created_at in descending order and take first 4
+    this.recentPosts = this.blogs
+      .sort((a, b) => {
+        const dateA = new Date(a.published_at || a.created_at);
+        const dateB = new Date(b.published_at || b.created_at);
+        return dateB.getTime() - dateA.getTime();
+      })
+      .slice(0, 4);
   }
 
   // Method to filter blogs by category (for future use)

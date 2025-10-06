@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule, DatePipe, NgFor } from '@angular/common';
 import { BannerService, Banner } from 'src/app/core/services/banner.service'; // ✅ import BannerService
 
@@ -51,7 +52,11 @@ export class BlogComponent implements OnInit {
   baseUrl = 'http://165.22.223.163:8000'; // API base URL
   banner: Banner | null = null;           // 🔹 Blog banner
 
-  constructor(private http: HttpClient, private bannerService: BannerService) {}
+  constructor(
+    private http: HttpClient, 
+    private bannerService: BannerService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     // 🔹 Load Blog Banner
@@ -73,6 +78,13 @@ export class BlogComponent implements OnInit {
         this.blogs = [...this.allBlogs]; // Create a copy for display
         this.extractCategories();
         this.extractRecentPosts();
+        
+        // Check for category filter from query parameters
+        this.route.queryParams.subscribe(params => {
+          if (params['category']) {
+            this.filterByCategory(params['category']);
+          }
+        });
       });
   }
 

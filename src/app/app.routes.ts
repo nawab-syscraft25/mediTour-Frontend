@@ -82,6 +82,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/attractions/attractions').then(m => m.Attractions)
   },
   {
+    path: 'not-found',
+    loadComponent: () => import('./pages/not-found/not-found').then(m => m.NotFound)
+  },
+  {
     path: 'doctor-details/:id',
     loadComponent: () => import('./pages/doctor-details/doctor-details').then(m => m.DoctorDetails)
   },

@@ -120,6 +120,18 @@
 {
     margin-top: 20px;
 }
+.partner-logo
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.user-card-rating i
+{
+  font-size: 18px;
+  color: #F66F4D !important;
+}
 @media only screen and (min-width: 768px) and (max-width: 1024px)
 {
     .about-feture-info
@@ -169,5 +181,9 @@
     .about-feture-dtl
     {
         margin: 10px 0px;
+    }
+    .partner-logo
+    {
+        margin-bottom: 15px;
     }
 }

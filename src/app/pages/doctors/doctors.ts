@@ -1,9 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { DoctorService, Doctor } from 'src/app/core/services/doctors.service';
 import { HospitalService, Hospital } from 'src/app/core/services/hospital.service';
-import { BannerService, Banner } from 'src/app/core/services/banner.service'; // ✅ import banner service
+import { BannerService, Banner } from 'src/app/core/services/banner.service';
 
 @Component({
   selector: 'app-doctors',
@@ -17,29 +17,32 @@ export class Doctors implements OnInit {
   hospitalCache: { [id: number]: string } = {};
   loading = true;
 
-  // 🔹 new variables
+  // Filter variables
   locations: string[] = [];
   specializations: string[] = [];
   selectedLocation: string = '';
   selectedSpecialization: string = '';
 
-  // 🔹 banner
+  // Dropdown open/close states
+  isLocationOpen = false;
+  isSpecializationOpen = false;
+
+  // Banner
   banner: Banner | null = null;
 
   constructor(
     private doctorService: DoctorService,
     private hospitalService: HospitalService,
-    private bannerService: BannerService, // ✅ banner service
+    private bannerService: BannerService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.loadBanner();    // 🔹 load Doctors banner
-    this.loadFilters();   // fetch dropdown data
-    this.loadDoctors();   // fetch doctor list
+    this.loadBanner();
+    this.loadFilters();
+    this.loadDoctors();
   }
 
-  // 🔹 fetch dynamic banner
   loadBanner() {
     this.bannerService.getBannerByTitle('Doctors').subscribe({
       next: (banner) => {
@@ -53,7 +56,6 @@ export class Doctors implements OnInit {
     });
   }
 
-  // 🔹 fetch dynamic dropdown data
   loadFilters() {
     this.doctorService.getLocations().subscribe({
       next: (data) => this.locations = data || [],
@@ -66,7 +68,6 @@ export class Doctors implements OnInit {
     });
   }
 
-  // 🔹 fetch doctors (with filters)
   loadDoctors() {
     this.loading = true;
 
@@ -74,17 +75,14 @@ export class Doctors implements OnInit {
       next: (data: Doctor[]) => {
         let doctorsList = data;
 
-        // filter by specialization if selected
         if (this.selectedSpecialization) {
           doctorsList = doctorsList.filter(d =>
             d.specialization?.toLowerCase() === this.selectedSpecialization.toLowerCase()
           );
         }
 
-        // sort by rating
         this.doctors = doctorsList.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
 
-        // fetch hospital names
         const uniqueHospitalIds = [...new Set(this.doctors.map(doc => doc.hospital_id))];
         if (uniqueHospitalIds.length === 0) {
           this.loading = false;
@@ -143,7 +141,41 @@ export class Doctors implements OnInit {
     });
   }
 
-  // 🔹 triggered when dropdown changes
+  // Toggle dropdown methods
+  toggleLocationDropdown(): void {
+    this.isLocationOpen = !this.isLocationOpen;
+    this.isSpecializationOpen = false;
+  }
+
+  toggleSpecializationDropdown(): void {
+    this.isSpecializationOpen = !this.isSpecializationOpen;
+    this.isLocationOpen = false;
+  }
+
+  // Select methods
+  selectLocation(loc: string): void {
+    this.selectedLocation = loc;
+    this.isLocationOpen = false;
+    this.onFilterChange();
+  }
+
+  selectSpecialization(spec: string): void {
+    this.selectedSpecialization = spec;
+    this.isSpecializationOpen = false;
+    this.onFilterChange();
+  }
+
+  // Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  clickout(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.custom-select-wrapper')) {
+      this.isLocationOpen = false;
+      this.isSpecializationOpen = false;
+    }
+  }
+
+  // Original function - unchanged
   onFilterChange() {
     this.loadDoctors();
   }

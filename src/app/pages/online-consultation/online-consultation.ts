@@ -44,6 +44,14 @@ export class OnlineConsultation implements OnInit {
   // ✅ Banner
   banner: Banner | null = null;
 
+  // Filter properties
+  locations: string[] = [];
+  specializations: string[] = [];
+  selectedLocation = '';
+  selectedSpecialization = '';
+  isLocationOpen = false;
+  isSpecializationOpen = false;
+
   // Form
   bookingForm: FormGroup;
   isSubmitting = false;
@@ -108,6 +116,9 @@ export class OnlineConsultation implements OnInit {
         console.error('❌ Error loading banner:', err);
       }
     });
+
+    // 🔹 Load filter data
+    this.loadFilterData();
 
     // 🔹 Load doctors
     this.loadDoctors();
@@ -290,5 +301,123 @@ export class OnlineConsultation implements OnInit {
       if (field.errors['minlength']) return `${fieldName.replace('_', ' ')} must be at least ${field.errors['minlength'].requiredLength} characters`;
     }
     return '';
+  }
+
+  // Filter Methods
+  private loadFilterData(): void {
+    // Load locations
+    this.doctorService.getLocations().subscribe({
+      next: (locations) => {
+        this.locations = locations;
+      },
+      error: (err) => console.error('Error loading locations:', err)
+    });
+
+    // Load specializations
+    this.doctorService.getSpecializations().subscribe({
+      next: (specializations) => {
+        this.specializations = specializations;
+      },
+      error: (err) => console.error('Error loading specializations:', err)
+    });
+  }
+
+  // Location dropdown methods
+  toggleLocationDropdown(): void {
+    this.isLocationOpen = !this.isLocationOpen;
+    if (this.isLocationOpen) {
+      this.isSpecializationOpen = false;
+    }
+  }
+
+  selectLocation(location: string): void {
+    this.selectedLocation = location;
+    this.isLocationOpen = false;
+    this.filterDoctors();
+  }
+
+  // Specialization dropdown methods
+  toggleSpecializationDropdown(): void {
+    this.isSpecializationOpen = !this.isSpecializationOpen;
+    if (this.isSpecializationOpen) {
+      this.isLocationOpen = false;
+    }
+  }
+
+  selectSpecialization(specialization: string): void {
+    this.selectedSpecialization = specialization;
+    this.isSpecializationOpen = false;
+    this.filterDoctors();
+  }
+
+  // Filter doctors based on selected criteria
+  private filterDoctors(): void {
+    this.loading = true;
+    this.doctorService.searchDoctors(0, 100, '', this.selectedLocation).subscribe({
+      next: (data: Doctor[]) => {
+        let filteredDoctors = data;
+
+        // Filter by specialization if selected
+        if (this.selectedSpecialization) {
+          filteredDoctors = data.filter(doctor => 
+            doctor.specialization?.toLowerCase().includes(this.selectedSpecialization.toLowerCase())
+          );
+        }
+
+        // Sort and process doctors
+        this.doctors = filteredDoctors.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        this.loadHospitalNamesForDoctors();
+      },
+      error: (err) => {
+        console.error('Error filtering doctors:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  // Load hospital names for doctors
+  private loadHospitalNamesForDoctors(): void {
+    const uniqueHospitalIds = [...new Set(this.doctors.map(doc => doc.hospital_id))];
+    let hospitalRequestsCompleted = 0;
+
+    const checkAllHospitalsLoaded = () => {
+      hospitalRequestsCompleted++;
+      if (hospitalRequestsCompleted >= uniqueHospitalIds.length) {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    };
+
+    uniqueHospitalIds.forEach((hospitalId) => {
+      if (this.hospitalCache[hospitalId]) {
+        this.doctors.forEach((doc, i) => {
+          if (doc.hospital_id === hospitalId) {
+            this.doctors[i].hospitalName = this.hospitalCache[hospitalId];
+          }
+        });
+        checkAllHospitalsLoaded();
+      } else {
+        this.hospitalService.getHospitalById(hospitalId).subscribe({
+          next: (hospital: Hospital) => {
+            this.hospitalCache[hospitalId] = hospital.name;
+            this.doctors.forEach((doc, i) => {
+              if (doc.hospital_id === hospitalId) {
+                this.doctors[i].hospitalName = hospital.name;
+              }
+            });
+            checkAllHospitalsLoaded();
+          },
+          error: () => {
+            this.hospitalCache[hospitalId] = 'Hospital not available';
+            this.doctors.forEach((doc, i) => {
+              if (doc.hospital_id === hospitalId) {
+                this.doctors[i].hospitalName = 'Hospital not available';
+              }
+            });
+            checkAllHospitalsLoaded();
+          }
+        });
+      }
+    });
   }
 }

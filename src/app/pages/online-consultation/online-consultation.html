@@ -35,6 +35,52 @@
             </div>
         </div>
 
+        <!-- Filters -->
+        <div class="row">
+            <div class="tret-filter-main d-flex align-items-center">
+                <div class="tret-filter">
+                    <h4 class="mb-0">Filter Doctors</h4>
+                </div>
+                <div class="filter-option d-flex gap-3">
+                    <!-- Location Filter -->
+                    <div class="custom-select-wrapper">
+                        <div class="form-select" [class.open]="isLocationOpen" [class.placeholder]="!selectedLocation"
+                            (click)="toggleLocationDropdown()">
+                            <span>{{ selectedLocation || 'All Locations' }}</span>
+                        </div>
+
+                        <div class="select-dropdown" *ngIf="isLocationOpen">
+                            <div class="select-option" (click)="selectLocation('')">
+                                All Locations
+                            </div>
+                            <div class="select-option" *ngFor="let loc of locations" [class.selected]="selectedLocation === loc"
+                                (click)="selectLocation(loc)">
+                                {{ loc }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Specialization Filter -->
+                    <div class="custom-select-wrapper">
+                        <div class="form-select" [class.open]="isSpecializationOpen" [class.placeholder]="!selectedSpecialization"
+                            (click)="toggleSpecializationDropdown()">
+                            <span>{{ selectedSpecialization || 'All Specializations' }}</span>
+                        </div>
+
+                        <div class="select-dropdown" *ngIf="isSpecializationOpen">
+                            <div class="select-option" (click)="selectSpecialization('')">
+                                All Specializations
+                            </div>
+                            <div class="select-option" *ngFor="let spec of specializations"
+                                [class.selected]="selectedSpecialization === spec" (click)="selectSpecialization(spec)">
+                                {{ spec }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div *ngIf="loading" class="text-center">Loading doctors...</div>
 
         <div class="row" *ngIf="!loading && doctors.length">

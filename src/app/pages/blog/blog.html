@@ -44,7 +44,7 @@
                                 <!-- Blog date -->
                                 <div class="blog-date d-flex align-items-center">
                                     <img [src]="'assets/images/date.svg'" class="img-fluid me-2" />
-                                    <p class="mb-0">{{ blog.published_at | date : 'MMMM d, y' }}</p>
+                                    <p class="mb-0">{{ (blog.published_at || blog.created_at) | date : 'MMMM d, y' }}</p>
                                 </div>
 
                                 <!-- Title -->
@@ -70,23 +70,15 @@
                         <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
                             <h4>Categories</h4>
                         </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Health and Wellness</a></p>
+                        
+                        <!-- Dynamic categories from blog data -->
+                        <div class="dtl-doctor-info" *ngFor="let category of categories">
+                            <p><a href="#" (click)="filterByCategory(category); $event.preventDefault()">{{ category }}</a></p>
                         </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Health News</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Advances and Technology</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Oncology</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Patient Stories</a></p>
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p><a href="#">Ayurveda & Wellness</a></p>
+                        
+                        <!-- Fallback message if no categories -->
+                        <div class="dtl-doctor-info" *ngIf="categories.length === 0">
+                            <p class="text-muted">No categories available</p>
                         </div>
                     </div>
                 </div>

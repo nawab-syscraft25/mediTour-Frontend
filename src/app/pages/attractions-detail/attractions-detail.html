@@ -12,7 +12,7 @@
                 <li><img src="assets/images/breadcumb.svg" /></li>
                 <li><a routerLink="/attractions">Attractions</a></li>
                 <li><img src="assets/images/breadcumb.svg" /></li>
-                <li>{{ offer?.name || 'Details' }}</li>
+                <li><a >{{ offer?.name || 'Details' }}</a></li>
               </ul>
             </div>
           </div>
@@ -29,37 +29,24 @@
               <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
                   <h4>Recent Event</h4>
               </div>
-              <div class="dtl-doctor-list d-flex align-items-center">
+              
+              <!-- Dynamic recent offers -->
+              <div class="dtl-doctor-list d-flex align-items-center" *ngFor="let recentOffer of recentOffers">
                   <div class="dtl-doctor-img">
-                      <img [src]="'assets/images/recent-post.png'" class="img-fluid">
+                      <img [src]="getOfferImageUrl(recentOffer)" class="img-fluid">
                   </div>
                   <div class="dtl-doctor-info">
-                      <p>Do’s and Don’ts or precautions after cataract</p>
+                      <p>
+                          <a [routerLink]="['/attractions-detail', recentOffer.id]" class="text-decoration-none">
+                              {{ recentOffer.name }}
+                          </a>
+                      </p>
                   </div>
               </div>
-              <div class="dtl-doctor-list d-flex align-items-center">
-                  <div class="dtl-doctor-img">
-                      <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                  </div>
-                  <div class="dtl-doctor-info">
-                      <p>Do’s and Don’ts or precautions after cataract</p>
-                  </div>
-              </div>
-              <div class="dtl-doctor-list d-flex align-items-center">
-                  <div class="dtl-doctor-img">
-                      <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                  </div>
-                  <div class="dtl-doctor-info">
-                      <p>Do’s and Don’ts or precautions after cataract</p>
-                  </div>
-              </div>
-              <div class="dtl-doctor-list d-flex align-items-center">
-                  <div class="dtl-doctor-img">
-                      <img [src]="'assets/images/recent-post.png'" class="img-fluid">
-                  </div>
-                  <div class="dtl-doctor-info">
-                      <p>Do’s and Don’ts or precautions after cataract</p>
-                  </div>
+              
+                            <!-- Fallback message if no recent offers -->
+              <div class="dtl-doctor-info" *ngIf="recentOffers.length === 0">
+                  <p class="text-muted">No recent offers available</p>
               </div>
           </div>
       </div>
@@ -120,6 +107,14 @@
               <!-- Description -->
               <div class="blog-dtl attractions-detail">
                 <p>{{ offer.description }}</p>
+              </div>
+
+              <!-- Contact Now Button -->
+              <div class="text-center mt-4 mb-4">
+                <button class="btn btn-primary btn-lg px-5 py-3" (click)="contactNow()">
+                  <i class="fas fa-phone me-2"></i>
+                  Contact Now
+                </button>
               </div>
   
               <!-- Extra Images -->

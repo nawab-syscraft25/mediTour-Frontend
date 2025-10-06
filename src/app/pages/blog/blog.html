@@ -71,9 +71,28 @@
                             <h4>Categories</h4>
                         </div>
                         
+                        <!-- Show All option -->
+                        <div class="dtl-doctor-info">
+                            <p>
+                                <a href="#" 
+                                   (click)="showAllBlogs(); $event.preventDefault()"
+                                   [class.fw-bold]="selectedCategory === null"
+                                   [class.text-primary]="selectedCategory === null">
+                                   All Categories
+                                </a>
+                            </p>
+                        </div>
+                        
                         <!-- Dynamic categories from blog data -->
                         <div class="dtl-doctor-info" *ngFor="let category of categories">
-                            <p><a href="#" (click)="filterByCategory(category); $event.preventDefault()">{{ category }}</a></p>
+                            <p>
+                                <a href="#" 
+                                   (click)="filterByCategory(category); $event.preventDefault()"
+                                   [class.fw-bold]="selectedCategory === category"
+                                   [class.text-primary]="selectedCategory === category">
+                                   {{ category }}
+                                </a>
+                            </p>
                         </div>
                         
                         <!-- Fallback message if no categories -->

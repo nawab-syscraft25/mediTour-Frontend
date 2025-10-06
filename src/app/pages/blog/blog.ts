@@ -44,8 +44,10 @@ interface Blog {
 })
 export class BlogComponent implements OnInit {
   blogs: Blog[] = [];
+  allBlogs: Blog[] = []; // Store original blog list for filtering
   categories: string[] = [];
   recentPosts: Blog[] = [];
+  selectedCategory: string | null = null; // Track selected category
   baseUrl = 'http://165.22.223.163:8000'; // API base URL
   banner: Banner | null = null;           // 🔹 Blog banner
 
@@ -67,7 +69,8 @@ export class BlogComponent implements OnInit {
     this.http
       .get<Blog[]>(`${this.baseUrl}/api/v1/blogs?skip=0&limit=100&published_only=false&featured_only=false`)
       .subscribe((data) => {
-        this.blogs = data || [];
+        this.allBlogs = data || []; // Store original list
+        this.blogs = [...this.allBlogs]; // Create a copy for display
         this.extractCategories();
         this.extractRecentPosts();
       });
@@ -79,7 +82,7 @@ export class BlogComponent implements OnInit {
 
   // Extract unique categories from blogs
   private extractCategories(): void {
-    const allCategories = this.blogs
+    const allCategories = this.allBlogs
       .map(blog => blog.category)
       .filter(category => category !== null && category !== undefined && category.trim() !== '')
       .map(category => category!.trim().toUpperCase());
@@ -91,7 +94,7 @@ export class BlogComponent implements OnInit {
   // Extract recent posts (latest 4 blogs)
   private extractRecentPosts(): void {
     // Sort blogs by published_at or created_at in descending order and take first 4
-    this.recentPosts = this.blogs
+    this.recentPosts = [...this.allBlogs]
       .sort((a, b) => {
         const dateA = new Date(a.published_at || a.created_at);
         const dateB = new Date(b.published_at || b.created_at);
@@ -100,9 +103,22 @@ export class BlogComponent implements OnInit {
       .slice(0, 4);
   }
 
-  // Method to filter blogs by category (for future use)
+  // Method to filter blogs by category
   filterByCategory(category: string): void {
-    // Implementation for category filtering can be added later
-    console.log('Filter by category:', category);
+    this.selectedCategory = category;
+    
+    // Filter blogs by the selected category (case-insensitive comparison)
+    this.blogs = this.allBlogs.filter(blog => 
+      blog.category && blog.category.trim().toUpperCase() === category.toUpperCase()
+    );
+    
+    console.log(`Filtered blogs by category "${category}":`, this.blogs.length, 'results');
+  }
+
+  // Method to show all blogs (clear filter)
+  showAllBlogs(): void {
+    this.selectedCategory = null;
+    this.blogs = [...this.allBlogs];
+    console.log('Showing all blogs:', this.blogs.length, 'results');
   }
 }

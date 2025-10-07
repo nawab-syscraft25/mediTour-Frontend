@@ -73,7 +73,7 @@ export class Home implements OnInit {
   // Load active partners (limit to 3)
   private loadPartners(): void {
     this.partnerService.getActivePartners().subscribe({
-      next: (res) => (this.partners = res.slice(0, 3)),
+      next: (res) => (this.partners = res.slice(0)),
       error: (err) => console.error('Failed to load partners:', err)
     });
   }

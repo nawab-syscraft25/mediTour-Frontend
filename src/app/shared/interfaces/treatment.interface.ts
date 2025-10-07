@@ -45,4 +45,5 @@ export interface TreatmentSearchParams {
   limit?: number;
   location?: string;
   treatment_type?: string;
+  featured_only?: boolean;
 }

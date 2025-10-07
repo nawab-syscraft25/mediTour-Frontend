@@ -59,10 +59,13 @@ export class Home implements OnInit {
     this.startCounter('awardsCount', this.awardsTarget, 50, 1);
   }
 
-  // Load top treatments (limit to 3)
+  // Load top treatments (filter featured on frontend, limit to 4)
   private loadTopTreatments(): void {
-    this.treatmentService.searchTreatments({ skip: 0, limit: 3 }).subscribe({
-      next: (res) => (this.treatments = res),
+    this.treatmentService.searchTreatments({ skip: 0, limit: 20 }).subscribe({
+      next: (res) => {
+        // Filter featured treatments and limit to 4
+        this.treatments = res.filter(treatment => treatment.is_featured).slice(0, 4);
+      },
       error: (err) => console.error('Failed to load treatments:', err)
     });
   }

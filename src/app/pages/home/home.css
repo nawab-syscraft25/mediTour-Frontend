@@ -14,9 +14,15 @@
   font-size: 18px;
   color: #F66F4D !important;
 }
+.we-offer .offer-box img.home-offer-img
+  {
+    width: 100%;
+      height: 260px;
+      object-fit: cover;
+  }
 @media screen and (max-width: 767px)
 {
-  .we-offer .offer-box img
+  .we-offer .offer-box img.home-offer-img
   {
     max-height: 270px;
     width: 100%;

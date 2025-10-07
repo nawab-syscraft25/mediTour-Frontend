@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -76,6 +76,14 @@ export class TreatmentDetail implements OnInit {
     // Add more services as needed
   ];
 
+  // ✅ NEW: Dropdown open/close states
+  isTreatmentDropdownOpen = false;
+  isBudgetDropdownOpen = false;
+
+  // ✅ NEW: Selected display values
+  selectedTreatmentLabel: string = '';
+  selectedBudgetLabel: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private treatmentService: TreatmentService,
@@ -97,6 +105,40 @@ export class TreatmentDetail implements OnInit {
       travel_assistant: [false],
       stay_assistant: [false]
     });
+  }
+
+  // ✅ NEW: Toggle dropdowns
+  toggleTreatmentDropdown(): void {
+    this.isTreatmentDropdownOpen = !this.isTreatmentDropdownOpen;
+    this.isBudgetDropdownOpen = false;
+  }
+
+  toggleBudgetDropdown(): void {
+    this.isBudgetDropdownOpen = !this.isBudgetDropdownOpen;
+    this.isTreatmentDropdownOpen = false;
+  }
+
+  // ✅ NEW: Select treatment
+  selectTreatment(service: { value: number; label: string }): void {
+    this.bookingForm.patchValue({ treatment_id: service.value });
+    this.selectedTreatmentLabel = service.label;
+    this.isTreatmentDropdownOpen = false;
+  }
+
+  // ✅ NEW: Select budget
+  selectBudget(budget: { value: string; label: string }): void {
+    this.bookingForm.patchValue({ budget: budget.value });
+    this.selectedBudgetLabel = budget.label;
+    this.isBudgetDropdownOpen = false;
+  }
+
+  // ✅ NEW: Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: any): void {
+    if (!event.target.closest('.custom-select-wrapper')) {
+      this.isTreatmentDropdownOpen = false;
+      this.isBudgetDropdownOpen = false;
+    }
   }
 
   // Method to get dynamic FAQs from treatment data
@@ -146,11 +188,16 @@ export class TreatmentDetail implements OnInit {
     this.resetForm();
   }
 
+  // ✅ UPDATED: Reset form with dropdown labels
   resetForm() {
     this.bookingForm.reset();
     this.isSubmitting = false;
     this.submitSuccess = false;
     this.submitError = '';
+
+    // ✅ Reset dropdown labels
+    this.selectedTreatmentLabel = '';
+    this.selectedBudgetLabel = '';
 
     // Set default values
     this.bookingForm.patchValue({
@@ -396,9 +443,6 @@ export class TreatmentDetail implements OnInit {
 
     return [];
   }
-
-  // Method to get dynamic FAQs from treatment data
-
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

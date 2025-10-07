@@ -6,6 +6,7 @@ import { HeroSection } from '../hero-section/hero-section';
 import { TreatmentService } from 'src/app/core/services/treatment.service';
 import { PartnerService, Partner } from 'src/app/core/services/partner.service';
 import { PatientStory, PatientStoryService } from 'src/app/core/services/patient-story.service';
+import { OfferService } from 'src/app/core/services/offer.service';
 import { Treatment } from 'src/app/shared/interfaces/treatment.interface';
 
 @Component({
@@ -19,6 +20,7 @@ export class Home implements OnInit {
   treatments: Treatment[] = [];
   partners: Partner[] = [];
   patientStories: PatientStory[] = [];
+  offers: any[] = [];
 
   patientsCount = 0;
   patientsTarget = 2500;
@@ -44,39 +46,54 @@ export class Home implements OnInit {
   constructor(
     private treatmentService: TreatmentService,
     public partnerService: PartnerService,
-    private patientStoryService: PatientStoryService
+    private patientStoryService: PatientStoryService,
+    private offerService: OfferService
   ) {}
 
   ngOnInit(): void {
     this.loadTopTreatments();
     this.loadPartners();
     this.loadPatientStories();
+    this.loadOffers();
     this.startCounter('patientsCount', this.patientsTarget, 20, 25);
     this.startCounter('awardsCount', this.awardsTarget, 50, 1);
   }
 
-  // Load top treatments
+  // Load top treatments (limit to 3)
   private loadTopTreatments(): void {
-    this.treatmentService.searchTreatments({ skip: 0, limit: 4 }).subscribe({
+    this.treatmentService.searchTreatments({ skip: 0, limit: 3 }).subscribe({
       next: (res) => (this.treatments = res),
       error: (err) => console.error('Failed to load treatments:', err)
     });
   }
 
-  // Load active partners
+  // Load active partners (limit to 3)
   private loadPartners(): void {
     this.partnerService.getActivePartners().subscribe({
-      next: (res) => (this.partners = res),
+      next: (res) => (this.partners = res.slice(0, 3)),
       error: (err) => console.error('Failed to load partners:', err)
     });
   }
 
-  // Load patient stories
+  // Load patient stories (limit to 3)
   private loadPatientStories(): void {
     this.patientStoryService.getStories().subscribe({
-      next: (res) => (this.patientStories = res),
+      next: (res) => (this.patientStories = res.slice(0, 3)),
       error: (err) => console.error('Failed to load patient stories:', err)
     });
+  }
+
+  // Load offers (limit to 3 for homepage)
+  private loadOffers(): void {
+    this.offerService.getAllOffers(0, 3, true, false).subscribe({
+      next: (res) => (this.offers = res),
+      error: (err) => console.error('Failed to load offers:', err)
+    });
+  }
+
+  // Get offer image URL
+  getOfferImageUrl(offer: any): string {
+    return this.offerService.getOfferImageUrl(offer);
   }
 
   // Get star icons for ratings

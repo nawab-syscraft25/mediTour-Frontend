@@ -119,6 +119,9 @@
     color: var(--secondary-color);
     font-family: var(--primary-font);
     font-size: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .client-feedback .user-card-rating
 {

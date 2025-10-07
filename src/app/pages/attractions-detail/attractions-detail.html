@@ -108,14 +108,6 @@
               <div class="blog-dtl attractions-detail">
                 <p>{{ offer.description }}</p>
               </div>
-
-              <!-- Contact Now Button -->
-              <div class="text-center mt-4 mb-4">
-                <button class="btn btn-primary btn-lg px-5 py-3" (click)="contactNow()">
-                  <i class="fas fa-phone me-2"></i>
-                  Contact Now
-                </button>
-              </div>
   
               <!-- Extra Images -->
               <div class="mt-4" *ngIf="offer.images?.length > 1">
@@ -131,6 +123,13 @@
                       />
                     </div>
                   </div>
+                  <!-- Contact Now Button -->
+              <div class="">
+                <button class="btn-default mt-4 attraction-call" (click)="contactNow()">
+                  <i class="fas fa-phone me-2"></i>
+                  Contact Now
+                </button>
+              </div>
                 </div>
               </div>
               

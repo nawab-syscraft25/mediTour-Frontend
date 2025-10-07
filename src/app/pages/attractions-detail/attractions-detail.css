@@ -67,3 +67,15 @@
     width: 100%;
     object-fit: cover;
 }
+.dtl-doctor-info a 
+{
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 3px;
+    text-decoration: none;
+    color: var(--primary-font) !important;
+}
+.attraction-call i
+{
+    transform: rotate(0deg)
+}

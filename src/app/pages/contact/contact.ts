@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { TreatmentService } from 'src/app/core/services/treatment.service'; // adjust path
-import { BannerService, Banner } from 'src/app/core/services/banner.service'; // ✅ BannerService
+import { TreatmentService } from 'src/app/core/services/treatment.service';
+import { BannerService, Banner } from 'src/app/core/services/banner.service';
 
 @Component({
   selector: 'app-contact',
@@ -16,13 +16,19 @@ export class ContactComponent implements OnInit {
   contactForm: FormGroup;
   treatmentTypes: string[] = [];
   isSubmitted: boolean = false;
-  banner: Banner | null = null; // 🔹 Contact page banner
+  banner: Banner | null = null;
+
+  // ✅ NEW: Dropdown open/close state
+  isDepartmentDropdownOpen = false;
+
+  // ✅ NEW: Selected display value
+  selectedDepartmentLabel: string = '';
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private treatmentService: TreatmentService,
-    private bannerService: BannerService // ✅ inject banner service
+    private bannerService: BannerService
   ) {
     this.contactForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -37,8 +43,28 @@ export class ContactComponent implements OnInit {
     });
   }
 
+  // ✅ NEW: Toggle dropdown
+  toggleDepartmentDropdown(): void {
+    this.isDepartmentDropdownOpen = !this.isDepartmentDropdownOpen;
+  }
+
+  // ✅ NEW: Select department
+  selectDepartment(type: string): void {
+    this.contactForm.patchValue({ department: type });
+    this.selectedDepartmentLabel = type;
+    this.isDepartmentDropdownOpen = false;
+  }
+
+  // ✅ NEW: Close dropdown when clicking outside
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: any): void {
+    if (!event.target.closest('.custom-select-wrapper')) {
+      this.isDepartmentDropdownOpen = false;
+    }
+  }
+
   ngOnInit(): void {
-    // 🔹 load Contact banner
+    // load Contact banner
     this.bannerService.getBannerByTitle('Contact').subscribe({
       next: (banner) => {
         if (banner) {
@@ -49,7 +75,7 @@ export class ContactComponent implements OnInit {
       error: (err) => console.error('❌ Error loading contact banner:', err)
     });
 
-    // ✅ fetch treatment types on load
+    // fetch treatment types on load
     this.treatmentService.getTreatmentTypes().subscribe({
       next: (types) => this.treatmentTypes = types,
       error: (err) => console.error('Error loading treatment types ❌', err)
@@ -73,6 +99,8 @@ export class ContactComponent implements OnInit {
           console.log('Form Submitted ✅', res);
           this.isSubmitted = true;
           this.contactForm.reset();
+          // ✅ Reset dropdown label
+          this.selectedDepartmentLabel = '';
         },
         error: (err) => {
           console.error('Form submission error ❌', err);

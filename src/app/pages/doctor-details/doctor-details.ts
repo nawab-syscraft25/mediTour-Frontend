@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -73,6 +73,14 @@ export class DoctorDetails implements OnInit {
     { value: 5, label: 'Emergency Consultation' }
   ];
 
+  // ✅ NEW: Dropdown open/close states
+  isTreatmentDropdownOpen = false;
+  isBudgetDropdownOpen = false;
+
+  // ✅ NEW: Selected display values
+  selectedTreatmentLabel: string = '';
+  selectedBudgetLabel: string = '';
+
   constructor(
     private doctorService: DoctorService,
     private hospitalService: HospitalService,
@@ -96,6 +104,40 @@ export class DoctorDetails implements OnInit {
     });
   }
 
+  // ✅ NEW: Toggle dropdowns
+  toggleTreatmentDropdown(): void {
+    this.isTreatmentDropdownOpen = !this.isTreatmentDropdownOpen;
+    this.isBudgetDropdownOpen = false;
+  }
+
+  toggleBudgetDropdown(): void {
+    this.isBudgetDropdownOpen = !this.isBudgetDropdownOpen;
+    this.isTreatmentDropdownOpen = false;
+  }
+
+  // ✅ NEW: Select treatment
+  selectTreatment(service: { value: number; label: string }): void {
+    this.consultationForm.patchValue({ treatment_id: service.value });
+    this.selectedTreatmentLabel = service.label;
+    this.isTreatmentDropdownOpen = false;
+  }
+
+  // ✅ NEW: Select budget
+  selectBudget(budget: { value: string; label: string }): void {
+    this.consultationForm.patchValue({ budget: budget.value });
+    this.selectedBudgetLabel = budget.label;
+    this.isBudgetDropdownOpen = false;
+  }
+
+  // ✅ NEW: Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: any): void {
+    if (!event.target.closest('.custom-select-wrapper')) {
+      this.isTreatmentDropdownOpen = false;
+      this.isBudgetDropdownOpen = false;
+    }
+  }
+
   ngOnInit(): void {
     const doctorId = Number(this.route.snapshot.paramMap.get('id'));
     if (doctorId) {
@@ -103,7 +145,6 @@ export class DoctorDetails implements OnInit {
     }
   }
   
-
   fetchDoctor(id: number) {
     this.doctorService.getDoctorById(id).subscribe({
       next: (data) => {
@@ -190,11 +231,16 @@ export class DoctorDetails implements OnInit {
     this.resetForm();
   }
 
+  // ✅ UPDATED: Reset form with dropdown labels
   resetForm() {
     this.consultationForm.reset();
     this.isSubmitting = false;
     this.submitSuccess = false;
     this.submitError = '';
+    
+    // ✅ Reset dropdown labels
+    this.selectedTreatmentLabel = '';
+    this.selectedBudgetLabel = '';
     
     // Set default values and pre-populate doctor/hospital info
     this.consultationForm.patchValue({

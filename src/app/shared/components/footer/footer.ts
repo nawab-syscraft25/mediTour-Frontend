@@ -13,20 +13,20 @@ import { FormsModule } from '@angular/forms';
 export class Footer {
   // List 1: Company Links
   footerlink1 = [
-    { label: 'About Us', route: '/' },
-    { label: 'Careers', route: '/' },
-    { label: 'Blog', route: '/' },
-    { label: 'Press', route: '/' },
-    { label: 'Contact', route: '/' }
+    { label: 'Home', route: '/' },
+    { label: 'About Us', route: '/about' },
+    { label: 'Privacy Policy', route: '/privacy-policy' },
+    { label: 'Terms And Conditions', route: '/terms-conditions' },
+    { label: 'Contact', route: '/contact' }
   ];
 
   // List 2: Services Links
   footerlink2 = [
-    { label: 'Medical Tourism', route: '/' },
-    { label: 'Cardiology', route: '/' },
-    { label: 'Neurology', route: '/' },
-    { label: 'Orthopedics', route: '/' },
-    { label: 'Cancer Treatment', route: '/' }
+    { label: ' Surgical Treatment Plan', route: '/treatments' },
+    { label: ' Online Consultation', route: '/online-consultation' },
+    { label: 'Associate Hospital', route: '/associate-hospital' },
+    { label: 'Our Doctors', route: '/doctors' },
+    { label: 'Articles', route: '/blog' }
   ];
 
   // List 3: Support Links

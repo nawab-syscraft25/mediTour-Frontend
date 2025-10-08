@@ -6,16 +6,20 @@ import { TreatmentService } from '../../core/services/treatment.service';
 import { DoctorService, Doctor } from '../../core/services/doctors.service';
 import { Treatment } from '../../shared/interfaces/treatment.interface';
 import { BannerService, Banner } from 'src/app/core/services/banner.service';
+import { ModalComponent } from '@core/modal/modal.component';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalComponent], // ✅ Add ModalComponent
   templateUrl: './hero-section.html',
   styleUrls: ['./hero-section.css']
 })
 export class HeroSection implements OnInit, OnDestroy {
   @Output() searchResultsChange = new EventEmitter<boolean>();
+
+  /** ✅ Modal state */
+  showNoResultsModal = false;
 
   /** ✅ Banner */
   banner: Banner | null = null;
@@ -63,6 +67,18 @@ export class HeroSection implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.removeEventListener('click', this.handleOutsideClick.bind(this));
+  }
+
+  // --------------------------
+  // 🔹 Modal Methods
+  // --------------------------
+  closeNoResultsModal() {
+    this.showNoResultsModal = false;
+  }
+
+  clearSearchFromModal() {
+    this.clearSearch();
+    this.showNoResultsModal = false;
   }
 
   // --------------------------
@@ -209,16 +225,27 @@ export class HeroSection implements OnInit, OnDestroy {
           (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
         );
         this.isSearching = false;
+        
+        // ✅ Show modal if no results found
+        if (this.searchResults.length === 0) {
+          this.showNoResultsModal = true;
+        }
+        
         this.searchResultsChange.emit(this.searchResults.length > 0);
-        setTimeout(() => {
-          document.querySelector('.search-results-container')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+        
+        if (this.searchResults.length > 0) {
+          setTimeout(() => {
+            document.querySelector('.search-results-container')?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
       },
       error: (error) => {
         console.error('Error searching treatments:', error);
         this.isSearching = false;
         this.searchResults = [];
         this.searchResultsChange.emit(false);
+        // ✅ Show modal on error too
+        this.showNoResultsModal = true;
       }
     });
   }
@@ -273,16 +300,27 @@ export class HeroSection implements OnInit, OnDestroy {
           (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
         );
         this.isDoctorSearching = false;
+        
+        // ✅ Show modal if no doctor results found
+        if (this.doctorResults.length === 0) {
+          this.showNoResultsModal = true;
+        }
+        
         this.searchResultsChange.emit(this.doctorResults.length > 0);
-        setTimeout(() => {
-          document.querySelector('.doctor-results-container')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+        
+        if (this.doctorResults.length > 0) {
+          setTimeout(() => {
+            document.querySelector('.doctor-results-container')?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
       },
       error: (error) => {
         console.error('Error searching doctors:', error);
         this.isDoctorSearching = false;
         this.doctorResults = [];
         this.searchResultsChange.emit(false);
+        // ✅ Show modal on error too
+        this.showNoResultsModal = true;
       }
     });
   }

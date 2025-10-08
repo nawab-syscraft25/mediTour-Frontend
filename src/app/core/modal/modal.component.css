@@ -45,6 +45,7 @@
 .book-package-modal .modal-header h3 {
   font-size: 22px;
   font-family: var(--primary-font);
+  color: var(--secondary-color);
 }
 .book-package-modal .modal .modal-body
 {

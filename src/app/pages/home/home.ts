@@ -8,6 +8,7 @@ import { PartnerService, Partner } from 'src/app/core/services/partner.service';
 import { PatientStory, PatientStoryService } from 'src/app/core/services/patient-story.service';
 import { OfferService } from 'src/app/core/services/offer.service';
 import { Treatment } from 'src/app/shared/interfaces/treatment.interface';
+import { HospitalService, Hospital } from 'src/app/core/services/hospital.service';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,8 @@ export class Home implements OnInit {
   partners: Partner[] = [];
   patientStories: PatientStory[] = [];
   offers: any[] = [];
+  hospitals: Hospital[] = [];
+  loadingHospitals = true;
 
   patientsCount = 0;
   patientsTarget = 2500;
@@ -47,14 +50,16 @@ export class Home implements OnInit {
     private treatmentService: TreatmentService,
     public partnerService: PartnerService,
     private patientStoryService: PatientStoryService,
-    private offerService: OfferService
-  ) {}
+    private offerService: OfferService,
+    private hospitalService: HospitalService // Inject hospital service
+  ) { }
 
   ngOnInit(): void {
     this.loadTopTreatments();
     this.loadPartners();
     this.loadPatientStories();
     this.loadOffers();
+    this.loadHospitals(); // Load hospitals dynamically
     this.startCounter('patientsCount', this.patientsTarget, 20, 25);
     this.startCounter('awardsCount', this.awardsTarget, 50, 1);
   }
@@ -63,7 +68,6 @@ export class Home implements OnInit {
   private loadTopTreatments(): void {
     this.treatmentService.searchTreatments({ skip: 0, limit: 20 }).subscribe({
       next: (res) => {
-        // Filter featured treatments and limit to 4
         this.treatments = res.filter(treatment => treatment.is_featured).slice(0, 4);
       },
       error: (err) => console.error('Failed to load treatments:', err)
@@ -94,6 +98,25 @@ export class Home implements OnInit {
     });
   }
 
+  // Load active hospitals
+  // Load featured hospitals only
+  private loadHospitals(): void {
+    this.loadingHospitals = true;
+    this.hospitalService.getHospitals(0, 10).subscribe({
+      next: (res) => {
+        // Filter only active AND featured hospitals
+        this.hospitals = res.filter(h => h.is_active && h.is_featured);
+        this.loadingHospitals = false;
+      },
+      error: (err) => {
+        console.error('Failed to load hospitals:', err);
+        this.loadingHospitals = false;
+      }
+    });
+  }
+  
+
+
   // Get offer image URL
   getOfferImageUrl(offer: any): string {
     return this.offerService.getOfferImageUrl(offer);
@@ -113,6 +136,20 @@ export class Home implements OnInit {
       ...Array(emptyStars).fill('empty')
     ];
   }
+  hospitalSliderOptions: OwlOptions = {
+    loop: true,
+    autoplay: true,
+    margin: 20,
+    dots: true,
+    nav: false,
+    navText: ['<', '>'],
+    responsive: {
+      0: { items: 1 },
+      576: { items: 2 },
+      992: { items: 3 }
+    }
+  };
+
 
   // Handle search result changes
   onSearchResultsChange(hasResults: boolean): void {

@@ -89,14 +89,14 @@ export class OnlineConsultation implements OnInit {
       last_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       mobile_no: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
-      treatment_id: ['', Validators.required],
-      budget: ['', Validators.required],
+      treatment_id: [null], // Hardcoded to null
+      budget: [''],
       doctor_preference: [''],
       hospital_preference: [''],
       medical_history_file: [''],
       user_query: [''],
-      travel_assistant: [false],
-      stay_assistant: [false]
+      travel_assistant: [false], // Hardcoded to false
+      stay_assistant: [false] // Hardcoded to false
     });
   }
 
@@ -206,16 +206,32 @@ export class OnlineConsultation implements OnInit {
     ];
   }
 
+  // openModal(doctor: Doctor) {
+  //   this.selectedDoctor = doctor;
+  //   this.showModal = true;
+  //   this.resetForm();
+  //   this.bookingForm.patchValue({
+  //     doctor_preference: doctor.name,
+  //     hospital_preference: (doctor as any).hospitalName || ''
+  //   });
+  //   this.cdr.detectChanges();
+  // }
+
   openModal(doctor: Doctor) {
-    this.selectedDoctor = doctor;
-    this.showModal = true;
-    this.resetForm();
-    this.bookingForm.patchValue({
-      doctor_preference: doctor.name,
-      hospital_preference: (doctor as any).hospitalName || ''
-    });
-    this.cdr.detectChanges();
-  }
+  this.selectedDoctor = doctor;
+  this.showModal = true;
+  this.resetForm();
+
+  // ✅ Auto-fill Doctor, Hospital, and Consultation Fees
+  this.bookingForm.patchValue({
+    doctor_preference: doctor.name,
+    hospital_preference: (doctor as any).hospitalName || '',
+    budget: doctor.consultancy_fee ? `₹${doctor.consultancy_fee}` : ''
+  });
+
+  this.cdr.detectChanges();
+}
+
 
   closeModal() {
     this.showModal = false;
@@ -227,9 +243,9 @@ export class OnlineConsultation implements OnInit {
   resetForm() {
     this.bookingForm.reset();
     this.bookingForm.patchValue({
-      travel_assistant: false,
-      stay_assistant: false,
-      treatment_id: '',
+      travel_assistant: false, // Hardcoded to false
+      stay_assistant: false, // Hardcoded to false
+      treatment_id: null, // Hardcoded to null
       budget: ''
     });
     this.isSubmitting = false;
@@ -257,11 +273,13 @@ export class OnlineConsultation implements OnInit {
       const formData = this.bookingForm.value;
       const bookingRequest: BookingRequest = {
         ...formData,
-        treatment_id: Number(formData.treatment_id),
+        treatment_id: null, // Hardcoded to null
         medical_history_file: formData.medical_history_file || 'null',
         doctor_preference: formData.doctor_preference || (this.selectedDoctor?.name || ''),
         hospital_preference: formData.hospital_preference || ((this.selectedDoctor as any)?.hospitalName || ''),
-        user_query: formData.user_query || 'Online consultation booking'
+        user_query: formData.user_query || 'Online consultation booking',
+        travel_assistant: false, // Hardcoded to false
+        stay_assistant: false // Hardcoded to false
       };
 
       const response = await this.http.post<BookingResponse>(

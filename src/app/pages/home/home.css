@@ -2,34 +2,37 @@
   font-size: 2rem;
   color: #333;
 }
-.partner-logo
-{
+
+.partner-logo {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
 }
-.user-card-rating i
-{
+
+.user-card-rating i {
   font-size: 18px;
   color: #F66F4D !important;
 }
-.we-offer .offer-box img.home-offer-img
-  {
-    width: 100%;
-      height: 260px;
-      object-fit: cover;
-  }
-@media screen and (max-width: 767px)
+
+.we-offer .offer-box img.home-offer-img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+.hospital-card .card-location
 {
-  .we-offer .offer-box img.home-offer-img
-  {
+    margin-top: 12px;
+}
+
+@media screen and (max-width: 767px) {
+  .we-offer .offer-box img.home-offer-img {
     max-height: 270px;
     width: 100%;
     object-fit: cover;
   }
-  .partner-logo
-  {
+
+  .partner-logo {
     margin-bottom: 15px;
   }
 }

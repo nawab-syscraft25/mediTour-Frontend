@@ -73,12 +73,12 @@
                     <div *ngIf="!isSubmitted">
                         <h5>Get in touch with us</h5>
                         <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
-                            been
-                            the industry's standard dummy.</p>
+                            been the industry's.</p>
                         <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
+                                        <label for="firstName" class="form-label">First Name<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" placeholder="First Name"
                                             formControlName="firstName" />
                                         <div class="text-danger"
@@ -89,6 +89,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
+                                        <label for="lastName" class="form-label">Last Name<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" placeholder="Last Name"
                                             formControlName="lastName" />
                                         <div class="text-danger"
@@ -101,6 +102,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
+                                        <label for="email" class="form-label">Email Id<span class="text-danger">*</span></label>
                                         <input type="email" class="form-control" placeholder="Enter Email Id"
                                             formControlName="email" />
                                         <div class="text-danger"
@@ -111,6 +113,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="mb-3">
+                                        <label for="mobile" class="form-label">Mobile Number<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" placeholder="Enter Mobile Number"
                                             formControlName="mobile" />
                                         <div class="text-danger"
@@ -134,6 +137,7 @@
                             </div> -->
                             <div class="mb-3">
                                 <div class="custom-select-wrapper">
+                                    <label for="selectedDepartment" class="form-label">Select Treatment<span class="text-danger">*</span></label>
                                     <div class="form-select" [class.open]="isDepartmentDropdownOpen"
                                         [class.placeholder]="!selectedDepartmentLabel"
                                         [class.is-invalid]="contactForm.get('department')?.touched && contactForm.get('department')?.invalid"
@@ -160,6 +164,7 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="query" class="form-label">Query<span class="text-danger">*</span></label>
                                 <textarea class="form-control" rows="3" placeholder="Enter Your Query"
                                     formControlName="query"></textarea>
                                 <div class="text-danger"

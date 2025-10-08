@@ -102,17 +102,19 @@
                             </div>
 
                             <!-- Error Message -->
-                            <div *ngIf="submitError" class="alert alert-danger" role="alert">
+                            <!-- <div *ngIf="submitError" class="alert alert-danger" role="alert">
                                 <i class="fas fa-exclamation-circle me-2"></i>
                                 {{ submitError }}
-                            </div>
+                            </div> -->
 
                             <form [formGroup]="consultationForm" (ngSubmit)="onSubmit()" *ngIf="!submitSuccess">
 
                                 <!-- First Name -->
                                 <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name<span
+                                            class="text-danger">*</span></label>
                                     <input type="text" class="form-control"
-                                        [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name*"
+                                        [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name"
                                         formControlName="first_name">
                                     <div class="invalid-feedback" *ngIf="isFieldInvalid('first_name')">
                                         {{ getFieldError('first_name') }}
@@ -121,8 +123,10 @@
 
                                 <!-- Last Name -->
                                 <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name<span
+                                            class="text-danger">*</span></label>
                                     <input type="text" class="form-control"
-                                        [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name*"
+                                        [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name"
                                         formControlName="last_name">
                                     <div class="invalid-feedback" *ngIf="isFieldInvalid('last_name')">
                                         {{ getFieldError('last_name') }}
@@ -131,8 +135,10 @@
 
                                 <!-- Email -->
                                 <div class="mb-3">
+                                    <label for="email" class="form-label">Email Id<span
+                                            class="text-danger">*</span></label>
                                     <input type="email" class="form-control"
-                                        [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id*"
+                                        [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id"
                                         formControlName="email">
                                     <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
                                         {{ getFieldError('email') }}
@@ -141,17 +147,21 @@
 
                                 <!-- Mobile Number -->
                                 <div class="mb-3">
+                                    <label for="mobile_no" class="form-label">Mobile Number<span
+                                            class="text-danger">*</span></label>
                                     <input type="tel" class="form-control"
                                         [class.is-invalid]="isFieldInvalid('mobile_no')"
-                                        placeholder="Enter Mobile Number*" formControlName="mobile_no">
+                                        placeholder="Enter Mobile Number" formControlName="mobile_no">
                                     <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile_no')">
                                         {{ getFieldError('mobile_no') }}
                                     </div>
                                 </div>
 
                                 <!-- Service Selection -->
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <div class="custom-select-wrapper">
+                                        <label for="service" class="form-label">Service<span
+                                                class="text-danger">*</span></label>
                                         <div class="form-select" [class.open]="isTreatmentDropdownOpen"
                                             [class.placeholder]="!selectedTreatmentLabel"
                                             [class.is-invalid]="isFieldInvalid('treatment_id')"
@@ -175,11 +185,12 @@
                                         [style.display]="isFieldInvalid('treatment_id') ? 'block' : 'none'">
                                         {{ getFieldError('treatment_id') }}
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- Budget Preference - Custom Dropdown -->
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <div class="custom-select-wrapper">
+                                        <label for="budget" class="form-label">Budget<span class="text-danger">*</span></label>
                                         <div class="form-select" [class.open]="isBudgetDropdownOpen"
                                             [class.placeholder]="!selectedBudgetLabel"
                                             [class.is-invalid]="isFieldInvalid('budget')"
@@ -202,10 +213,19 @@
                                         [style.display]="isFieldInvalid('budget') ? 'block' : 'none'">
                                         {{ getFieldError('budget') }}
                                     </div>
+                                </div> -->
+                                <div class="mb-3">
+                                    <label for="consultation_fee" class="form-label">Consultation Fees</label>
+                                    <input type="text" class="form-control" formControlName="consultation_fee" readonly>
+                                    <small class="form-text text-muted" *ngIf="doctor?.consultancy_fee">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Default consultation fee: ₹{{ doctor.consultancy_fee }}
+                                    </small>
                                 </div>
 
                                 <!-- Doctor Preference (Pre-filled) -->
                                 <div class="mb-3">
+                                    <label for="doctor_preference" class="form-label">Doctor Preference</label>
                                     <input type="text" class="form-control" placeholder="Doctor Preference"
                                         formControlName="doctor_preference" readonly>
                                     <small class="form-text text-muted" *ngIf="doctor">
@@ -216,6 +236,7 @@
 
                                 <!-- Hospital Preference (Pre-filled) -->
                                 <div class="mb-3">
+                                    <label for="hospital_preference" class="form-label">Hospital Preference</label>
                                     <input type="text" class="form-control" placeholder="Hospital Preference"
                                         formControlName="hospital_preference" readonly>
                                     <small class="form-text text-muted" *ngIf="hospitalName">
@@ -235,6 +256,7 @@
 
                                 <!-- User Query -->
                                 <div class="mb-3">
+                                    <label for="user_query" class="form-label">Query</label>
                                     <textarea class="form-control" rows="3"
                                         placeholder="Enter Your Query or Consultation Requirements"
                                         formControlName="user_query"></textarea>
@@ -276,7 +298,7 @@
 
                                     <!-- Form validation summary -->
                                     <div *ngIf="consultationForm.invalid && consultationForm.touched"
-                                        class="alert alert-warning mt-2 mb-0" role="alert">
+                                        class="alert form-alert mt-2 mb-0" role="alert">
                                         <small><i class="fas fa-exclamation-triangle me-1"></i>Please fill in all
                                             required fields marked with *</small>
                                     </div>
@@ -445,7 +467,7 @@
                             <img *ngIf="!relatedDoctor.profile_photo" [src]="'assets/images/dtl-doctor.png'"
                                 class="img-fluid">
                         </div>
-                        <div class="dtl-doctor-info ms-sm-3 w-100">
+                        <div class="dtl-doctor-info w-100">
                             <p class="mb-1 fw-semibold">{{ relatedDoctor.name }}</p>
                             <ul class="ps-0 mb-0 list-unstyled">
                                 <li class="text-muted small">{{ relatedDoctor.designation ||

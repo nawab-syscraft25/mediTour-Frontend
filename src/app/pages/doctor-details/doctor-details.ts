@@ -13,11 +13,12 @@ interface BookingRequest {
   last_name: string;
   email: string;
   mobile_no: string;
-  treatment_id: number;
+  treatment_id: number | null;
   budget: string;
   medical_history_file: string;
   doctor_preference: string;
   hospital_preference: string;
+  consultation_fee: string; // ✅ added
   user_query: string;
   travel_assistant: boolean;
   stay_assistant: boolean;
@@ -52,9 +53,9 @@ export class DoctorDetails implements OnInit {
   isSubmitting = false;
   submitSuccess = false;
   submitError = '';
-  expandedFaqIndex: number | null = null; // Track which FAQ is expanded
+  expandedFaqIndex: number | null = null;
 
-  // Budget options
+  // Dropdown options
   budgetOptions = [
     { value: '10000 - 50000', label: '₹10,000 - ₹50,000' },
     { value: '50000 - 100000', label: '₹50,000 - ₹1,00,000' },
@@ -64,7 +65,6 @@ export class DoctorDetails implements OnInit {
     { value: '800000+', label: '₹8,00,000+' }
   ];
 
-  // Service options for consultation
   serviceOptions = [
     { value: 1, label: 'General Consultation' },
     { value: 2, label: 'Follow-up Consultation' },
@@ -73,11 +73,8 @@ export class DoctorDetails implements OnInit {
     { value: 5, label: 'Emergency Consultation' }
   ];
 
-  // ✅ NEW: Dropdown open/close states
   isTreatmentDropdownOpen = false;
   isBudgetDropdownOpen = false;
-
-  // ✅ NEW: Selected display values
   selectedTreatmentLabel: string = '';
   selectedBudgetLabel: string = '';
 
@@ -93,18 +90,19 @@ export class DoctorDetails implements OnInit {
       last_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       mobile_no: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
-      treatment_id: ['', Validators.required],
-      budget: ['', Validators.required],
+      treatment_id: [null], // Hardcoded to null
+      budget: [''],
       doctor_preference: [''],
       hospital_preference: [''],
+      consultation_fee: [''], // ✅ added
       medical_history_file: [''],
       user_query: [''],
-      travel_assistant: [false],
-      stay_assistant: [false]
+      travel_assistant: [false], // Hardcoded to false
+      stay_assistant: [false] // Hardcoded to false
     });
   }
 
-  // ✅ NEW: Toggle dropdowns
+  // Dropdown logic
   toggleTreatmentDropdown(): void {
     this.isTreatmentDropdownOpen = !this.isTreatmentDropdownOpen;
     this.isBudgetDropdownOpen = false;
@@ -115,21 +113,18 @@ export class DoctorDetails implements OnInit {
     this.isTreatmentDropdownOpen = false;
   }
 
-  // ✅ NEW: Select treatment
   selectTreatment(service: { value: number; label: string }): void {
     this.consultationForm.patchValue({ treatment_id: service.value });
     this.selectedTreatmentLabel = service.label;
     this.isTreatmentDropdownOpen = false;
   }
 
-  // ✅ NEW: Select budget
   selectBudget(budget: { value: string; label: string }): void {
     this.consultationForm.patchValue({ budget: budget.value });
     this.selectedBudgetLabel = budget.label;
     this.isBudgetDropdownOpen = false;
   }
 
-  // ✅ NEW: Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   clickOutside(event: any): void {
     if (!event.target.closest('.custom-select-wrapper')) {
@@ -144,7 +139,7 @@ export class DoctorDetails implements OnInit {
       this.fetchDoctor(doctorId);
     }
   }
-  
+
   fetchDoctor(id: number) {
     this.doctorService.getDoctorById(id).subscribe({
       next: (data) => {
@@ -171,7 +166,6 @@ export class DoctorDetails implements OnInit {
     this.loadingRelatedDoctors = true;
     this.doctorService.getDoctorsByHospital(hospitalId, 0, 10).subscribe({
       next: (doctors) => {
-        // Filter out the current doctor and take only first 3 related doctors
         this.relatedDoctors = doctors
           .filter(doctor => doctor.id !== currentDoctorId)
           .slice(0, 3);
@@ -184,22 +178,14 @@ export class DoctorDetails implements OnInit {
     });
   }
 
-  // Method to get dynamic FAQs from doctor data
   getDynamicFaqs(): { question: string; answer: string }[] {
     if (!this.doctor) return [];
-
     const faqs: { question: string; answer: string }[] = [];
-
-    // Collect faq1..faq5 if present
     for (let i = 1; i <= 5; i++) {
       const q = (this.doctor as any)[`faq${i}_question`];
       const a = (this.doctor as any)[`faq${i}_answer`];
-      if (q && a) {
-        faqs.push({ question: q, answer: a });
-      }
+      if (q && a) faqs.push({ question: q, answer: a });
     }
-
-    // Merge faqs array if present
     if (Array.isArray(this.doctor.faqs)) {
       this.doctor.faqs.forEach((faq: any) => {
         if (faq.question && faq.answer) {
@@ -207,16 +193,13 @@ export class DoctorDetails implements OnInit {
         }
       });
     }
-
     return faqs;
   }
 
-  // Method to toggle FAQ expansion
   toggleFaq(index: number): void {
     this.expandedFaqIndex = this.expandedFaqIndex === index ? null : index;
   }
 
-  // Method to check if FAQ is expanded
   isFaqExpanded(index: number): boolean {
     return this.expandedFaqIndex === index;
   }
@@ -231,43 +214,37 @@ export class DoctorDetails implements OnInit {
     this.resetForm();
   }
 
-  // ✅ UPDATED: Reset form with dropdown labels
+  // ✅ UPDATED: Reset form (now includes consultation_fee)
   resetForm() {
     this.consultationForm.reset();
     this.isSubmitting = false;
     this.submitSuccess = false;
     this.submitError = '';
-    
-    // ✅ Reset dropdown labels
+
     this.selectedTreatmentLabel = '';
     this.selectedBudgetLabel = '';
-    
-    // Set default values and pre-populate doctor/hospital info
+
     this.consultationForm.patchValue({
-      travel_assistant: false,
-      stay_assistant: false,
-      treatment_id: '',
+      travel_assistant: false, // Hardcoded to false
+      stay_assistant: false, // Hardcoded to false
+      treatment_id: null, // Hardcoded to null
       budget: '',
       doctor_preference: this.doctor?.name || '',
-      hospital_preference: this.hospitalName || ''
+      hospital_preference: this.hospitalName || '',
+      consultation_fee: this.doctor?.consultancy_fee ? `₹${this.doctor.consultancy_fee}` : '' // ✅ default fee
     });
   }
 
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      // For now, we'll just store the filename
-      // In a real application, you'd upload the file to a server first
-      this.consultationForm.patchValue({
-        medical_history_file: file.name
-      });
+      this.consultationForm.patchValue({ medical_history_file: file.name });
     }
   }
 
   async onSubmit() {
-    // Mark all fields as touched to show validation errors
     this.markFormGroupTouched();
-    
+
     if (this.consultationForm.invalid) {
       this.submitError = 'Please fill in all required fields correctly.';
       return;
@@ -278,21 +255,21 @@ export class DoctorDetails implements OnInit {
 
     try {
       const formData = this.consultationForm.value;
-      
-      // Prepare the request payload
+
       const bookingRequest: BookingRequest = {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
         mobile_no: formData.mobile_no,
-        treatment_id: Number(formData.treatment_id),
-        budget: formData.budget,
+        treatment_id: null, // Hardcoded to null
+        budget: formData.budget || `₹${this.doctor?.consultancy_fee || ''}`,
+        consultation_fee: formData.consultation_fee || `₹${this.doctor?.consultancy_fee || ''}`, // ✅ include in payload
         medical_history_file: formData.medical_history_file || 'null',
-        doctor_preference: formData.doctor_preference || (this.doctor?.id?.toString() || '1'),
-        hospital_preference: formData.hospital_preference || (this.doctor?.hospital_id?.toString() || '1'),
+        doctor_preference: formData.doctor_preference || (this.doctor?.name || ''),
+        hospital_preference: formData.hospital_preference || (this.hospitalName || ''),
         user_query: formData.user_query || 'Consultation booking request',
-        travel_assistant: formData.travel_assistant,
-        stay_assistant: formData.stay_assistant
+        travel_assistant: false, // Hardcoded to false
+        stay_assistant: false // Hardcoded to false
       };
 
       const response = await this.http.post<BookingResponse>(
@@ -308,8 +285,7 @@ export class DoctorDetails implements OnInit {
 
       console.log('Consultation booked successfully:', response);
       this.submitSuccess = true;
-      
-      // Close modal after 2 seconds
+
       setTimeout(() => {
         this.closeModal();
       }, 2000);
@@ -329,7 +305,6 @@ export class DoctorDetails implements OnInit {
     });
   }
 
-  // Helper methods for form validation
   isFieldInvalid(fieldName: string): boolean {
     const field = this.consultationForm.get(fieldName);
     return !!(field && field.invalid && (field.touched || field.dirty));
@@ -339,7 +314,6 @@ export class DoctorDetails implements OnInit {
     const field = this.consultationForm.get(fieldName);
     if (field?.errors) {
       if (field.errors['required']) {
-        // Customize error messages for different fields
         switch(fieldName) {
           case 'first_name': return 'First name is required';
           case 'last_name': return 'Last name is required';

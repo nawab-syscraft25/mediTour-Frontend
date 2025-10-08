@@ -179,8 +179,9 @@
 
                 <!-- First Name -->
                 <div class="mb-3">
+                    <label for="first_name" class="form-label">First Name<span class="text-danger">*</span></label>
                     <input type="text" class="form-control" [class.is-invalid]="isFieldInvalid('first_name')"
-                        placeholder="First Name*" formControlName="first_name">
+                        placeholder="First Name" formControlName="first_name">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('first_name')">
                         {{ getFieldError('first_name') }}
                     </div>
@@ -188,8 +189,9 @@
 
                 <!-- Last Name -->
                 <div class="mb-3">
+                    <label for="last_name" class="form-label">Last Name<span class="text-danger">*</span></label>
                     <input type="text" class="form-control" [class.is-invalid]="isFieldInvalid('last_name')"
-                        placeholder="Last Name*" formControlName="last_name">
+                        placeholder="Last Name" formControlName="last_name">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('last_name')">
                         {{ getFieldError('last_name') }}
                     </div>
@@ -197,8 +199,9 @@
 
                 <!-- Email -->
                 <div class="mb-3">
+                    <label for="email" class="form-label">Email Id<span class="text-danger">*</span></label>
                     <input type="email" class="form-control" [class.is-invalid]="isFieldInvalid('email')"
-                        placeholder="Enter Email Id*" formControlName="email">
+                        placeholder="Enter Email Id" formControlName="email">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
                         {{ getFieldError('email') }}
                     </div>
@@ -206,48 +209,29 @@
 
                 <!-- Mobile Number -->
                 <div class="mb-3">
+                    <label for="mobile_no" class="form-label">Mobile Number<span class="text-danger">*</span></label>
                     <input type="tel" class="form-control" [class.is-invalid]="isFieldInvalid('mobile_no')"
-                        placeholder="Enter Mobile Number*" formControlName="mobile_no">
+                        placeholder="Enter Mobile Number" formControlName="mobile_no">
                     <div class="invalid-feedback" *ngIf="isFieldInvalid('mobile_no')">
                         {{ getFieldError('mobile_no') }}
                     </div>
                 </div>
 
-                <!-- Service Selection -->
-                <div class="mb-3">
-                    <select class="form-select" [class.is-invalid]="isFieldInvalid('treatment_id')"
-                        formControlName="treatment_id">
-                        <option value="" selected>Select Service*</option>
-                        <option *ngFor="let service of serviceOptions" [value]="service.value">
-                            {{ service.label }}
-                        </option>
-                    </select>
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('treatment_id')">
-                        {{ getFieldError('treatment_id') }}
-                    </div>
-                </div>
 
-                <!-- Budget Preference -->
                 <div class="mb-3">
-                    <select class="form-select" [class.is-invalid]="isFieldInvalid('budget')" formControlName="budget">
-                        <option value="" selected>Budget Preference*</option>
-                        <option *ngFor="let budget of budgetOptions" [value]="budget.value">
-                            {{ budget.label }}
-                        </option>
-                    </select>
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('budget')">
-                        {{ getFieldError('budget') }}
-                    </div>
+                    <label for="budget" class="form-label">Consultation Fees</label>
+                    <input type="text" class="form-control" formControlName="budget" readonly>
                 </div>
-
                 <!-- Doctor Preference -->
                 <div class="mb-3">
+                    <label for="doctor_preference" class="form-label">Doctor Preference</label>
                     <input type="text" class="form-control" placeholder="Doctor Preference (Optional)"
                         formControlName="doctor_preference">
                 </div>
 
                 <!-- Hospital Preference -->
                 <div class="mb-3">
+                    <label for="hospital_preference" class="form-label">Hospital Preference</label>
                     <input type="text" class="form-control" placeholder="Hospital Preference (Optional)"
                         formControlName="hospital_preference">
                 </div>
@@ -262,31 +246,12 @@
 
                 <!-- User Query -->
                 <div class="mb-3">
+                    <label for="hospital_preference" class="form-label">Query</label>
                     <textarea class="form-control" rows="3" placeholder="Enter Your Query (Optional)"
                         formControlName="user_query"></textarea>
                 </div>
 
-                <!-- Travel Assistance -->
-                <!-- <div class="mb-2 form-check">
-                    <input type="checkbox" class="form-check-input" id="travelCheck"
-                           formControlName="travel_assistant">
-                    <label class="form-check-label" for="travelCheck">
-                        Do You Need Travel Assistance?
-                    </label>
-                </div>
 
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="stayCheck"
-                           formControlName="stay_assistant">
-                    <label class="form-check-label" for="stayCheck">
-                        Do You Need Stay Assistance?
-                    </label>
-                </div> -->
-
-                <!-- Note -->
-                <div class="package-book-note">
-                    <p class="mb-3"><span>Note:</span> Travel and stay assistance will incur additional charges.</p>
-                </div>
 
                 <!-- Submit Button -->
                 <div class="d-grid gap-2">
@@ -296,7 +261,7 @@
                     </button>
 
                     <!-- Form validation summary -->
-                    <div *ngIf="bookingForm.invalid && bookingForm.touched" class="alert alert-warning mt-2"
+                    <div *ngIf="bookingForm.invalid && bookingForm.touched" class="alert form-alert mt-2"
                         role="alert">
                         <small><i class="fas fa-exclamation-triangle me-1"></i>Please fill in all
                             required fields marked with *</small>

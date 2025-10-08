@@ -64,11 +64,6 @@
     color: #AEAEAE;
 }
 
-.book-package-form form label {
-    color: #AEAEAE;
-    font-size: 16px;
-}
-
 .book-package-form form .form-check input {
     padding: 9px;
     margin-right: 12px;
@@ -81,7 +76,7 @@
 }
 
 .book-package-form form .package-book-note p span {
-    color: #323232;
+    color: #ff5252;
 }
 
 .dtl-features-list ul li {

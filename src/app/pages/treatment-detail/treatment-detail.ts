@@ -1,35 +1,17 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TreatmentService } from 'src/app/core/services/treatment.service';
 import { DoctorService } from 'src/app/core/services/doctors.service';
+import { BookingService, BookingRequest, BookingResponse } from 'src/app/core/services/booking.service';
 import { Treatment } from 'src/app/shared/interfaces/treatment.interface';
 import { Doctor } from 'src/app/core/services/doctors.service';
 
 // Import the standalone ModalComponent
 import { ModalComponent } from '@core/modal/modal.component';
 
-interface BookingRequest {
-  first_name: string;
-  last_name: string;
-  email: string;
-  mobile_no: string;
-  treatment_id: number;
-  budget: string;
-  medical_history_file: string;
-  doctor_preference: string;
-  hospital_preference: string;
-  user_query: string;
-  travel_assistant: boolean;
-  stay_assistant: boolean;
-}
-
-interface BookingResponse extends BookingRequest {
-  id: number;
-  created_at: string;
-}
 
 @Component({
   selector: 'app-treatment-detail',
@@ -88,22 +70,25 @@ export class TreatmentDetail implements OnInit {
     private route: ActivatedRoute,
     private treatmentService: TreatmentService,
     private doctorService: DoctorService,
+    private bookingService: BookingService,
     private fb: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) {
     this.bookingForm = this.fb.group({
       first_name: ['', [Validators.required, Validators.minLength(2)]],
       last_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       mobile_no: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
-      treatment_id: ['', Validators.required],
-      budget: ['', Validators.required],
+      treatment_id: [null], // Hardcoded to null
+      budget: [''], // Removed required validation
       doctor_preference: [''],
       hospital_preference: [''],
       medical_history_file: [''],
       user_query: [''],
       travel_assistant: [false],
-      stay_assistant: [false]
+      stay_assistant: [false],
+      personal_assistant: [false] // New field for Personal Nursing Assistant
     });
   }
 
@@ -203,16 +188,26 @@ export class TreatmentDetail implements OnInit {
     this.bookingForm.patchValue({
       travel_assistant: false,
       stay_assistant: false,
-      treatment_id: '',  // Keep empty to show default option
-      budget: ''         // Keep empty to show default option
+      personal_assistant: false,
+      treatment_id: null, // Hardcoded to null
+      budget: '' // Keep empty to show default option
     });
   }
+
+  selectedFile: File | null = null;
 
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      // For now, we'll just store the filename
-      // In a real application, you'd upload the file to a server first
+      // Use the booking service to validate the file
+      const validation = this.bookingService.validateFile(file);
+      if (!validation.valid) {
+        this.submitError = validation.error || 'Invalid file';
+        return;
+      }
+
+      this.selectedFile = file;
+      this.submitError = ''; // Clear any previous errors
       this.bookingForm.patchValue({
         medical_history_file: file.name
       });
@@ -229,48 +224,86 @@ export class TreatmentDetail implements OnInit {
     this.submitError = '';
 
     try {
+      let fileUploadResult = '';
+      
+      // First, upload the file if one is selected
+      if (this.selectedFile) {
+        fileUploadResult = await this.uploadFile(this.selectedFile);
+      }
+
       const formData = this.bookingForm.value;
 
-      // Prepare the request payload
+      // Prepare the request payload to match the API exactly
       const bookingRequest: BookingRequest = {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
         mobile_no: formData.mobile_no,
-        treatment_id: Number(formData.treatment_id),
-        budget: formData.budget,
-        medical_history_file: formData.medical_history_file || 'null',
-        doctor_preference: formData.doctor_preference || '1',
-        hospital_preference: formData.hospital_preference || '1',
-        user_query: formData.user_query || 'No query provided',
-        travel_assistant: formData.travel_assistant,
-        stay_assistant: formData.stay_assistant
+        treatment_id: this.treatment?.id || 0, // Use actual treatment ID or 0
+        budget: formData.budget || (this.treatment?.price_exact ? this.treatment.price_exact.toString() : ''),
+        medical_history_file: fileUploadResult || formData.medical_history_file || 'null',
+        doctor_preference: formData.doctor_preference || 'null',
+        hospital_preference: formData.hospital_preference || 'null',
+        user_query: formData.user_query || 'Treatment package booking',
+        travel_assistant: formData.travel_assistant || false,
+        stay_assistant: formData.stay_assistant || false,
+        personal_assistant: formData.personal_assistant || false
       };
 
-      const response = await this.http.post<BookingResponse>(
-        `${this.baseUrl}/api/v1/bookings`,
-        bookingRequest,
-        {
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        }
-      ).toPromise();
+      console.log('Sending booking request:', bookingRequest);
+
+      const response = await this.bookingService.createBooking(bookingRequest).toPromise();
 
       console.log('Booking created successfully:', response);
+      
+      // Always show success message if we reach this point (no error thrown)
       this.submitSuccess = true;
+      this.submitError = ''; // Clear any previous errors
+      
+      // Force Angular change detection to update the UI
+      this.cdr.detectChanges();
+      
+      console.log('Success flag set to:', this.submitSuccess);
+      console.log('Error message cleared:', this.submitError);
+      console.log('Change detection triggered');
 
-      // Close modal after 2 seconds
+      // Store the booking response for future reference
+      if (response) {
+        console.log('Booking ID:', response.id);
+        console.log('Created at:', response.created_at);
+      }
+
+      // Close modal after 4 seconds to show success message longer
       setTimeout(() => {
         this.closeModal();
-      }, 2000);
+      }, 4000);
 
     } catch (error: any) {
       console.error('Error creating booking:', error);
-      this.submitError = error.error?.message || 'Failed to create booking. Please try again.';
+      if (error.status === 422) {
+        this.submitError = 'Please check your input data and try again.';
+      } else if (error.status === 400) {
+        this.submitError = 'Invalid request. Please check all required fields.';
+      } else {
+        this.submitError = error.error?.detail || error.error?.message || 'Failed to create booking. Please try again.';
+      }
     } finally {
       this.isSubmitting = false;
+    }
+  }
+
+  // Method to upload file to server
+  private async uploadFile(file: File): Promise<string> {
+    try {
+      // Uncomment this when you have implemented the file upload endpoint on your backend:
+      // const uploadResponse = await this.bookingService.uploadFile(file).toPromise();
+      // return uploadResponse?.file_url || file.name;
+      
+      // For now, return the filename (you should implement proper file upload endpoint)
+      return file.name;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw new Error('Failed to upload file');
     }
   }
 

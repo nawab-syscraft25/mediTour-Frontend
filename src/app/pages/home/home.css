@@ -24,6 +24,15 @@
 {
     margin-top: 12px;
 }
+.package-image
+{
+  height: 100%;
+}
+.package-image img
+{
+    height: 100%;
+    max-height: 355px;
+}
 
 @media screen and (max-width: 767px) {
   .we-offer .offer-box img.home-offer-img {

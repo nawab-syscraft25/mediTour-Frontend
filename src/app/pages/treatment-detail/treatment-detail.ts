@@ -184,6 +184,9 @@ export class TreatmentDetail implements OnInit {
     this.selectedTreatmentLabel = '';
     this.selectedBudgetLabel = '';
 
+    // Clear selected file
+    this.selectedFile = null;
+
     // Set default values
     this.bookingForm.patchValue({
       travel_assistant: false,
@@ -208,9 +211,7 @@ export class TreatmentDetail implements OnInit {
 
       this.selectedFile = file;
       this.submitError = ''; // Clear any previous errors
-      this.bookingForm.patchValue({
-        medical_history_file: file.name
-      });
+      console.log('File selected:', file.name, file.size, file.type);
     }
   }
 
@@ -224,13 +225,6 @@ export class TreatmentDetail implements OnInit {
     this.submitError = '';
 
     try {
-      let fileUploadResult = '';
-      
-      // First, upload the file if one is selected
-      if (this.selectedFile) {
-        fileUploadResult = await this.uploadFile(this.selectedFile);
-      }
-
       const formData = this.bookingForm.value;
 
       // Prepare the request payload to match the API exactly
@@ -239,11 +233,11 @@ export class TreatmentDetail implements OnInit {
         last_name: formData.last_name,
         email: formData.email,
         mobile_no: formData.mobile_no,
-        treatment_id: this.treatment?.id || 0, // Use actual treatment ID or 0
+        treatment_id: this.treatment?.id || null, // Use actual treatment ID or null
         budget: formData.budget || (this.treatment?.price_exact ? this.treatment.price_exact.toString() : ''),
-        medical_history_file: fileUploadResult || formData.medical_history_file || 'null',
-        doctor_preference: formData.doctor_preference || 'null',
-        hospital_preference: formData.hospital_preference || 'null',
+        medical_history_file: formData.medical_history_file || '',
+        doctor_preference: formData.doctor_preference || '',
+        hospital_preference: formData.hospital_preference || '',
         user_query: formData.user_query || 'Treatment package booking',
         travel_assistant: formData.travel_assistant || false,
         stay_assistant: formData.stay_assistant || false,
@@ -251,8 +245,9 @@ export class TreatmentDetail implements OnInit {
       };
 
       console.log('Sending booking request:', bookingRequest);
+      console.log('Selected file:', this.selectedFile);
 
-      const response = await this.bookingService.createBooking(bookingRequest).toPromise();
+      const response = await this.bookingService.createBooking(bookingRequest, this.selectedFile || undefined).toPromise();
 
       console.log('Booking created successfully:', response);
       
@@ -292,20 +287,7 @@ export class TreatmentDetail implements OnInit {
     }
   }
 
-  // Method to upload file to server
-  private async uploadFile(file: File): Promise<string> {
-    try {
-      // Uncomment this when you have implemented the file upload endpoint on your backend:
-      // const uploadResponse = await this.bookingService.uploadFile(file).toPromise();
-      // return uploadResponse?.file_url || file.name;
-      
-      // For now, return the filename (you should implement proper file upload endpoint)
-      return file.name;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      throw new Error('Failed to upload file');
-    }
-  }
+
 
   private markFormGroupTouched() {
     Object.keys(this.bookingForm.controls).forEach(key => {

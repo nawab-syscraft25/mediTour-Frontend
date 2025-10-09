@@ -40,6 +40,7 @@ export class OnlineConsultation implements OnInit {
   showModal = false;
   selectedDoctor: Doctor | null = null;
   baseUrl = 'http://165.22.223.163:8000';
+  selectedFile: File | null = null;
 
   // ✅ Banner
   banner: Banner | null = null;
@@ -248,6 +249,7 @@ export class OnlineConsultation implements OnInit {
       treatment_id: null, // Hardcoded to null
       budget: ''
     });
+    this.selectedFile = null; // Clear selected file
     this.isSubmitting = false;
     this.submitSuccess = false;
     this.submitError = '';
@@ -256,7 +258,8 @@ export class OnlineConsultation implements OnInit {
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.bookingForm.patchValue({ medical_history_file: file.name });
+      this.selectedFile = file;
+      console.log('File selected:', file.name, file.size, file.type);
     }
   }
 
@@ -271,21 +274,35 @@ export class OnlineConsultation implements OnInit {
 
     try {
       const formData = this.bookingForm.value;
-      const bookingRequest: BookingRequest = {
-        ...formData,
-        treatment_id: null, // Hardcoded to null
-        medical_history_file: formData.medical_history_file || 'null',
-        doctor_preference: formData.doctor_preference || (this.selectedDoctor?.name || ''),
-        hospital_preference: formData.hospital_preference || ((this.selectedDoctor as any)?.hospitalName || ''),
-        user_query: formData.user_query || 'Online consultation booking',
-        travel_assistant: false, // Hardcoded to false
-        stay_assistant: false // Hardcoded to false
-      };
+      
+      // Create FormData for multipart/form-data
+      const multipartFormData = new FormData();
+      
+      // Append all the form fields
+      multipartFormData.append('first_name', formData.first_name);
+      multipartFormData.append('last_name', formData.last_name);
+      multipartFormData.append('email', formData.email);
+      multipartFormData.append('mobile_no', formData.mobile_no);
+      multipartFormData.append('treatment_id', ''); // Hardcoded to null/empty
+      multipartFormData.append('budget', formData.budget || '');
+      multipartFormData.append('doctor_preference', formData.doctor_preference || (this.selectedDoctor?.name || ''));
+      multipartFormData.append('hospital_preference', formData.hospital_preference || ((this.selectedDoctor as any)?.hospitalName || ''));
+      multipartFormData.append('user_query', formData.user_query || 'Online consultation booking');
+      multipartFormData.append('travel_assistant', 'false'); // Hardcoded to false
+      multipartFormData.append('stay_assistant', 'false'); // Hardcoded to false
+      multipartFormData.append('personal_assistant', 'false'); // Add missing field
+      
+      // Append file if selected, otherwise append empty string
+      if (this.selectedFile) {
+        multipartFormData.append('medical_history_file', this.selectedFile);
+      } else {
+        multipartFormData.append('medical_history_file', '');
+      }
 
       const response = await this.http.post<BookingResponse>(
         `${this.baseUrl}/api/v1/bookings`,
-        bookingRequest,
-        { headers: { 'accept': 'application/json', 'Content-Type': 'application/json' } }
+        multipartFormData,
+        { headers: { 'accept': 'application/json' } }
       ).toPromise();
 
       console.log('✅ Booking created:', response);

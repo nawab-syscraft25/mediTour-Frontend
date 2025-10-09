@@ -7,12 +7,14 @@
     padding: 0px;
     margin-top: 10px;
 }
-.dtl-doctor-info a {
+.dtl-doctor-info a,
+.dtl-doctor-info a.text-primary
+{
     font-size: 16px;
     font-weight: 400;
     margin-bottom: 3px;
     text-decoration: none;
-    color: var(--primary-font);
+    color: var(--primary-font) !important;
 }
 .detail-doctors
 {
@@ -68,6 +70,18 @@
 }
 .blog-img img
 {
-    min-height: 220px;
+    max-height: 220px;
     object-fit: cover;
+}
+.blog-card-dtl h4
+{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.blog-main.blog-list .blog-card
+{
+    height: 94.5%;
 }

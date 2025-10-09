@@ -54,6 +54,7 @@ export class DoctorDetails implements OnInit {
   submitSuccess = false;
   submitError = '';
   expandedFaqIndex: number | null = null;
+  selectedFile: File | null = null;
 
   // Dropdown options
   budgetOptions = [
@@ -223,6 +224,7 @@ export class DoctorDetails implements OnInit {
 
     this.selectedTreatmentLabel = '';
     this.selectedBudgetLabel = '';
+    this.selectedFile = null; // Clear selected file
 
     this.consultationForm.patchValue({
       travel_assistant: false, // Hardcoded to false
@@ -238,7 +240,8 @@ export class DoctorDetails implements OnInit {
   onFileSelect(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.consultationForm.patchValue({ medical_history_file: file.name });
+      this.selectedFile = file;
+      console.log('File selected:', file.name, file.size, file.type);
     }
   }
 
@@ -256,29 +259,37 @@ export class DoctorDetails implements OnInit {
     try {
       const formData = this.consultationForm.value;
 
-      const bookingRequest: BookingRequest = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        mobile_no: formData.mobile_no,
-        treatment_id: null, // Hardcoded to null
-        budget: formData.budget || `₹${this.doctor?.consultancy_fee || ''}`,
-        consultation_fee: formData.consultation_fee || `₹${this.doctor?.consultancy_fee || ''}`, // ✅ include in payload
-        medical_history_file: formData.medical_history_file || 'null',
-        doctor_preference: formData.doctor_preference || (this.doctor?.name || ''),
-        hospital_preference: formData.hospital_preference || (this.hospitalName || ''),
-        user_query: formData.user_query || 'Consultation booking request',
-        travel_assistant: false, // Hardcoded to false
-        stay_assistant: false // Hardcoded to false
-      };
+      // Create FormData for multipart/form-data
+      const multipartFormData = new FormData();
+      
+      // Append all the form fields
+      multipartFormData.append('first_name', formData.first_name);
+      multipartFormData.append('last_name', formData.last_name);
+      multipartFormData.append('email', formData.email);
+      multipartFormData.append('mobile_no', formData.mobile_no);
+      multipartFormData.append('treatment_id', ''); // Hardcoded to null/empty
+      multipartFormData.append('budget', formData.budget || `₹${this.doctor?.consultancy_fee || ''}`);
+      multipartFormData.append('doctor_preference', formData.doctor_preference || (this.doctor?.name || ''));
+      multipartFormData.append('hospital_preference', formData.hospital_preference || (this.hospitalName || ''));
+      multipartFormData.append('user_query', formData.user_query || 'Consultation booking request');
+      multipartFormData.append('travel_assistant', 'false'); // Hardcoded to false
+      multipartFormData.append('stay_assistant', 'false'); // Hardcoded to false
+      multipartFormData.append('personal_assistant', 'false'); // Add missing field
+      
+      // Append file if selected, otherwise append empty string
+      if (this.selectedFile) {
+        multipartFormData.append('medical_history_file', this.selectedFile);
+      } else {
+        multipartFormData.append('medical_history_file', '');
+      }
 
       const response = await this.http.post<BookingResponse>(
         `${this.baseUrl}/api/v1/bookings`,
-        bookingRequest,
+        multipartFormData,
         {
           headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
+            'accept': 'application/json'
+            // Don't set Content-Type for FormData - browser will set it automatically with boundary
           }
         }
       ).toPromise();

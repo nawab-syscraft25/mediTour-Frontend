@@ -32,13 +32,36 @@ export class BookingService {
 
   constructor(private http: HttpClient) {}
 
-  createBooking(data: BookingRequest): Observable<BookingResponse> {
+  createBooking(data: BookingRequest, file?: File): Observable<BookingResponse> {
+    const formData = new FormData();
+    
+    // Append all the form fields
+    formData.append('first_name', data.first_name);
+    formData.append('last_name', data.last_name);
+    formData.append('email', data.email);
+    formData.append('mobile_no', data.mobile_no);
+    formData.append('treatment_id', data.treatment_id ? data.treatment_id.toString() : '');
+    formData.append('budget', data.budget || '');
+    formData.append('doctor_preference', data.doctor_preference || '');
+    formData.append('hospital_preference', data.hospital_preference || '');
+    formData.append('user_query', data.user_query || '');
+    formData.append('travel_assistant', data.travel_assistant.toString());
+    formData.append('stay_assistant', data.stay_assistant.toString());
+    formData.append('personal_assistant', data.personal_assistant.toString());
+    
+    // Append file if provided, otherwise append empty string
+    if (file) {
+      formData.append('medical_history_file', file);
+    } else {
+      formData.append('medical_history_file', '');
+    }
+
     const headers = new HttpHeaders({
-      'accept': 'application/json',
-      'Content-Type': 'application/json'
+      'accept': 'application/json'
+      // Don't set Content-Type for FormData - browser will set it automatically with boundary
     });
 
-    return this.http.post<BookingResponse>(this.apiUrl, data, { headers });
+    return this.http.post<BookingResponse>(this.apiUrl, formData, { headers });
   }
 
   // File upload method - you can implement this when you have the endpoint

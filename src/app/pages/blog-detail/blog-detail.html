@@ -68,49 +68,51 @@
 
             </div>
             <div class="col-lg-4">
-                <div class="blog-category">
-                    <div class="detail-doctors">
-                        <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
-                            <h4>Categories</h4>
+                <div class="blog-category-main">
+                    <div class="blog-category">
+                        <div class="detail-doctors">
+                            <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
+                                <h4>Categories</h4>
+                            </div>
+                            
+                            <!-- Dynamic categories from blog data -->
+                            <div class="dtl-doctor-info" *ngFor="let category of categories">
+                                <p>
+                                    <a href="#" (click)="filterByCategory(category); $event.preventDefault()">
+                                        {{ category }}
+                                    </a>
+                                </p>
+                            </div>
+                            
+                            <!-- Fallback message if no categories -->
+                            <div class="dtl-doctor-info" *ngIf="categories.length === 0">
+                                <p class="text-muted">No categories available</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-doctors recent-post">
+                                            <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
+                            <h4>Recent Posts</h4>
                         </div>
                         
-                        <!-- Dynamic categories from blog data -->
-                        <div class="dtl-doctor-info" *ngFor="let category of categories">
-                            <p>
-                                <a href="#" (click)="filterByCategory(category); $event.preventDefault()">
-                                    {{ category }}
-                                </a>
-                            </p>
+                        <!-- Dynamic recent posts from blog data -->
+                        <div class="dtl-doctor-list d-flex align-items-center" *ngFor="let post of recentPosts">
+                            <div class="dtl-doctor-img">
+                                <img [src]="getImageUrl(post.featured_image)" class="img-fluid">
+                            </div>
+                            <div class="dtl-doctor-info">
+                                <p>
+                                    <a [attr.href]="'/blog-detail/' + post.id" class="text-decoration-none">
+                                        {{ post.title }}
+                                    </a>
+                                </p>
+                            </div>
                         </div>
                         
-                        <!-- Fallback message if no categories -->
-                        <div class="dtl-doctor-info" *ngIf="categories.length === 0">
-                            <p class="text-muted">No categories available</p>
+                        <!-- Fallback message if no recent posts -->
+                        <div class="dtl-doctor-info" *ngIf="recentPosts.length === 0">
+                            <p class="text-muted">No recent posts available</p>
                         </div>
-                    </div>
-                </div>
-                <div class="detail-doctors recent-post">
-                                        <div class="dtl-doctor-head d-flex align-items-center justify-content-between">
-                        <h4>Recent Posts</h4>
-                    </div>
-                    
-                    <!-- Dynamic recent posts from blog data -->
-                    <div class="dtl-doctor-list d-flex align-items-center" *ngFor="let post of recentPosts">
-                        <div class="dtl-doctor-img">
-                            <img [src]="getImageUrl(post.featured_image)" class="img-fluid">
-                        </div>
-                        <div class="dtl-doctor-info">
-                            <p>
-                                <a [attr.href]="'/blog-detail/' + post.id" class="text-decoration-none">
-                                    {{ post.title }}
-                                </a>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Fallback message if no recent posts -->
-                    <div class="dtl-doctor-info" *ngIf="recentPosts.length === 0">
-                        <p class="text-muted">No recent posts available</p>
                     </div>
                 </div>
             </div>

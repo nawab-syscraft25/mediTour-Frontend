@@ -112,11 +112,11 @@ export class AyushmanTreatmentDetail implements OnInit {
   }
 
   // ✅ NEW: Select budget
-  selectBudget(budget: { value: string; label: string }): void {
-    this.bookingForm.patchValue({ budget: budget.value });
-    this.selectedBudgetLabel = budget.label;
-    this.isBudgetDropdownOpen = false;
-  }
+  // selectBudget(budget: { value: string; label: string }): void {
+  //   this.bookingForm.patchValue({ budget: budget.value });
+  //   this.selectedBudgetLabel = budget.label;
+  //   this.isBudgetDropdownOpen = false;
+  // }
 
   // ✅ NEW: Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])

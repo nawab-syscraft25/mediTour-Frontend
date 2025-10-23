@@ -131,31 +131,7 @@
                 <p>{{ t.short_description }}</p>
               </div>
 
-              <!-- Rating -->
-              <div class="user-card-rating">
-                <div class="user-card-rating d-flex align-items-center">
-                  <ng-container *ngFor="let star of getStars(t.rating)">
-                    <!-- Full star -->
-                    <i *ngIf="star === 'full'" class="fa fa-star text-warning"></i>
-                    <!-- Half star -->
-                    <i *ngIf="star === 'half'" class="fa fa-star-half-alt text-warning"></i>
-                    <!-- Empty star -->
-                    <i *ngIf="star === 'empty'" class="fa-regular fa-star text-warning"></i>
-                  </ng-container>
-                  <span class="ms-2" *ngIf="t.rating !== null"></span>
-                </div>
-              </div>
 
-              <!-- Price -->
-              <p class="treatment-price" *ngIf="t.price_exact">
-                <strong>Price:</strong> ₹{{ t.price_exact | number }}
-                <span class="ms-1">Onward</span>
-              </p>
-              <p class="treatment-price" *ngIf="t.price_min && t.price_max">
-                <strong>Price:</strong> ₹{{ t.price_min | number }} –
-                ₹{{ t.price_max | number }}
-                <span class="ms-1">Onward</span>
-              </p>
 
               <!-- Location -->
               <div class="d-flex align-items-center card-location">
@@ -168,7 +144,7 @@
 
             <!-- More Detail -->
             <div class="read-more">
-              <a *ngIf="t.id" [attr.href]="'/treatment-detail/' + t.id" class="btn">
+              <a *ngIf="t.id" [attr.href]="'/ayushman-treatment-detail/' + t.id" class="btn">
                 More Detail <i class="fa fa-arrow-up"></i>
               </a>
             </div>

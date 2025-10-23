@@ -39,11 +39,6 @@
                     <h2 class="section-title">{{ treatment.name }}</h2>
                     
                     <!-- Ayushman Badge -->
-                    <div class="ayushman-badge mb-3" *ngIf="treatment.is_ayushman">
-                        <span class="badge bg-success fs-6 px-2 py-2 fw-normal">
-                            <i class="fas fa-check-circle me-1"></i> Ayushman Bharat Eligible
-                        </span>
-                    </div>
                     
                     <div class="detail-description">
                         <p>{{ treatment.short_description }}</p>
@@ -158,16 +153,6 @@
                                         placeholder="{{ treatment.name }}" readonly>
                                 </div>
 
-                                <!-- Ayushman Information -->
-                                <div class="mb-3" *ngIf="treatment.is_ayushman">
-                                    <div class="alert alert-info d-flex align-items-center" role="alert">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <div>
-                                            <strong>Ayushman Bharat Eligible:</strong> This treatment is covered under the Ayushman Bharat scheme. 
-                                            Please bring your Ayushman card and valid ID for verification.
-                                        </div>
-                                    </div>
-                                </div>
 
 
                                 <!-- Budget Preference - Custom Dropdown -->

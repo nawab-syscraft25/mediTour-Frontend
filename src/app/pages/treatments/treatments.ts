@@ -64,14 +64,11 @@ export class Treatments implements OnInit {
       next: (data) => {
         console.log('✅ All treatments loaded:', data);
         
-        // Filter out Ayushman treatments - only show non-Ayushman treatments
-        const nonAyushmanTreatments = data.filter(t => t.is_ayushman === false);
-        console.log(`🔍 Filtered ${nonAyushmanTreatments.length}/${data.length} non-Ayushman treatments`);
-        
-        this.treatments = nonAyushmanTreatments.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
+        // Keep all treatments (including Ayushman ones)
+        this.treatments = data.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
 
-        this.availableLocations = Array.from(new Set(this.treatments.map(t => t.location).filter(Boolean)));
-        this.availableTreatmentTypes = Array.from(new Set(this.treatments.map(t => t.treatment_type).filter(Boolean)));
+  this.availableLocations = Array.from(new Set(this.treatments.map(t => t.location).filter(Boolean)));
+  this.availableTreatmentTypes = Array.from(new Set(this.treatments.map(t => t.treatment_type).filter(Boolean)));
 
         this.filteredTreatments = [...this.treatments];
         this.loading = false;
@@ -119,8 +116,7 @@ export class Treatments implements OnInit {
     this.filteredTreatments = this.treatments.filter(t => {
       const locationMatch = this.selectedLocation ? t.location === this.selectedLocation : true;
       const treatmentMatch = this.selectedTreatmentType ? t.treatment_type === this.selectedTreatmentType : true;
-      const nonAyushmanMatch = t.is_ayushman === false; // Ensure only non-Ayushman treatments
-      return locationMatch && treatmentMatch && nonAyushmanMatch;
+      return locationMatch && treatmentMatch;
     });
     
     console.log(`🔍 Filtered ${this.filteredTreatments.length} non-Ayushman treatments after applying filters`);
@@ -151,7 +147,7 @@ export class Treatments implements OnInit {
 
   // Get only non-Ayushman treatments for display
   get nonAyushmanTreatments(): Treatment[] {
-    return this.filteredTreatments.filter(t => t.is_ayushman === false);
+    return this.filteredTreatments;
   }
 
   // TrackBy function for better performance in *ngFor

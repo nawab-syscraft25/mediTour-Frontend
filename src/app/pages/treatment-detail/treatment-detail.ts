@@ -449,7 +449,7 @@ export class TreatmentDetail implements OnInit {
     if (typeof this.treatment.features === 'string') {
       // Split by various delimiters and clean up
       return this.treatment.features
-        .split(/[,;|\n\r]/) // Split by comma, semicolon, pipe, or newlines
+        .split(/[;|\n\r]/) // Split by semicolon, pipe, or newlines
         .map(feature => feature.trim())
         .filter(feature => feature.length > 0);
     }

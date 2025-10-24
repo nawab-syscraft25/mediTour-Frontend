@@ -37,16 +37,30 @@
             <div class="col-lg-6">
                 <div class="dtl-info hospital-info treatment-info">
                     <h2 class="section-title">{{ treatment.name }}</h2>
-                    
+
                     <!-- Ayushman Badge -->
-                    
+
                     <div class="detail-description">
                         <p>{{ treatment.short_description }}</p>
                     </div>
                     <!-- <p><strong>Type:</strong> {{ treatment.treatment_type }}</p> -->
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div class="detail-location d-flex align-items-center card-location">
+                                <img [src]="'assets/images/card-location.svg'">
+                                <p class="mb-0">{{ treatment.location }}</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div  *ngIf="hospitalName" class="detail-location d-flex align-items-center card-location">
+                                <img [src]="'assets/images/hospital.svg'">
+                                <p class="mb-0">{{ hospitalName }}</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="detail-location d-flex align-items-center card-location">
-                        <img [src]="'assets/images/card-location.svg'">
-                        <p class="mb-0">{{ treatment.location }}</p>
+                        <img [src]="'assets/images/designation.svg'">
+                        <p class="mb-0"><span *ngFor="let doctor of (treatment?.associated_doctors?.length ? treatment.associated_doctors : relatedDoctors)">{{doctor.name }}, &nbsp;</span></p>
                     </div>
                     <!-- <p><strong>Rating:</strong> ⭐ {{ treatment.rating }}</p> -->
                     <div class="treatment-price">
@@ -76,7 +90,8 @@
 
                                 <!-- First Name -->
                                 <div class="mb-3">
-                                    <label for="first_name" class="form-label">First Name<span class="text-danger">*</span></label>
+                                    <label for="first_name" class="form-label">First Name<span
+                                            class="text-danger">*</span></label>
                                     <input type="text" class="form-control"
                                         [class.is-invalid]="isFieldInvalid('first_name')" placeholder="First Name"
                                         formControlName="first_name">
@@ -87,7 +102,8 @@
 
                                 <!-- Last Name -->
                                 <div class="mb-3">
-                                    <label for="last_name" class="form-label">Last Name<span class="text-danger">*</span></label>
+                                    <label for="last_name" class="form-label">Last Name<span
+                                            class="text-danger">*</span></label>
                                     <input type="text" class="form-control"
                                         [class.is-invalid]="isFieldInvalid('last_name')" placeholder="Last Name"
                                         formControlName="last_name">
@@ -98,7 +114,8 @@
 
                                 <!-- Email -->
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email Id<span class="text-danger">*</span></label>
+                                    <label for="email" class="form-label">Email Id<span
+                                            class="text-danger">*</span></label>
                                     <input type="email" class="form-control"
                                         [class.is-invalid]="isFieldInvalid('email')" placeholder="Enter Email Id"
                                         formControlName="email">
@@ -109,7 +126,8 @@
 
                                 <!-- Mobile Number -->
                                 <div class="mb-3">
-                                    <label for="mobile_no" class="form-label">Mobile Number<span class="text-danger">*</span></label>
+                                    <label for="mobile_no" class="form-label">Mobile Number<span
+                                            class="text-danger">*</span></label>
                                     <input type="tel" class="form-control"
                                         [class.is-invalid]="isFieldInvalid('mobile_no')"
                                         placeholder="Enter Mobile Number*" formControlName="mobile_no">
@@ -158,7 +176,8 @@
                                 <!-- Budget Preference - Custom Dropdown -->
                                 <div class="mb-3">
                                     <div class="custom-select-wrapper">
-                                        <label for="Budget" class="form-label">Budget Preference<span class="text-danger">*</span></label>
+                                        <label for="Budget" class="form-label">Budget Preference<span
+                                                class="text-danger">*</span></label>
                                         <div class="form-select" [class.open]="isBudgetDropdownOpen"
                                             [class.placeholder]="!selectedBudgetLabel"
                                             [class.is-invalid]="isFieldInvalid('budget')"
@@ -232,7 +251,7 @@
                                 </div>
                                 <div class="mb-3 form-check">
                                     <input type="checkbox" class="form-check-input" id="personal_assistant"
-                                     formControlName="personal_assistant">
+                                        formControlName="personal_assistant">
                                     <label class="form-check-label">
                                         Do You Need A Personal Nursing Assistant?
                                     </label>
@@ -280,7 +299,7 @@
         </div>
     </div>
 </section>
-<section class="tret-feature ptc-60" *ngIf="treatment">
+<section class="tret-feature ptc-60" *ngIf="treatment && treatment.features">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -412,7 +431,8 @@
                     </div>
 
                     <!-- Preferred: associated_doctors from treatment API, fallback to relatedDoctors -->
-                    <div *ngFor="let doctor of (treatment?.associated_doctors ?? relatedDoctors)" class="dtl-doctor-list d-flex align-items-center">
+                    <div *ngFor="let doctor of (treatment?.associated_doctors ?? relatedDoctors)"
+                        class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
                             <img *ngIf="doctor.profile_photo" [src]="baseUrl + doctor.profile_photo" [alt]="doctor.name"
                                 class="img-fluid">
@@ -424,13 +444,15 @@
                                 <li>{{ doctor.designation || doctor.specialization }}</li>
                                 <li *ngIf="doctor.experience_years">{{ doctor.experience_years }} Years of Experience
                                 </li>
-                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{ doctor.consultancy_fee | number }}</li>
+                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{
+                                    doctor.consultancy_fee | number }}</li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- No doctors found when both sources empty -->
-                    <div *ngIf="!loadingDoctors && ((treatment?.associated_doctors?.length ?? relatedDoctors.length) === 0)" class="text-center py-3">
+                    <div *ngIf="!loadingDoctors && ((treatment?.associated_doctors?.length ?? relatedDoctors.length) === 0)"
+                        class="text-center py-3">
                         <p class="mb-0 text-muted">No related doctors found for this treatment.</p>
                     </div>
                 </div>

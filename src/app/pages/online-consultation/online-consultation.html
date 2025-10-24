@@ -87,8 +87,8 @@
             <div *ngFor="let d of doctors" class="col-lg-4 col-md-6 mb-4">
                 <div class="user-card">
                     <div class="user-card-img">
-                        <img *ngIf="d.profile_photo?.length" [src]="'http://165.22.223.163:8000' + d.profile_photo"
-                            [alt]="d.name" class="card-img-top img-fluid" />
+                        <!-- <img *ngIf="d.profile_photo?.length" [src]="'http://165.22.223.163:8000' + d.profile_photo" [alt]="d.name" class="card-img-top img-fluid" /> -->
+                        <img [src]="d.profile_photo ? ('http://165.22.223.163:8000' + d.profile_photo) : 'assets/images/our-doctors.png'" [alt]="d.name" class="card-img-top img-fluid" />
                     </div>
                     <div class="user-card-content doctors-card-info">
                         <h5 class="card-title">{{ d.name }}</h5>

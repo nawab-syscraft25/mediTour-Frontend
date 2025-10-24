@@ -236,7 +236,7 @@ export class AyushmanTreatmentDetail implements OnInit {
         email: formData.email,
         mobile_no: formData.mobile_no,
         treatment_id: this.treatment?.id || null, // Use actual treatment ID or null
-        budget: formData.budget || (this.treatment?.price_exact ? this.treatment.price_exact.toString() : ''),
+        budget: formData.budget,
         medical_history_file: formData.medical_history_file || '',
         doctor_preference: formData.doctor_preference || '',
         hospital_preference: formData.hospital_preference || '',
@@ -245,6 +245,9 @@ export class AyushmanTreatmentDetail implements OnInit {
         travel_assistant: formData.travel_assistant || false,
         stay_assistant: formData.stay_assistant || false,
         personal_assistant: formData.personal_assistant || false
+        ,
+        // Mark this booking as an Ayushman treatment booking
+        is_ayushman_treatment: true
       };
 
       console.log('Sending booking request:', bookingRequest);

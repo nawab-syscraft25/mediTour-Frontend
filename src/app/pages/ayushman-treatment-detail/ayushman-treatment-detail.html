@@ -356,8 +356,8 @@
                         <p class="mt-2 mb-0">Loading related doctors...</p>
                     </div>
 
-                    <!-- Dynamic doctor list -->
-                    <div *ngFor="let doctor of relatedDoctors" class="dtl-doctor-list d-flex align-items-center">
+                    <!-- Preferred: associated_doctors from treatment API, fallback to relatedDoctors -->
+                    <div *ngFor="let doctor of (treatment?.associated_doctors ?? relatedDoctors)" class="dtl-doctor-list d-flex align-items-center">
                         <div class="dtl-doctor-img">
                             <img *ngIf="doctor.profile_photo" [src]="baseUrl + doctor.profile_photo" [alt]="doctor.name"
                                 class="img-fluid">
@@ -369,14 +369,13 @@
                                 <li>{{ doctor.designation || doctor.specialization }}</li>
                                 <li *ngIf="doctor.experience_years">{{ doctor.experience_years }} Years of Experience
                                 </li>
-                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{
-                                    doctor.consultancy_fee | number }}</li>
+                                <li *ngIf="!doctor.experience_years && doctor.consultancy_fee">Consultation Fee: ₹{{ doctor.consultancy_fee | number }}</li>
                             </ul>
                         </div>
                     </div>
 
-                    <!-- No doctors found -->
-                    <div *ngIf="!loadingDoctors && relatedDoctors.length === 0" class="text-center py-3">
+                    <!-- No doctors found when both sources empty -->
+                    <div *ngIf="!loadingDoctors && ((treatment?.associated_doctors?.length ?? relatedDoctors.length) === 0)" class="text-center py-3">
                         <p class="mb-0 text-muted">No related doctors found for this treatment.</p>
                     </div>
                 </div>

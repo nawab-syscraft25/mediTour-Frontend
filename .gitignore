@@ -18,14 +18,10 @@ yarn-error.log
 .c9/
 *.launch
 .settings/
+temp_auto_push.bat
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 .history/*
 
 # Miscellaneous
@@ -41,5 +37,6 @@ testem.log
 .DS_Store
 Thumbs.db
 dist.zip
-.env
 .env.local  
+temp_interactive_push.bat
+.gitignore
